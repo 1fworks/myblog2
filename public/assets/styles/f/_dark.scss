@@ -1,0 +1,211 @@
+@use 'variables' as *;
+
+[data-theme="dark"] {
+.mytheme :global {
+    background-color: $dark-background-color;
+    color: $dark-text-base-color;
+
+    .modal > .modal-darker,
+    .modal-active > .modal-darker,
+    .img-modal > .modal-darker,
+    .img-modal-active > .modal-darker,
+    .navmenu {
+        background-color: $dark-background-color;
+    }
+
+    .skeleton {
+        @apply bg-gradient-to-r from-[#292a2b] from-50% via-[#7b7e80] via-75% to-[#292a2b] to-100%
+    }
+
+    .img-box-wrapping-paper {
+        @apply bg-[#292a2b];
+    }
+
+    ::selection {
+        background-color: $dark-text-selection;
+    }
+
+    strong {
+        color: $dark-text-em;
+    }
+
+    code {
+        background-color: $dark-text-input-active;
+        text-decoration-color: $dark-text-cloudy;
+        &::selection {
+            color: $dark-text-cloudy;
+            background-color: $dark-text-base-color;
+        }
+    }
+
+    hr {
+        border-color: $dark-text-cloudy;
+    }
+
+    a:not([class]):not([id]){
+        color: $text-link;
+        text-decoration-color: $dark-text-input-active;
+        &:hover {
+            color: $dark-text-link-active;
+        }
+        &::after {
+            background-color: $dark-text-base-color;
+        }
+    }
+
+    a.link-color {
+        color: $text-link;
+        text-decoration-color: $dark-text-input-active;
+        &:hover {
+            color: $dark-text-link;
+        }
+    }
+
+    nav.toc {
+        a {
+            color: $dark-text-less-cloudy;
+            text-decoration-color: $dark-text-input-active;
+            &:hover {
+                color: $dark-text-em;
+            }
+            &::after {
+                background-color: $dark-text-base-color;
+            }
+        }
+    }
+    
+    input {
+        caret-color: $dark-text-input-selection;
+        background-color: $dark-text-input;
+        outline-color: $dark-text-cloudy;
+        &::placeholder {
+            color: $dark-text-less-cloudy;
+        }
+        &:focus {
+            background-color: $dark-text-input-active;
+        }
+        &::selection {
+            background-color: $dark-text-input-selection;
+        }
+    }
+
+    button {
+        background-color: $dark-background-color;
+        &:hover {
+            background-color: $dark-text-input-active;
+        }
+    }
+
+    .navmenu {
+        svg{
+            @apply stroke-white;
+            fill: $dark-background-color;
+        }
+    }
+
+    .searchbar {
+        svg{
+            stroke: $dark-text-cloudy;
+            &:focus {
+                stroke: $dark-text-em;
+            }
+        }
+    }
+
+    .menulist {
+        .menulink {
+            color: $dark-text-less-cloudy;
+            &:hover {
+                color: $dark-text-em;
+            }
+        }
+        .menulink-active {
+            color: $dark-text-em;
+        }
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        color: $dark-text-less-em;
+        text-decoration-color: $dark-text-input-active;
+        &[id]{
+            &:hover{
+                color: $dark-text-em;
+                &::after{
+                    background-color: $dark-text-less-cloudy;
+                }
+            }
+        }
+    }
+
+    table {
+        th {
+            border-bottom-color: $dark-text-base-color;
+        }
+        td {
+            border-color: $dark-text-cloudy;
+        }
+    }
+
+    blockquote {
+        border-color: $dark-text-link;
+        background-color: $dark-text-input;
+        p {
+            color: $dark-text-less-em;
+        }
+    }
+
+    .archive-list {
+        svg {
+            stroke: #fff;
+            fill: #fff;
+        }
+        background-color: $dark-text-input-active50;
+        &:hover {
+            background-color: $dark-text-input-active;
+            .title {
+                color: #fff;
+                text-decoration-color: $dark-text-input-selection;
+            }
+        }
+    }
+    
+    .post-data {
+        h1 {
+            background-color: $dark-post-title;
+        }
+    }
+
+    .mini-archive {
+        border-color: $dark-text-input;
+    }
+
+    footer {
+        color: $dark-text-cloudy;
+        svg {
+            fill: $dark-text-cloudy;
+        }
+    }
+
+    .main-wrapper {
+        svg {
+            fill: $dark-text-less-em;
+        }
+    }
+
+    .file-not-found {
+        background-color: $dark-text-input;
+        color: $dark-text-less-cloudy;
+    }
+
+    .about-link {
+        svg {
+            fill: $text-less-cloudy;
+        }
+        div:hover {
+            background-color: $text-input-active;
+            svg {
+                fill: $text-link-active;
+            }
+        }
+    }
+}}

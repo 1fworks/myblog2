@@ -1,0 +1,259 @@
+@use 'variables' as *;
+
+.mytheme :global {
+    font-size: $base-font-size;
+    line-height: $base-line-height;
+    font-family: var(--wantedsans-font);
+
+    background-color: $background-color;
+    color: $text-base-color;
+
+    & {
+        strong {
+            font-size: $large-font-size;
+        }
+        @include media-query($on-mobile) {
+            font-size: $medium-font-size;
+            footer {
+                font-size: $base-font-size;
+            }
+            strong {
+                font-size: $base-font-size;
+            }
+        }
+        @include media-query($on-super-mini) {
+            font-size: $small-font-size;
+            strong {
+                font-size: $medium-font-size;
+            }
+        }
+        @include media-query($on-minimini) {
+            font-size: $mini-font-size;
+            strong {
+                font-size: $small-font-size;
+            }
+        }
+    }
+
+    .modal > .modal-darker,
+    .modal-active > .modal-darker,
+    .img-modal > .modal-darker,
+    .img-modal-active > .modal-darker,
+    .navmenu {
+        background-color: $background-color;
+    }
+
+    .skeleton {
+        @apply bg-gradient-to-r from-[#ebebeb] from-50% via-[#fff] via-75% to-[#ebebeb] to-100%
+    }
+
+    .img-box-wrapping-paper {
+        @apply bg-[#ebebeb];
+    }
+
+    ::selection {
+        background-color: $text-selection;
+    }
+
+    strong {
+        color: $text-em;
+    }
+
+    code {
+        background-color: $text-input-active;
+        text-decoration-color: $text-cloudy;
+    }
+
+    hr {
+        border-color: $text-cloudy;
+    }
+
+    a:not([class]):not([id]){
+        color: $text-link;
+        text-decoration-color: $text-input;
+        &:hover {
+            color: $text-link-active;
+        }
+        &::after {
+            background-color: $text-base-color;
+        }
+    }
+
+    a.link-color {
+        color: $text-link;
+        text-decoration-color: $text-input;
+        &:hover {
+            color: $text-link-active;
+        }
+    }
+    
+    nav.toc {
+        a {
+            color: $text-less-cloudy;
+            text-decoration-color: $text-input;
+            &:hover {
+                color: $text-em;
+            }
+            &::after {
+                background-color: $text-base-color;
+            }
+        }
+    }
+
+    input {
+        caret-color: $text-cloudy;
+        background-color: $text-input;
+        outline-color: $text-cloudy;
+        &::placeholder {
+            color: $text-cloudy;
+        }
+        &:focus {
+            background-color: $text-input-active;
+        }
+        &::selection {
+            background-color: $text-input-selection;
+        }
+    }
+
+    button {
+        background-color: $background-color;
+        &:hover {
+            background-color: $text-input-active;
+        }
+    }
+
+    .navmenu {
+        svg{
+            @apply stroke-neutral-800 fill-neutral-800;
+        }
+    }
+
+    .searchbar {
+        svg{
+            stroke: $text-cloudy;
+            &:focus {
+                stroke: $text-em;
+            }
+        }
+    }
+
+    .menulist {
+        .menulink {
+            @apply transition-all;
+            color: $text-less-cloudy;
+            &:hover {
+                color: $text-em;
+            }
+        }
+        .menulink-active {
+            color: $text-em;
+            @apply font-bold;
+        }
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        color: $text-less-em;
+        text-decoration-color: $text-input;
+        &[id]{
+            &::after{
+                background-color: #00000000;
+            }
+            &:hover{
+                color: $text-em;
+                &::after{
+                    background-color: $text-less-cloudy;
+                }
+            }
+        }
+    }
+
+    table {
+        th {
+            border-bottom-color: $text-base-color;
+        }
+        td {
+            font-size: $small-font-size;
+            border-color: $text-cloudy;
+        }
+        @include media-query($on-mobile) {
+            th {
+                font-size: $small-font-size;
+            }
+            td {
+                font-size: $mini-font-size;
+            }
+        }
+    }
+
+    blockquote {
+        border-color: $text-link;
+        background-color: $text-input;
+        p {
+            color: $text-less-em;
+        }
+    }
+
+    .archive-list {
+        svg {
+            stroke: #000;
+            fill: #000;
+        }
+        .title {
+            text-decoration-color: $text-input-selection;
+        }
+        background-color: $text-input-active50;
+        &:hover {
+            background-color: $text-input-active;
+            .title {
+                color: #000;
+            }
+        }
+    }
+
+    .post-data {
+        h1 {
+            background-color: $post-title;
+        }
+    }
+
+    .mini-archive {
+        border-color: $text-input;
+    }
+
+    footer {
+        color: $text-cloudy;
+        svg {
+            fill: $text-cloudy;
+        }
+        a:hover {
+            color: #EE802F;
+            svg {
+                fill: #EE802F;
+            }
+        }
+    }
+
+    .main-wrapper {
+        svg {
+            fill: $text-less-em;
+        }
+    }
+
+    .file-not-found {
+        background-color: $text-input;
+        color: $text-less-cloudy;
+    }
+
+    
+    .about-link {
+        svg {
+            fill: $dark-text-less-cloudy;
+        }
+        div:hover {
+            background-color: $dark-text-input-active;
+            svg {
+                fill: $background-color;
+            }
+        }
+    }
+}

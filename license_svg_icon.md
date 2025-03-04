@@ -1,0 +1,9 @@
+## Svg Icon Resources
+- Dazzle Line Icons by Dazzle UI, CC Attribution License: [Dazzle Line Icons](https://www.svgrepo.com/collection/dazzle-line-icons)
+- Gentlecons Interface Icons by Konstantin Filatov, CC Attribution License: [Gentlecons Interface Icons](https://www.svgrepo.com/collection/gentlecons-interface-icons)
+- Zwicon Line Icons by zwicon, CC Attribution License: [Zwicon Line Icons](https://www.svgrepo.com/collection/zwicon-line-icons)
+- Social Media Solid icon pack by Iconfinder, Free for commercial use: [Social Media Solid icon Pack](https://www.iconfinder.com/iconsets/social-media-black-white-2)
+- Picons Social icon pack by Picons.me, Free for commercial use: [Picons Social icon pack](https://www.iconfinder.com/iconsets/picons-social)
+- Ionicons icon pack by Ionions, MIT License: [Ionicons icon pack](https://www.iconfinder.com/iconsets/ionicons)
+- Tiny App Icons by edent, MIT License: [Tiny App Icons](https://www.svgrepo.com/collection/tiny-app-icons)
+- The GameJolt logo is part of the "Brand Icons" collection, and it is covered under the Logo License: [Gamejolt SVG Vector](https://www.svgrepo.com/collection/brand-icons)

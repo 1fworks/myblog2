@@ -1,0 +1,97 @@
+@use 'sass:math';
+
+// Fonts preferences
+$large-font-size: 20px;
+$base-font-size: 18px;
+$medium-font-size: $base-font-size * 0.938;
+$small-font-size: $base-font-size * 0.9;
+$mini-font-size: $base-font-size * 0.875;
+$super-mini-font-size: $base-font-size * 0.8;
+$minimini-font-size: $base-font-size * 0.75;
+$base-line-height: 1.5;
+
+// font 1
+$pretendard-normal-weight: 45;
+$pretendard-bold-weight: 920;
+// font 2
+$wanted-sans-normal-weight: 400;
+$wanted-sans-bold-weight: 1000;
+
+//Light Colors
+$background-color: #ffffff;
+
+$text-base-color: #434648;
+$text-selection: #ffe5ce;
+$text-link: #df6680;
+$text-link-active: #ff3e78;
+
+$text-em: #000000;
+$text-less-em: #292a2b;
+$text-less-cloudy: #7b7e80;
+$text-cloudy: #b6b6b6;
+$text-input: #ebebeb;
+$text-input-active: #f0f0f0;
+$text-input-active50: #f0f0f080;
+$text-input-selection: #ffd89d;
+$post-title: #fff8ec;
+
+// Dark Colors
+$dark-background-color: #151517;
+
+$dark-text-base-color: #d3c9c9;
+$dark-text-selection: #353535;
+$dark-text-link: #ff5277;
+$dark-text-link-active: #ffe6c1;
+
+$dark-text-em: #ffffff;
+$dark-text-less-em: #e4e2e2;
+$dark-text-less-cloudy: #948e8e;
+$dark-text-cloudy: #3b3b3b;
+$dark-text-input: #1e1e20;
+$dark-text-input-active: #313135;
+$dark-text-input-active50: #31313580;
+$dark-text-input-selection: #837e78;
+$dark-post-title: #1f1f1f;
+
+// Width of the content area
+$area-size: 790px;
+
+// Padding unit
+$spacing-full: 30px;
+$spacing-half: math.div($spacing-full, 2);
+
+// State of devices
+$on-what-happen: 280px;
+$on-minimini: 400px;
+$on-super-mini: 480px;
+$on-mini: 550px;
+$on-mobile: 768px;
+$on-tablet: 1100px;
+$on-pc: 1366px;
+
+$screen-min-height: 660px;
+$screen-mobile-min-height: 400px;
+
+@mixin media-height($device) {
+    @media screen and (max-height: $device) {
+        @content;
+    }
+}
+
+@mixin media-height-oppsite($device) {
+    @media screen and (min-height: ($device + 1px)) {
+        @content;
+    }
+}
+
+@mixin media-query($device) {
+    @media screen and (max-width: $device) {
+        @content;
+    }
+}
+
+@mixin media-query-opposite($device) {
+    @media screen and (min-width: ($device + 1px)) {
+        @content;
+    }
+}
