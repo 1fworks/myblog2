@@ -4,6 +4,8 @@ import ExportedImage from "next-image-export-optimizer";
 import { default as NextImage } from "next/image";
 import { useState, useEffect, useRef, MouseEvent, TransitionEvent, SyntheticEvent, useCallback } from "react";
 import { FileNotFound } from "../mdx/fileNotFound";
+import { basePath } from "@/app/site.setting";
+import path from "path";
 
 export const closeImgModal = () => {
     const modal = document.querySelector('.img-modal-active') as HTMLElement
@@ -54,6 +56,8 @@ export const MyNextImage = (
     ratio?:number, cover?:boolean, unoptimized?:boolean,
     imgWidth?:number, imgHeight?:number, delay?:number, clickable?:boolean, animate?:boolean}) => {
     
+    const src_with_basePath = path.join(`${basePath}/`,`${src}`)
+
     imgWidth = Number(imgWidth)
     imgHeight = Number(imgHeight)
     
@@ -100,7 +104,7 @@ export const MyNextImage = (
         }
         if(nextImg.current === null) {
             const img = new Image()
-            img.src = src
+            img.src = src_with_basePath
             nextImg.current = img
         }
         else {
@@ -325,8 +329,8 @@ export const MyNextImage = (
                             >
                                 { process.env.NODE_ENV === 'production' &&
                                     <ExportedImage
-                                        data-src={src}
-                                        src={src}
+                                        data-src={src_with_basePath}
+                                        src={src_with_basePath}
                                         alt={alt?alt:filename}
                                         width={imgData.width}
                                         height={imgData.height}
@@ -336,8 +340,8 @@ export const MyNextImage = (
                                 }
                                 { process.env.NODE_ENV !== 'production' &&
                                     <NextImage
-                                        data-src={src}
-                                        src={src}
+                                        data-src={src_with_basePath}
+                                        src={src_with_basePath}
                                         alt={alt?alt:filename}
                                         width={imgData.width}
                                         height={imgData.height}
@@ -366,8 +370,8 @@ export const MyNextImage = (
                                     objectFit: cover ? 'cover' : 'contain',
                                 }}
                                 onLoad={onLoadEvent}
-                                data-src={src}
-                                src={src}
+                                data-src={src_with_basePath}
+                                src={src_with_basePath}
                                 alt={alt?alt:filename}
                                 width={imgData.width}
                                 height={imgData.height}
@@ -385,8 +389,8 @@ export const MyNextImage = (
                                     objectFit: cover ? 'cover' : 'contain',
                                 }}
                                 onLoad={onLoadEvent}
-                                data-src={src}
-                                src={src}
+                                data-src={src_with_basePath}
+                                src={src_with_basePath}
                                 alt={alt?alt:filename}
                                 width={imgData.width}
                                 height={imgData.height}

@@ -1,4 +1,6 @@
-const url = process.env.NODE_ENV === 'production' ? "https://1fworks.github.io/myblog2" : "http://localhost:3000"
+const isProduction = process.env.NODE_ENV === 'production'
+export const basePath = isProduction ? '/myblog2' : ''
+const url = isProduction ? `https://1fworks.github.io${basePath}` : `http://localhost:3000`
 
 export const siteSetting = {
     site:{

@@ -35,7 +35,7 @@ export async function GET(){
   const index = BASE_PATH.split('/').length
   
   const tmp = imgPaths.map(path => {
-    return path.split('/')[index]
+    return path.slice(path.indexOf(BASE_PATH)).split('/')[index]
   })
   const category = tmp.filter((v, i) => tmp.indexOf(v) === i)
 
@@ -47,7 +47,7 @@ export async function GET(){
   imgPaths.forEach((imgPath)=>{
     result[imgPath.split('/')[index]].push({
       data: imageSize(imgPath),
-      filename: imgPath.replace('./public', '')
+      filename: imgPath.slice(imgPath.indexOf(BASE_PATH)).replace('/public', '')
     })
   })
 
