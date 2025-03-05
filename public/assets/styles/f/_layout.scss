@@ -8,10 +8,6 @@
         font-family: var(--anton-font);
     }
 
-    img {
-        image-rendering: pixelated;
-    }
-
     .uwu {
         @apply w-full min-h-dvh -mt-12 pt-12;
         @apply flex flex-col place-content-between;
@@ -259,7 +255,7 @@
             }
         }
         @include media-query($on-mobile){
-            @apply fixed w-dvw z-10;
+            @apply fixed w-full z-10;
             .hamburger-menu {
                 @apply block;
             }

@@ -27,6 +27,9 @@ export const closeImgModal = () => {
             if(mark){
                 mark.style.scale = '1'
             }
+            img.querySelectorAll('img').forEach(element => {
+                element.style.imageRendering = "auto"
+            })
             img.style.scale = '1'
             img.style.transform = `translate(0%, 0%)`
             img.classList.add('img-focus')
@@ -122,6 +125,7 @@ export const MyNextImage = (
 
     const calculate_scale_and_pos = useCallback((element: HTMLElement) => {
         const margin = window.innerWidth > 768 ? 20 : 0//px
+        let original = false
 
         const parentTarget = element.parentElement
         if(!parentTarget
@@ -143,12 +147,16 @@ export const MyNextImage = (
         const img_vw = Math.min(boxWidth, imgData.width)
         const img_vh = Math.min(boxHeight, imgData.height)
         const max_scale = Math.min(
-                Math.min(imgData.width, window.innerWidth - margin * 2) / img_vw,
+                Math.min(imgData.width, document.body.clientWidth - margin * 2) / img_vw,
                 Math.min(imgData.height, window.innerHeight - margin * 2) / img_vh
         );
+        if(imgData.width < document.body.clientWidth - margin * 2
+        && imgData.height < window.innerHeight - margin * 2) {
+            original = true
+        }
         
         const pt_end = [
-            window.scrollX + window.innerWidth/2,
+            window.scrollX + document.body.clientWidth/2,
             window.scrollY + window.innerHeight/2
         ]
         const pt_start = [
@@ -160,8 +168,8 @@ export const MyNextImage = (
             Math.round((pt_end[0]-pt_start[0]) / max_scale),
             Math.round((pt_end[1]-pt_start[1]) / max_scale)
         ]
-
-        return { max_scale: max_scale, mov_xy: mov_xy }
+        
+        return { max_scale: max_scale, mov_xy: mov_xy, pixelated: original }
     }, [ratio, imgData])
 
     const clickEvent = (e:MouseEvent) => {
@@ -177,7 +185,7 @@ export const MyNextImage = (
 
         if(!parentTarget || !parentTarget.parentElement) return;
 
-        const { max_scale, mov_xy } = calculate_scale_and_pos(target)
+        const { max_scale, mov_xy, pixelated } = calculate_scale_and_pos(target)
         if(!max_scale || !mov_xy) return;
         
         if(target.classList.contains('img-focus')){ // zoom
@@ -196,6 +204,12 @@ export const MyNextImage = (
                 modal.classList.add('img-modal-active')
                 modal.classList.remove('img-modal')
                 modal.style.zIndex = '10'
+            }
+
+            if(pixelated) {
+                target.querySelectorAll('img').forEach(element => {
+                    element.style.imageRendering = "pixelated"
+                })
             }
 
             target.classList.add('img-focus-active')
@@ -280,7 +294,12 @@ export const MyNextImage = (
     useEffect(()=>{
         const div = divZoomRef.current
         if(div && div.classList.contains('img-focus-active')){
-            const { max_scale, mov_xy } = calculate_scale_and_pos(div)
+            const { max_scale, mov_xy, pixelated } = calculate_scale_and_pos(div)
+            if(pixelated) {
+                div.querySelectorAll('img').forEach(element => {
+                    element.style.imageRendering = "pixelated"
+                })
+            }
             if(max_scale !== null && mov_xy !== null){
                 div.style.scale = `${max_scale}`
                 div.style.transform = `translate(${mov_xy[0]}px, ${mov_xy[1]}px)`
