@@ -1,5 +1,6 @@
-export const dynamic = 'force-static'
 import { getAllPostsWithContent } from "@/libs/post"
+
+export const dynamic = 'force-static'
 
 export async function GET(){
     const data = getAllPostsWithContent(['_description.mdx'])

@@ -4,7 +4,7 @@ import { Element } from "mdx/types";
 
 const hasImglistClass = (node: Element): boolean => {
   return node.attributes?.some(
-    (attr: any) =>
+    (attr: {type?:string, name?:string, value?:string}) =>
       attr.type === "mdxJsxAttribute"
     && attr.name === "className"
     && attr.value === "post-img-list"

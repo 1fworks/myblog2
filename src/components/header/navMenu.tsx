@@ -41,17 +41,18 @@ export const NavMenu = () => {
       </div>
     )
   }
+  
+  const [ hamburger, setHamburger ] = useState(false)
 
   const path = usePathname()
   useEffect(()=>{
-    if(hamburger) setHamburger(false)
+    setHamburger(false)
     closeImgModal()
     style_init()
   }, [path])
   const current = path.split('/')
   const page = (current.length > 1 && current[1] === '' ? '/' : current[1]).toLowerCase()
-
-  const [ hamburger, setHamburger ] = useState(false)
+  
   const HamburgerMenu = () => {
     return (
       <div className="mode" onClick={()=>{

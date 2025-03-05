@@ -1,7 +1,7 @@
 import Fuse from 'fuse.js'
 
 export function searchwithfuse(datalist:
-  {[key:string]: string}[] ){
+  {[key:string]: string|undefined}[] ){
   
   const fuse = new Fuse(datalist, {
     // isCaseSensitive: false,

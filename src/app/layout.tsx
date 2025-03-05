@@ -96,7 +96,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ImgModal/>
           <NavMenu/>
-          <Wrapper children={children} />
+          <Wrapper>{children}</Wrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -4,7 +4,7 @@ import { sync } from 'glob';
 import path from "path";
 import imageSize from 'image-size'
 
-const BASE_PATH = '/public/art';
+const BASE_PATH = '/public/posts/art';
 const POSTS_PATH = path.join(process.cwd(), BASE_PATH);
 
 const image_files = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
@@ -31,9 +31,11 @@ export async function GET(){
     })
     .filter((element)=>element!==undefined)
   )
+
+  const index = BASE_PATH.split('/').length
   
   const tmp = imgPaths.map(path => {
-    return path.split('/')[3]
+    return path.split('/')[index]
   })
   const category = tmp.filter((v, i) => tmp.indexOf(v) === i)
 
@@ -43,7 +45,7 @@ export async function GET(){
   })
 
   imgPaths.forEach((imgPath)=>{
-    result[imgPath.split('/')[3]].push({
+    result[imgPath.split('/')[index]].push({
       data: imageSize(imgPath),
       filename: imgPath.replace('./public', '')
     })

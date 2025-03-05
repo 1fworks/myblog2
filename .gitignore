@@ -43,4 +43,8 @@ next-env.d.ts
 # obsidian
 .obsidian
 /public/**/*.md
-/public/draft
+/public/draft/*
+
+# next-image-export-optimizer
+**/nextImageExportOptimizer
+next-image-export-optimizer-hashes.json

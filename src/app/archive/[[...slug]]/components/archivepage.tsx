@@ -12,13 +12,14 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import Link from "next/link";
 import { DividingLine, fileListItem } from "./filelistitem";
 import { folderListItem } from "./folderlistitem";
+import { frontmatter_type } from "@/libs/post";
 
 export const ArchivePageWithSearchBar = ({
   data
 }:{
   data:{
     postdata:{
-      frontmatter:{title:string, date:string, update:string},
+      frontmatter:frontmatter_type,
       content:string|undefined,
       url:string
     }[],
@@ -31,24 +32,25 @@ export const ArchivePageWithSearchBar = ({
     }[],
     archive_detail: {
       description: { [key:string]:string|number|boolean },
-      folders: any[],
+      folders: {
+        url: string;
+        description: string;
+        folder: number;
+        file: number;
+      }[],
       files: { date:string, title:string, url:string }[]
     },
   }
 })=>{
-  const fuseIdx = useRef<Fuse<unknown>|null>(null)
+  const fuseIdx = useRef<Fuse<{[key:string]:string|undefined}>|null>(null)
   const timeoutRef = useRef<NodeJS.Timeout>(undefined)
   const inputRef = useRef<HTMLInputElement>(null)
   const postdata = data.postdata
-  const [sortby, setSortby] = useState("newest") // "oldest"
+  const [sortby, setSortby] = useState(data.archive_detail.description.order?"newest":"oldest")
   const [value, setValue] = useState("")
-  const [searchResult, setSearchResult] = useState<FuseResult<unknown>[]>([])
+  const [searchResult, setSearchResult] = useState<FuseResult<{url:string, title:string, date:string}>[]>([])
 
   useEffect(()=>{
-    if(!data.archive_detail.description.order) {
-      if(sortby !== "oldest") setSortby("oldest")
-    }
-
     if(inputRef.current){
       inputRef.current.onfocus = (e:FocusEvent) => {
         const target = e.currentTarget as HTMLElement
@@ -63,11 +65,13 @@ export const ArchivePageWithSearchBar = ({
         }
       }
     }
+  }, [])
 
+  useEffect(()=>{
     if(!fuseIdx.current){
       if(postdata.length > 0){
         const inputFuseDataList = async() => {
-          const promises = postdata.map(async (post:{frontmatter: {title: string, date:string, update: string}, content:string|undefined, url:string})=>{
+          const promises = postdata.map(async (post:{frontmatter: frontmatter_type, content:string|undefined, url:string})=>{
             const content = await getTextFromContext(post.content)
             return {
               url: post.url,
@@ -81,7 +85,7 @@ export const ArchivePageWithSearchBar = ({
         inputFuseDataList()
       }
     }
-  }, [])
+  }, [postdata])
   
   const searchPosts = (event : ChangeEvent<HTMLInputElement>) => {
     clearTimeout(timeoutRef.current)
@@ -118,7 +122,8 @@ export const ArchivePageWithSearchBar = ({
         </div>
         <div className={`transition-transform duration-500 ease-[cubic-bezier(.68,-0.55,.15,.99)] ${value.length > 0?'-translate-y-full':''}`}>
           <div className="p-2">
-            { data.archive_route.map((path)=>{
+            { data.archive_route.length > 0 &&
+              data.archive_route.map((path)=>{
                 return (
                   <Link className="link-color inline-block no-style" key={path.title} href={path.url}>
                     <button key={path.title} className="button-disable">/ {path.description}</button>
@@ -196,8 +201,8 @@ export const ArchivePageWithSearchBar = ({
         }
       </div>
       <div className="mini-spotlight">
-        { value.length > 0 &&
-          searchResult.map((element: any, id: number)=>{
+        { value.length > 0 && searchResult.length > 0 &&
+          searchResult.map((element, id: number)=>{
             return (
               fileListItem({
                 url: element.item.url.replace('/public/posts','/post'),
@@ -209,12 +214,12 @@ export const ArchivePageWithSearchBar = ({
         }
         { value.length === 0 &&
           <>
-            {
+            { data.archive_detail.folders.length > 0 &&
               data.archive_detail.folders.map((folder, i)=>{
                 return folderListItem(folder, `folder ${i}`, (i+1)*100)
               })
             }
-            {
+            { files.length > 0 &&
               files.map((file, i)=>{
                 const delay = (data.archive_detail.folders.length + 1) * 100 + i * 100;
                 return (

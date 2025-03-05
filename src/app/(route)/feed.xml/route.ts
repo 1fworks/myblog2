@@ -24,12 +24,14 @@ export async function GET(){
 
     const promises = orderedDate.map(async (element)=>{
         const description = await getTextFromContext(element.content);
-        feed.item({
-            title: element.frontmatter.title,
-            description: description,
-            url: `${siteSetting.site.url}${element.url.replace(BASE_PATH, '/post')}`,
-            date: element.frontmatter.date ? element.frontmatter.date : element.frontmatter.update
-        })
+        if(element.frontmatter.title) {
+            feed.item({
+                title: element.frontmatter.title,
+                description: description,
+                url: `${siteSetting.site.url}${element.url.replace(BASE_PATH, '/post')}`,
+                date: element.frontmatter.date ? element.frontmatter.date : (element.frontmatter.update ? element.frontmatter.update : new Date())
+            })
+        }
     })
     await Promise.all(promises)
     

@@ -1,17 +1,15 @@
 import type { MetadataRoute } from 'next'
 import { siteSetting } from './site.setting'
 import { getAllPostsWithFrontMatter } from '@/libs/post'
-import { BASE_PATH } from '@/libs/post'
+import { BASE_PATH, frontmatter_type } from '@/libs/post'
 
 export const dynamic = 'force-static'
 
 export function sortPost(posts
   :{
-    url: string;
-    frontmatter: {
-        [key: string]: any;
-    };
-    content: string | undefined;
+    url: string,
+    frontmatter: frontmatter_type,
+    content: string | undefined
   }[]
 ) {
   return posts.sort((a, b) => {

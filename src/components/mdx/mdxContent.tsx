@@ -14,13 +14,13 @@ import { rehypeRemovePtagInSideList } from '@/libs/rehypeRemovePtagInList';
 import { MyNextImage } from "../image/mynextImage";
 import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
-import { getImgDataList } from "@/app/(route)/api/getAllPostImagesData/route";
+import { getImgDataList } from '@/libs/post';
 
-const file_type = {
-  image_files: ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'],
-  audio_files: ['mp3', 'wav', 'm4a', 'ogg', '3gp', 'flac'], // ,'webm'
-  video_files: ['mp4', 'webm', 'ogv', 'mov', 'mkv']
-}
+// const file_type = {
+//   image_files: ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'],
+//   audio_files: ['mp3', 'wav', 'm4a', 'ogg', '3gp', 'flac'], // ,'webm'
+//   video_files: ['mp4', 'webm', 'ogv', 'mov', 'mkv']
+// }
 
 export const MDXContent = async(props : { source:string, slugs?: string[] }) => {
   const content = props.source

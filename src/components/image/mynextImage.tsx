@@ -2,7 +2,7 @@
 
 import ExportedImage from "next-image-export-optimizer";
 import { default as NextImage } from "next/image";
-import { useState, useEffect, useRef, MouseEvent, TransitionEvent, SyntheticEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent, TransitionEvent, SyntheticEvent, useCallback } from "react";
 import { FileNotFound } from "../mdx/fileNotFound";
 
 export const closeImgModal = () => {
@@ -116,7 +116,7 @@ export const MyNextImage = (
         }
     }
 
-    const calculate_scale_and_pos = (element: HTMLElement) => {
+    const calculate_scale_and_pos = useCallback((element: HTMLElement) => {
         const margin = window.innerWidth > 768 ? 20 : 0//px
 
         const parentTarget = element.parentElement
@@ -129,7 +129,7 @@ export const MyNextImage = (
         const rect_w = parentTarget.getBoundingClientRect().width
         const rect_h = parentTarget.getBoundingClientRect().height
 
-        let boxWidth = rect_w
+        const boxWidth = rect_w
         let boxHeight = rect_h
         
         if(ratio) {
@@ -158,7 +158,7 @@ export const MyNextImage = (
         ]
 
         return { max_scale: max_scale, mov_xy: mov_xy }
-    }
+    }, [ratio, imgData])
 
     const clickEvent = (e:MouseEvent) => {
         e.stopPropagation()
@@ -222,44 +222,56 @@ export const MyNextImage = (
         completeLoad(target)
     }
 
-    const completeLoad = (img: HTMLImageElement) => {
-        setTimeout(()=>{
-        if(img.naturalWidth > imgData.width && img.naturalHeight > imgData.height) {
-            if(imgWidth > img.naturalWidth && imgHeight > img.naturalWidth){
-                setImgData({width: imgWidth, height: imgHeight})
-            } else setImgData({width: img.naturalWidth, height: img.naturalHeight})
-        }
-        if(!isLoaded) setIsLoaded(true)
+    const completeLoad = useCallback((img: HTMLImageElement) => {
+        const timer = setTimeout(()=>{
+            if(img.naturalWidth > imgData.width && img.naturalHeight > imgData.height) {
+                if(imgWidth > img.naturalWidth && imgHeight > img.naturalWidth){
+                    setImgData({width: imgWidth, height: imgHeight})
+                } else setImgData({width: img.naturalWidth, height: img.naturalHeight})
+            }
+            if(!isLoaded) setIsLoaded(true)
         }, 500)
-    }
+        return ()=>{clearTimeout(timer)}
+    }, [isLoaded, imgData, imgWidth, imgHeight])
+    
+    useEffect(()=>{
+        if(isOriginalImage === undefined) {
+            if(unoptimized || (imgWidth === 0 && imgHeight === 0)) {
+                if(isOriginalImage !== true) setIsOriginalImage(true)
+            }
+            else if(isOriginalImage !== false) setIsOriginalImage(false)
+            return;
+        }
+
+        if(!isLoaded) {
+            const img = imgRef.current
+            if(img && img.complete) { // check cache
+                completeLoad(img)
+                return;
+            }
+        }
+    }, [isOriginalImage, isLoaded, completeLoad, imgWidth, imgHeight, unoptimized])
 
     useEffect(()=>{
-        if(isOriginalImage === undefined){
-            if(unoptimized || (imgWidth === 0 && imgHeight === 0)) setIsOriginalImage(true)
-            else setIsOriginalImage(false)
-            return;
-        }
-        
-        const img = imgRef.current
-        if(img && img.complete) { // check cache
-            completeLoad(img)
-            return;
-        }
         if(imgWidth > 0 && imgHeight > 0) { // (recommend)
-            setImgData({width: imgWidth, height: imgHeight})
+            if(imgWidth > imgData.width && imgHeight > imgData.height) {
+                setImgData({width: imgWidth, height: imgHeight})
+            }
         }
         else if(imgWidth == -1 || imgHeight == -1) { // ... If possible, avoid using it. :D
-            fetch('/api/getAllPostImagesData')
-            .then(res => res.json())
-            .then(data => {
-                if(data[src] !== undefined) {
-                    if(data[src].width > imgData.width || data[src].height > imgData.height) {
-                        setImgData(data[src])
+            if(imgData.width === 0 && imgData.height === 0) {
+                fetch('/api/getAllPostImagesData')
+                .then(res => res.json())
+                .then(data => {
+                    if(data[src] !== undefined) {
+                        if(data[src].width > imgData.width || data[src].height > imgData.height) {
+                            setImgData(data[src])
+                        }
                     }
-                }
-            })
+                })
+            }
         }
-    }, [isOriginalImage])
+    }, [imgWidth, imgHeight, imgData.width, imgData.height, src])
 
     useEffect(()=>{
         const div = divZoomRef.current
@@ -270,8 +282,7 @@ export const MyNextImage = (
                 div.style.transform = `translate(${mov_xy[0]}px, ${mov_xy[1]}px)`
             }
         }
-    }, [imgData])
-    
+    }, [calculate_scale_and_pos])
     
     const width = Math.max(imgWidth, imgData.width)
     const height = Math.max(imgHeight, imgData.height)

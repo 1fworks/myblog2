@@ -21,7 +21,7 @@ export default async function Home() {
                 className="flex flex-row opacity-0 animate-climb70-animation"
                 style={{animationDuration:`${1000}ms`}}
               >
-                <h2 className="pl-1">F</h2><h2>'</h2><h2>s</h2>
+                <h2 className="pl-1">F</h2><h2>&apos;</h2><h2>s</h2>
               </div>
               <div className="flex flex-row -mt-1 overflow-hidden">
                 {

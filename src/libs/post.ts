@@ -2,9 +2,24 @@ import { sync } from 'glob';
 import fs from "fs";
 import path from 'path';
 import matter from 'gray-matter';
+import imageSize from 'image-size'
+import { ISizeCalculationResult } from 'image-size/dist/types/interface';
+
+export interface frontmatter_type {
+  title?: string;
+  description?: string;
+  short_description?: string;
+  date?: string;
+  update?: string;
+  tags?: string[];
+  order?: boolean;
+  preview?: string;
+}
 
 export const BASE_PATH = '/public/posts';
 const POSTS_PATH = path.join(process.cwd(), BASE_PATH);
+
+const image_files = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
 
 // generateMetadata
 export const readDescription = (filename:string) => {
@@ -52,7 +67,7 @@ export const getAllPostsWithFrontMatter = (except:undefined|string[] = undefined
         return undefined
       }
     }
-    const { content, data } = matter.read(mdxFilePath);
+    const { content, data } : { content:string, data:frontmatter_type } = matter.read(mdxFilePath);
     return {
       url: post.slug,
       frontmatter: data,
@@ -68,9 +83,18 @@ export const getAllPostsWithContent = (except:undefined|string[] = undefined) =>
   return posts;
 }
 
+// only archive folder
 export const getAllFolder = () => {
-  const folderPaths: string[] = sync(`${POSTS_PATH}/**/`, { posix: true, dotRelative: true } );
-  return folderPaths.map((path) => {
+  const files: string[] = sync(`${POSTS_PATH}/**/*.mdx`, { posix: true, dotRelative: true } );
+  const folderPaths: string[] = files.map(file=>{
+    if(file.split('/').slice(-1)[0][0] !== '_') {
+      const tmp = file.split('/')
+      tmp.pop()
+      return tmp.join('/')
+    }
+  }).filter(element=>element !== undefined)
+
+  return folderPaths.filter((v, i) => folderPaths.indexOf(v) === i).map((path) => {
     return {
       slug: path.slice(path.indexOf(BASE_PATH)),
     };
@@ -126,10 +150,29 @@ export const getDescription = (slugs:string[])=>{
     }
   }
   catch(err){
+    console.log(err)
     return {
       title: `Things about "${slugs.slice(-1)[0]}"`, description: 'uwu', order: true,
       folder: folder_n,
       file: file_n,
     }
   }
+}
+
+export const getImgDataList = () => {
+  const imgPaths: string[] =
+    sync(`${POSTS_PATH}/**/*.*`, { posix: true, dotRelative: true } )
+    .map((file)=>{
+      const tmp = file.split('.')
+      if(image_files.includes(tmp[tmp.length-1])) return file
+    })
+    .filter((element)=>element!==undefined)
+
+  const result : { [key:string]: ISizeCalculationResult } = {}
+  
+  imgPaths.forEach((img)=>{
+    result[img.replace('./public', '')] = imageSize(img) as ISizeCalculationResult
+  })
+
+  return result
 }

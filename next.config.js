@@ -2,16 +2,6 @@ import createMDX from '@next/mdx'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (
-    config,
-    { }
-  ) => {
-    config.module.rules.push({
-      test: /public\/draft/,
-      loader: "ignore-loader",
-    });
-    return config
-  },
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below
