@@ -1,14 +1,18 @@
 import createMDX from '@next/mdx'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: isProduction ? '/myblog2' : '',
+  assetPrefix: isProduction ? '/myblog2/' : '',
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below
   reactStrictMode: false,
-  output: process.env.NODE_ENV === 'production' ? "export" : undefined,
+  output: isProduction ? "export" : undefined,
   images: {
-    loader: process.env.NODE_ENV === 'production' ? "custom" : "default",
+    loader: isProduction ? "custom" : "default",
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
   },
