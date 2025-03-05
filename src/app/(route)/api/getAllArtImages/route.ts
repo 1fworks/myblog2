@@ -45,7 +45,7 @@ export async function GET(){
   })
 
   imgPaths.forEach((imgPath)=>{
-    result[imgPath.split('/')[index]].push({
+    result[imgPath.slice(imgPath.indexOf(BASE_PATH)).split('/')[index]].push({
       data: imageSize(imgPath),
       filename: imgPath.slice(imgPath.indexOf(BASE_PATH)).replace('/public', '')
     })
