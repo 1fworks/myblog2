@@ -8,6 +8,10 @@
         font-family: var(--anton-font);
     }
 
+    img {
+        image-rendering: pixelated;
+    }
+
     .uwu {
         @apply w-full min-h-dvh -mt-12 pt-12;
         @apply flex flex-col place-content-between;
