@@ -123,7 +123,7 @@ export const getAllSpecificFolderForFile = (filename: string, slugs: string[] = 
     folderPaths = sync(`${publicFolder}/**/${filename}`, { posix: true, dotRelative: true } );
 
   return folderPaths.map(path => {
-    return path.replace("./public", "")
+    return path.slice(path.indexOf(imgPath)).replace("/public", "")
   });
 }
 
@@ -171,7 +171,7 @@ export const getImgDataList = () => {
   const result : { [key:string]: ISizeCalculationResult } = {}
   
   imgPaths.forEach((img)=>{
-    result[img.replace('./public', '')] = imageSize(img) as ISizeCalculationResult
+    result[img.slice(img.indexOf(BASE_PATH)).replace('/public', '')] = imageSize(img) as ISizeCalculationResult
   })
 
   return result
