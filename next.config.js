@@ -5,7 +5,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: isProduction ? '/myblog2' : '',
-  assetPrefix: isProduction ? '/myblog2/' : '',
+  // assetPrefix: isProduction ? '/myblog2/' : '',
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below
