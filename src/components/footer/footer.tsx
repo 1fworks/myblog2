@@ -1,4 +1,5 @@
 import { siteSetting } from "@/app/site.setting"
+import Link from "next/link"
 
 export const Footer = () => {
   return (
@@ -11,7 +12,7 @@ export const Footer = () => {
           </svg>
         </div>
         <p className='w-fit mx-auto blog-data-1'>
-          <a className='no-style mr-3' href='/feed.xml'>
+          <Link className='no-style mr-3' href='/feed.xml'>
             {
               // Gentlecons Interface Icons by Konstantin Filatov, CC Attribution License
               // https://www.svgrepo.com/collection/gentlecons-interface-icons
@@ -27,7 +28,7 @@ export const Footer = () => {
               </g>
             </svg>
             rss
-          </a> © {siteSetting.author.name} {new Date().getFullYear()}
+          </Link> © {siteSetting.author.name} {new Date().getFullYear()}
         </p>
         <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Github Pages</p>
       </div>

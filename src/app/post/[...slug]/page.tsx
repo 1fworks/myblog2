@@ -7,7 +7,7 @@ import { MDXContent } from "@/components/mdx/mdxContent";
 import { notFound } from "next/navigation";
 import { BASE_PATH, getDescription } from "@/libs/post";
 import { getFiles } from "@/app/archive/[[...slug]]/page";
-import { FileListItem } from "@/app/archive/[[...slug]]/components/filelistitem";
+
 import { Comment } from "./components/comment";
 import matter from "gray-matter";
 
@@ -20,6 +20,7 @@ export const dynamic = 'force-static'
 
 import Link from "next/link";
 import dayjs from "dayjs";
+import { MiniArchive } from "./components/miniArchive";
 
 export default async function PostPage({ params }: { params : Promise<{ slug: string[] }> }) {
   const slugs = (await params).slug
@@ -48,6 +49,10 @@ export default async function PostPage({ params }: { params : Promise<{ slug: st
       if(!order)
         files.reverse()
 
+      const list_curr = files.findIndex((file)=>{
+        return file.url.split('/').slice(-1).pop() === current[0]
+      })
+
       return (
         <>
           <div className="post">
@@ -71,17 +76,7 @@ export default async function PostPage({ params }: { params : Promise<{ slug: st
                 <button className="button-disable">← back to &apos;{folder}&apos;</button>
               </Link>
             </div>
-            <div className="archive mini-archive">
-              {
-                files.map((file, i)=>{
-                  return (
-                    <FileListItem file={file} key={`file ${i}`} delay={-1} year={true}
-                      current={file.url.split('/').slice(-1).pop() === current[0]}
-                    />
-                  )
-                })
-              }
-            </div>
+            <MiniArchive files={files} l_curr={list_curr} />
           </div>
           <div className="w-full mt-14 mb-20">
             <Comment/>

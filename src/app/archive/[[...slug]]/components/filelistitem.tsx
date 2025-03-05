@@ -19,8 +19,8 @@ export const DividingLine = ({text, delay}:{text:string, delay:number}) => {
   )
 }
 
-export const FileListItem = ({file, key, delay, current=false, year=false}:{file: {url:string, title: string, date:string}, key:string, delay:number, current?:boolean, year?:boolean}) => {
-  return fileListItem(file, key, delay, current, year)
+export const FileListItem = ({file, key_string, delay, current=false, year=false}:{file: {url:string, title: string, date:string}, key_string:string, delay:number, current?:boolean, year?:boolean}) => {
+  return fileListItem(file, key_string, delay, current, year)
 }
 
 export const fileListItem = (file: {url:string, title: string, date:string}, key:string, delay:number, current?:boolean, year?:boolean) => {

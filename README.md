@@ -1,6 +1,6 @@
 ## blog: https://1fworks.github.io/myblog2
 
-**Next.js**의 **App Router** 방식으로 만든 블로그입니다.
+**Next.js**의 **App Router** 방식으로 만든 블로그입니다.  
 **TailwindCSS**와 **SCSS**를 이용해서 css 작업을 했습니다.
 
 **MDX**를 활용해서 게시글도 작성하고,  

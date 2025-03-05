@@ -28,7 +28,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
             { (i == 0 || dayjs(posts[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(posts[Math.max(i, 0)].date).format('YYYY')) &&
               <DividingLine key={`line ${i}`} text={dayjs(posts[Math.max(i, 0)].date).format('YYYY')} delay={(i+1)*100}/>
             }
-            <FileListItem file={post} key={`recent-post ${i}`} delay={(i+1)*100} year={false}/>
+            <FileListItem file={post} key_string={`recent-post ${i}`} delay={(i+1)*100} year={false}/>
           </div>
         )
       })}
