@@ -1,4 +1,4 @@
-const url = process.env.NODE_ENV === 'production' ? "https://uwu" : "http://localhost:3000"
+const url = process.env.NODE_ENV === 'production' ? "https://1fworks.github.io/myblog2/" : "http://localhost:3000"
 
 export const siteSetting = {
     site:{
