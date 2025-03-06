@@ -1,0 +1,105 @@
+---
+title: 렌더링 과정
+date: 2024-6-18
+tags:
+  - devlog
+---
+데모로 제출할 수 있을 만큼의 시각적인 즐거움을 주기위해. 꼼수를 부렸습니다.
+
+
+---
+
+## 빛, 그림자, 그라데이션
+
+![[end_fetchers/11/savepoint.png]]
+
+게임에서 다양한 색상의 빛이 사용되었습니다. 
+각 맵의 테마 색과 다른 색이더라도 그라데이션 느낌이 나도록 은은하게 깔아주면 분위기가 확 살아나더라고요.  
+
+
+---
+
+
+## 렌더링의 상세 과정
+
+![[end_fetchers/11/shadow.png]]
+
+먼저 풀의 그림자입니다. 사실 종이 조각을 레이어로 쌓아논 느낌이 강하긴 합니다.
+
+/imglist open
+![[end_fetchers/11/000.png]]
+![[end_fetchers/11/002.png]]
+![[end_fetchers/11/004.png]]
+/imglist close
+/imglist open
+![[end_fetchers/11/001.png]]
+![[end_fetchers/11/003.png]]
+![[end_fetchers/11/005.png]]
+/imglist close
+
+위 아래 순으로 결과 이미지와 렌더링에 필요했던 이미지입니다.  
+normal map 이라고 부르기에는 조금 민망한 이미지네요.  
+단순히 깊이 값을 기록해두었다는 느낌에 가깝습니다.
+
+> 그림자는 어떤 식으로 표현했는가?
+
+/imglist open
+![[end_fetchers/11/shadow_001.png]]
+![[end_fetchers/11/shadow_002.png]]
+![[end_fetchers/11/shadow_003.png]]
+/imglist close
+
+빛이 시작되는 위치에서 빛이 그려지는 곳까지의 깊이 값을 이용합니다.  
+(이 이미지에서 깊이는 밝기 값과 동일합니다.)  
+
+그려지는 방식은 간단합니다. 
+그려지는 곳(빨간 마크)에서 빛(청록 마크)으로 이동하면서 계산하는데 만일 녹색 사각형으로 표시된 부분처럼 현재 위치보다 더 작은 깊이 값을 만나게되면 밝기 값을 낮춰서 빛을 그립니다.  
+
+반대로 깊이 값이 유지되거나 커지기만 한다면 그림자는 생기지 않습니다.
+
+![[end_fetchers/11/shadow_004.png]]
+
+이런 식으로 빛이 그려지게 됩니다. 사실 그림자를 그린다는 표현보다는 빛을 그리면서 그림자가 생겨난다는 말이 더 어울리는 것 같네요.
+
+
+---
+
+
+## 빛
+
+/imglist open
+![[end_fetchers/11/sunlight.png]]
+![[end_fetchers/11/light.png]]
+/imglist close
+
+빛의 형태는 이 두 가지만 사용하였습니다. 어딘가에서 길게 내려오는 빛과, 사방으로 퍼지는 빛입니다.
+
+/imglist open
+![[end_fetchers/06/light4.gif]]
+![[end_fetchers/06/light6.gif]]
+/imglist close
+
+![[end_fetchers/11/lighting_result.png]]
+
+[이전에 올렸던 게시글](end_fetchers-06.mdx)에서 작업했던 빛을 적용한 것 뿐입니다.  
+단지 기능으로만 보았을 때하고 실제로 적용되었을 때하고 느낌이 꽤 다르지 않나요. XD  
+
+이 순간만큼 꽤 짜릿한 일은 별로 없을 듯 합니다.
+
+![[end_fetchers/11/order.png]]
+
+전체적인 화면이 구성되는 순서입니다.
+
+
+---
+
+
+## 다음 목표
+
+![[end_fetchers/11/main_image.png]]
+
+BIC 참가 신청도 했으니, 결과가 나올 때까지 이쁘게 다듬고, 스토리도 조금 담아내는 것이 목표입니다. 모두 행사장에서 만날 수 있으면 좋겠네요 :)
+
+
+
+그때까지 모두 즐거운 밤 보내시길 :)

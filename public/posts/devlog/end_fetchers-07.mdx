@@ -1,0 +1,97 @@
+---
+title: 캐릭터 움직임 구현. 그리고 게임 제목 결정
+date: 2023-12-14
+tags:
+  - devlog
+---
+스프라이트 찍는다고 좀 늦었습니다.  
+기본적인 움직임에만 160프레임 나왔네요...
+
+
+---
+
+## 움직임
+
+![[end_fetchers/07/sprite_example.png]]
+
+생각보다 그려야 할 동작이 많았습니다.  
+가만히 있기, 달리기, 숙이기, 점프, 가드, 구르기... 등등
+
+그래서 세세한 명암 묘사를 포기하고,  
+적은 색상으로 동작을 섬세하게 그리는 방식을 선택했습니다.
+
+![[end_fetchers/07/movement.gif]]
+
+찍은 스프라이트를 간단하게 적용한 모습입니다.  
+어느정도 생각하는 대로 표현돼서 다행입니다.
+
+
+---
+
+
+## 작업 방식
+
+![[end_fetchers/07/sequence.png]]
+
+작업 방식은 에이스프라이트로 애니메이션을 그린 뒤에 GMS의 sequence에 적용하는 식으로 하고 있습니다. 
+지금까지 사용해보지 못한 기능이었기에 좀 헤매긴 했지만, 메뉴얼 뜯어보면서 정보를 찾다보니 방법이 없진 않더라고요.
+
+
+```gml
+for(var _i=0;_i<array_length(seq_instance.activeTracks);_i++){
+    if(seq_instance.activeTracks[_i].track.type == seqtracktype_graphic){
+        sprite_subimg = seq_instance.activeTracks[_i].imageindex
+        sprite_index = seq_instance.activeTracks[_i].spriteIndex
+        break
+    }
+}
+```
+(이 코드를 쓰실 분이 있을련지는 모르겠네요. 그래도 일단 적어둡니다.)
+
+`Sequence Element Id`를 통해서 `Sequence Instance Struct`를 얻어오고, 이 구조체에서 `activeTracks`를 통해 재생되는 스프라이트 정보를 가져왔습니다. 
+이렇게 가져온 스프라이트 정보를 플레이어 객체에 집어넣었습니다.
+
+이런 식으로 사용하라고 만든 기능은 아닌 듯 한데... 보통 특정 이벤트에서 스토리 전개와 같이 특별한 연출을 보여줄 때 사용되는 것 같더라고요. 
+
+하지만 시퀀스만큼 효율적인 작업 방식이 따로 없을 거라고 생각되었기에 바로 채택했습니다.
+옛날에는 그냥 sprite_index와 image_speed 값을 수정하거나 프레임 단위로 image_index 값을 조절했었는데 게임 스케일이 커지니 너무 비효율적이더라고요. 
+
+아무튼 게임을 컴파일하지 않고도 어느 정도 캐릭터 동작을 컨트롤 할 수 있게 되었습니다. 
+
+
+---
+
+
+## 게임 제목
+
+드디어 게임 제목을 결정했습니다.  
+그것은 바로...
+
+![[projects/imgs/end_fetchers_title2.png]]
+
+[`END FETCHERS`](4-end_fetchers.mdx) 입니다.  
+직역하면 `종말을 가져오는 자들` 이 되겠네요.
+
+다들 기대해주셨으면 좋겠습니다.
+
+
+---
+
+
+## 다음 목표
+
+![[end_fetchers/07/textbox.png]]
+
+스프라이트 찍는다고 피격 시스템은 만들지 못했네요.  
+피격 시스템하고 조금 구상해놓은 대화상자 시스템을 슬슬 만들어야겠습니다.
+
+
+
+![[end_fetchers/07/screenshot.png]]
+
+
+
+찾아와주셔서 정말 감사합니다.  
+올해가 끝나기 전에 한 번 더 개발일지 작성하도록 하겠습니다.
+
+모두 즐거운 밤 되시길!

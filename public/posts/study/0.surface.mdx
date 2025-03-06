@@ -1,0 +1,103 @@
+---
+title: surface에 관한 고찰
+date: 2023-08-11
+tags:
+  - study
+---
+
+## 1. surface_exists() 사용했음에도 불구하고 에러가 발생한다..?
+최근 surface를 사용하면서 한 가지 이상한 문제가 발생했습니다.
+
+```gml
+﻿Trying to set a surface target that does not exist.
+(line 64) - surface_set_target(surface)
+```
+surface가 존재하지 않는다는 에러문구였습니다. 하지만 작성한 코드는..
+```gml
+if(!surface_exists(surface)){
+  surface = surface_create(width, height)
+}
+surface_set_target(surface)
+...
+```
+
+surface_exists() 함수를 사용했음에도 이러한 문제가 발생한 것입니다.  
+저 조건문 하나만으로 surface를 안전하게 사용할 수 있다고 생각했으나..  그렇지 않았습니다.
+
+if문을 체크 한 다음 운영체제에서 cpu를 다른 프로세스에 넘겨버리고 garbage collection에서 수거해간건지 알 수가 없었습니다.  
+다시 저 에러를 띄워서 원인이 무엇인가 찾으려고 노력했지만 다시 발생되지 않더군요;  
+정말 낮은 확률로 발생한 문제였던것 같습니다.  
+
+이러한 에러가 다시 발생되는 것을 확실히 막아내고 싶었기에, 새로운 방법을 찾아내었습니다.
+
+```gml
+var _check = true
+while(_check){
+  try{
+    surface_set_target(surface)
+      // 임시로 원 하나 그려보기
+      draw_clear(c_black)
+      draw_set_color(c_yellow)
+      draw_circle(mouse_x, mouse_y, 200, false)
+    surface_reset_target()
+    draw_surface(surface, 0, 0)
+    _check = false
+  }
+  catch(_exception){
+    surface = surface_create(room_width, room_height)
+    show_debug_message(_exception.message)
+  }
+}
+```
+try catch 문을 이용하는 것이었습니다.
+
+에러가 발생한다고 해도 다시 surface를 생성하고 그리는 과정을 시도할 수 있게 됩니다. 성공할 때까지 반복하는 것이죠. 물론 에러가 발생하는 횟수만큼 반복하게 되지만 무한루프에 빠질 정도로 에러가 발생하진 않을겁니다.
+
+
+(코드를 설명하자면 try문의 끝부분에 _check = false를 넣어서 에러가 발생할 수 있는 코드의 수행여부를 확인합니다. _check가 false가 될 때까지 반복하는 것이죠. 에러가 발생해도 catch로 넘어가기에 _check 변수에는 true 값이 유지됩니다.)
+
+​
+
+위 코드가 잘 수행되는지 테스트해보기 위해서 코드 한 줄을 맨 윗줄에 넣었습니다.
+```gml
+if(choose(0,1) == 0) surface_free(surface)
+```
+(대략) 절반의 확률로 surface를 지워보는 것입니다. 테스트 결과는...
+![[imgs/study-0/surface_0.png]]
+
+![[imgs/study-0/surface_1.png]]
+
+네. 아주 잘 그려집니다.  
+Output에서 에러 메시지를 계속 띄우지만 무사히 surface를 성공적으로 그려냅니다.
+
+---
+
+## 2. surface가 사라지는 것을 방지해보자
+다들 아시다시피 surface는 휘발성입니다. 언제든지 surface의 내용이 사라질 수 있는 것이죠. 
+그래서 대부분은 surface의 내용이 사라져도 게임에는 영향이 가지 않게끔 코드를 작성할 것입니다.
+
+하지만 일부는 surface의 내용을 유지해야하는 상황이 발생하기도 합니다. 
+저 역시 surface가 갑자기 사라지면 곤란했기에, 다음의 방법을 찾았습니다.
+
+바로 buffer_get_surface, buffer_set_surface 함수를 사용하는 것. 
+buffer의 내용은 garbage collection의 대상이 아니기에, surface의 내용을 buffer에 저장하는 것입니다.
+
+제가 사용한 코드는 다음과 같습니다.
+```gml
+if(!buffer_exists(buffer)){
+  buffer = buffer_create(surface_get_width(surface) * 
+                         surface_get_height(surface) * 4,
+                         buffer_fixed, 1);
+}
+buffer_get_surface(buffer, surface, 0)
+```
+surface의 크기만큼 buffer를 생성하고, surface의 내용을 담습니다.
+
+(정적 buffer가 아닌 동적 buffer으로 할당하고 싶다면 buffer_fixed 대신 buffer_grow 를 사용하시면 됩니다. 더 자세한 내용은 레퍼런스를 참고해주세요)
+- reference : [buffer_create](https://manual.yoyogames.com/GameMaker_Language/GML_Reference/Buffers/buffer_create.htm)
+
+반대로 buffer의 내용을 surface에 반영하고 싶다면 아래처럼 작성하시면 됩니다.
+```gml
+buffer_set_surface(buffer, surface, 0)
+```
+이렇게 surface의 내용을 buffer에 저장, buffer에 있는 내용을 surface에 담아낼 수 있기 때문에 사용중인 surface가 사라져도 안심할 수 있습니다.  
