@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 // import localizedFormat from 'dayjs/plugin/localizedFormat';
 // dayjs.extend(localizedFormat)
 
-export const DividingLine = ({text, delay, view=true}:{text:string, delay:number, view:boolean}) => {
+export const DividingLine = ({text, delay, view=true}:{text:string, delay:number, view?:boolean}) => {
   return (
     <div
       className={`w-full ${view?'my-2':''} flex flex-row gap-2 items-center opacity-0 animate-climb100-animation`}
