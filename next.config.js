@@ -10,7 +10,7 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below
   reactStrictMode: false,
-  output: isProduction ? "export" : undefined,
+  output: "export",
   images: {
     loader: isProduction ? "custom" : "default",
     imageSizes: [32, 64, 128, 256],

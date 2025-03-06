@@ -54,13 +54,13 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
       if(filetype === '.mdx') {
         return `[${text1}](${siteSetting.site.url}${modified_filename.replace('/posts/', '/post/').replace('.mdx', '')})`
       }
-      else if(file_type.image_files.indexOf(filetype.slice(0, 3)) > -1){
+      else if(file_type.image_files.indexOf(filetype.slice(1, 4)) > -1){
         // myNextImages
       }
-      else if(file_type.audio_files.indexOf(filetype.slice(0, 3)) > -1){
+      else if(file_type.audio_files.indexOf(filetype.slice(1, 4)) > -1){
         // TODO
       }
-      else if(file_type.video_files.indexOf(filetype.slice(0, 3)) > -1){
+      else if(file_type.video_files.indexOf(filetype.slice(1, 4)) > -1){
         // For videos, please try to use YouTube whenever possible.
         return `[${text1}](${siteSetting.site.url}${modified_filename})`
       }
