@@ -2,6 +2,12 @@ import { getFiles } from "./archive/[[...slug]]/page";
 import { GET as getImageData } from "./(route)/api/getAllArtImages/route";
 import { RecentPostAndArt } from "@/components/recent/recent";
 
+import { Metadata } from "next";
+import { metadata as layoutMetadata } from "@/app/layout";
+
+export const metadata: Metadata = layoutMetadata;
+export const dynamic = 'force-static'
+
 export default async function Home() {
   const files = (await getFiles(undefined)).files.slice(0, 2)
   const galleryData = await (await getImageData()).json()
