@@ -2,8 +2,12 @@
 
 .mytheme :global {
 
-    @apply overflow-x-hidden; // transition-all
+    @apply overflow-x-hidden;
     
+    p {
+        @apply transition-none;
+    }
+
     .font-anton {
         font-family: var(--anton-font);
     }
@@ -65,12 +69,12 @@
     }
 
     .modal, .img-modal, .modal-active, .img-modal-active {
-        @apply backdrop-blur-0 fixed left-0 top-0 -z-10 w-dvw h-dvh transition-[backdrop-filter] duration-300;
+        @apply backdrop-blur-0 fixed left-0 top-0 -z-10 w-dvw h-[150dvh] transition-[backdrop-filter] duration-300;
         // @include media-query($on-mobile){
         //     @apply mt-12;
         // }
         .modal-darker {
-            @apply w-full h-full opacity-0 transition-all;
+            @apply w-full h-full opacity-0 transition-opacity-bgcol;
         }
     }
     .modal-active, .img-modal-active {
@@ -120,14 +124,14 @@
     }
 
     input {
-        @apply rounded-lg px-2 transition-all;
+        @apply rounded-lg px-2 transition-colors;
         &:focus {
             @apply outline-none;
         }
     }
 
     button {
-        @apply whitespace-nowrap px-2 mx-1 rounded-md transition-all;
+        @apply whitespace-nowrap px-2 mx-1 rounded-md transition-button;
         @apply font-bold;
         font-size: $medium-font-size;
         &.button-disable {
@@ -139,7 +143,7 @@
     }
 
     hr {
-        @apply transition-colors;
+        @apply transition-[border-color];
     }
 
     .no-style {
@@ -156,7 +160,7 @@
                 @apply w-full;
             }
             input {
-                @apply rounded-lg w-full pl-2 pr-9 transition-all;
+                @apply rounded-lg w-full pl-2 pr-9 transition-bgcolor-shadow;
                 &:focus {
                     @apply outline-none outline-4 shadow-lg;
                     @apply pl-4 pr-9;
@@ -173,17 +177,16 @@
     }
 
     strong {
-        @apply transition-colors;
         font-family: var(--pretendard-font);
     }
 
     h1,h2,h3,h4,h5,h6 {
         font-family: var(--pretendard-font);
-        @apply transition-colors;
+        @apply transition-none;
         @apply w-fit underline break-keep;
         &[id]{
             &::after {
-                @apply opacity-20 transition-all;
+                @apply opacity-20 transition-opacity;
                 // content: " [#]";
             }
             &:hover{
@@ -217,7 +220,7 @@
         @apply p-2 h-12 flex flex-row content-center transition-colors;
         .mode { // theme icon
             svg {
-                @apply size-9 absolute scale-95 transition-all;
+                @apply size-9 absolute scale-95 transition-svg_button;
                 &.hamburger {
                     @apply right-2 hidden;
                     @include media-query($on-mobile) {
@@ -322,10 +325,10 @@
     }
 
     a:not([class]):not([id]){
-        @apply transition-all underline;
+        @apply transition-colors underline;
         &::after{
             // content: " [link]";
-            @apply transition-all;
+            @apply transition-opacity;
             @apply opacity-30;
         }
         &:hover{
@@ -336,17 +339,17 @@
     }
 
     nav.toc {
-        @apply rounded-md transition-all;
+        @apply rounded-md transition-opacity;
         @apply fixed left-1/2 top-1/4 translate-x-[410px];
         @apply text-base/4 my-4;
         @include media-query($on-tablet){
             @apply opacity-0;
         }
         a {
-            @apply transition-all break-keep underline select-none;
+            @apply transition-link break-keep underline select-none;
             @apply tracking-normal;
             &::after {
-                @apply transition-all;
+                @apply transition-opacity;
                 @apply opacity-10;
                 // content: " [#]";
             }
@@ -472,13 +475,13 @@
             @apply w-full h-full;
         }
         img {
-            @apply object-cover transition-all;
+            @apply object-cover; // transition-all
         }
         .img-zoom {
             @apply absolute bottom-0 left-0 right-0 top-0 cursor-pointer;
             .img-focus, .img-focus-active {
                 @apply w-full;
-                @apply transition-all duration-[400ms] origin-center;
+                @apply transition-img-zoom duration-[400ms] origin-center;
                 img {
                     @apply w-full h-full;
                 }
@@ -603,16 +606,16 @@
         @apply overflow-hidden;
     }
     .archive, .post-data, .project, .about {
-        @apply transition-all;
+        // @apply transition-all;
         font-family: var(--pretendard-font);
         p {
             @apply text-sm;
         }
         h1 {
-            @apply no-underline text-5xl mt-2 mb-2 font-bold transition-all;
+            @apply no-underline text-5xl mt-2 mb-2 font-bold transition-animate-text;
             &.large {
                 font-family: var(--anton-font);
-                @apply text-9xl transition-all;
+                @apply text-9xl transition-animate-text;
             }
             @include media-query($on-mobile) {
                 @apply text-[2.5rem];
@@ -637,8 +640,8 @@
     .archive-list {
         font-family: var(--pretendard-font);
         @apply h-fit;
-        @apply relative w-full mx-auto mb-3 rounded-md transition-all;
-        @apply opacity-0 translate-y-10 overflow-hidden;
+        @apply relative w-full mx-auto mb-3 rounded-md transition-animate-box;
+        @apply translate-y-10 overflow-hidden;
         .list-data {
             @apply pl-16 pr-5 py-2 flex gap-2 justify-between content-center;
             @include media-query($on-mobile) {
@@ -665,13 +668,13 @@
             }
         }
         .title {
-            @apply decoration-0 transition-all text-wrap;
+            @apply decoration-0 transition-title text-wrap;
             @include media-query($on-mobile) {
                 @apply left-14;
             }
         }
         .date {
-            @apply opacity-50 text-sm;
+            @apply opacity-50 text-sm transition-date;
         }
         &.folder {
             .folder-info {
@@ -746,11 +749,11 @@
         svg {
             @apply size-14;
         }
-        a, svg, p {
-            @apply transition-all;
+        a, svg {
+            @apply transition-colors;
         }
         a > svg {
-            @apply size-6 stroke-none inline mr-1;
+            @apply size-6 stroke-none inline mr-1 transition-svg;
         }
         .blog-data-2 {
             font-size: $mini-font-size;
@@ -818,7 +821,7 @@
             }
             h1 {
                 @extend .font-anton;
-                @apply text-[12rem] no-underline my-0 inline transition-all;
+                @apply text-[12rem] no-underline my-0 inline transition-animate-text;
                 line-height: 13rem;
                 @include media-query($on-mobile) {
                     @apply text-[11rem];
@@ -845,7 +848,7 @@
     .proj-item {
         @apply w-full flex flex-col aspect-[16/5] mb-4 overflow-hidden shadow-lg;
         &:hover {
-            @apply -hue-rotate-15 transition-all;
+            @apply -hue-rotate-15 transition-[filter];
             .proj-title {
                 @apply tracking-wider;
             }
@@ -857,14 +860,14 @@
             @apply w-full aspect-[16/5];
         }
         .proj-text {
-            @apply absolute ml-4 mt-3 left-0 top-0 transition-all;
+            @apply absolute ml-4 mt-3 left-0 top-0;
             p {
                 @apply opacity-80;
             }
         }
         .proj-title {
             font-family: var(--pretendard-font);
-            @apply text-2xl transition-all font-bold;
+            @apply text-2xl transition-[letter-spacing] font-bold;
             @include media-query($on-mobile) {
                 @apply text-xl;
             }
@@ -891,7 +894,7 @@
     }
 
     .file-not-found {
-        @apply w-full py-3 text-center rounded-md transition-colors overflow-hidden;
+        @apply w-full py-3 text-center rounded-md transition-text overflow-hidden;
         p {
             @apply inline-block;
         }

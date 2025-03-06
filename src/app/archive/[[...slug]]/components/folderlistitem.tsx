@@ -6,7 +6,7 @@ export const folderListItem = (folder: {url:string, description:string, folder:n
   return (
     <Link className="no-style" href={folder.url} key={key}>
       <div
-        className="archive-list folder animate-climb100-animation"
+        className="archive-list folder opacity-0 animate-climb100-animation"
         style={{animationDelay: `${delay}ms`}}
       >
         {

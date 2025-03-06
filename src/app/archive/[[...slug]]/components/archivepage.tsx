@@ -168,7 +168,7 @@ export const ArchivePageWithSearchBar = ({
       <div className="flex flex-col mb-4 animate-climb100-animation mini-spotlight">
         <div className="searchbar">
           <div className="searchbox">
-            <input ref={inputRef} id="search" type="text" name="search" placeholder="Search..." onChange={searchPosts}></input>
+            <input ref={inputRef} id="search" autoComplete="off" type="text" name="search" placeholder="Search..." onChange={searchPosts}></input>
           </div>
           {
             // Image by Dazzle UI, licensed under CC Attribution License
@@ -222,11 +222,10 @@ export const ArchivePageWithSearchBar = ({
             { files.length > 0 &&
               files.map((file, i)=>{
                 const delay = (data.archive_detail.folders.length + 1) * 100 + i * 100;
+                const view = (i == 0 || dayjs(files[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(files[Math.max(i, 0)].date).format('YYYY'))
                 return (
                   <div className="w-full" key={`file ${i}`}>
-                    { (i == 0 || dayjs(files[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(files[Math.max(i, 0)].date).format('YYYY')) &&
-                      <DividingLine key={`line ${i}`} text={dayjs(files[Math.max(i, 0)].date).format('YYYY')} delay={delay}/>
-                    }
+                    <DividingLine view={view} key={`line ${i}`} text={dayjs(files[Math.max(i, 0)].date).format('YYYY')} delay={delay}/>
                     {
                       fileListItem(file, `file ${i}`, delay)
                     }

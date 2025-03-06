@@ -7,14 +7,18 @@ import dayjs from 'dayjs';
 // import localizedFormat from 'dayjs/plugin/localizedFormat';
 // dayjs.extend(localizedFormat)
 
-export const DividingLine = ({text, delay}:{text:string, delay:number}) => {
+export const DividingLine = ({text, delay, view=true}:{text:string, delay:number, view:boolean}) => {
   return (
     <div
-      className="w-full my-2 flex flex-row gap-2 items-center opacity-0 animate-climb100-animation"
+      className={`w-full ${view?'my-2':''} flex flex-row gap-2 items-center opacity-0 animate-climb100-animation`}
       style={{animationDelay:`${delay}ms`}}
     >
-      <div className="opacity-50 text-sm">{text}</div>
-      <hr className="w-full"/>
+      { view &&
+        <>
+          <div className="opacity-50 text-sm">{text}</div>
+          <hr className="w-full"/>
+        </>
+      }
     </div>
   )
 }
@@ -27,7 +31,7 @@ export const fileListItem = (file: {url:string, title: string, date:string}, key
   return (
     <Link className="no-style" href={file.url} key={key}>
       <div
-        className={`archive-list file ${delay >= 0?'animate-climb100-animation':''} ${current?'current-post':''}`}
+        className={`archive-list file ${delay >= 0?'opacity-0 animate-climb100-animation':''} ${current?'current-post':''}`}
         style={{animationDelay: `${Math.max(delay, 0)}ms`}}
       >
         {
