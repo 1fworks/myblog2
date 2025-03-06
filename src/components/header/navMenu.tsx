@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 
 export const NavMenu = () => {
   const [ animate, setAnimate ] = useState(false)
+  const [ hamburger, setHamburger ] = useState(false)
+
   const MenuLink = ({ link, linktext, isSelected, delay }
     : { link:string, linktext:string, isSelected:boolean, delay:number }) => {
 
@@ -30,7 +32,7 @@ export const NavMenu = () => {
         window.removeEventListener('resize', handleResize);
       };
     }, [])
-  
+    
     return (
       <div
         className={`${isSelected?"menulink-active":"menulink"} ${animate ? 'animate-stair-animation':'animate-none'}`}
@@ -42,8 +44,6 @@ export const NavMenu = () => {
     )
   }
   
-  const [ hamburger, setHamburger ] = useState(false)
-
   const path = usePathname()
   useEffect(()=>{
     setHamburger(false)

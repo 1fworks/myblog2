@@ -219,9 +219,9 @@
             svg {
                 @apply size-9 absolute scale-95 transition-all;
                 &.hamburger {
-                    @apply right-2 invisible;
+                    @apply right-2 hidden;
                     @include media-query($on-mobile) {
-                        @apply visible;
+                        @apply block;
                     }
                 }
                 &:hover {
@@ -907,6 +907,12 @@
             svg {
                 @apply size-7;
             }
+        }
+    }
+
+    .giscus-box {
+        iframe {
+            @apply shadow-none;
         }
     }
 }

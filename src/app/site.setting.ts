@@ -3,6 +3,12 @@ export const basePath = isProduction ? '/myblog2' : ''
 const url = isProduction ? `https://1fworks.github.io${basePath}` : `http://localhost:3000`
 
 export const siteSetting = {
+    proj:{
+        github: '1fworks',
+        repo: 'myblog2',
+        repoId: 'R_kgDOODHeAQ',
+        categoryId: 'DIC_kwDOODHeAc4CnmmZ',
+    },
     site:{
         url: url,
         title: "_ = F = _ Blog",
