@@ -59,6 +59,8 @@ export const MyNextImage = (
     ratio?:number, cover?:boolean, unoptimized?:boolean,
     imgWidth?:number, imgHeight?:number, delay?:number, clickable?:boolean, animate?:boolean}) => {
     
+    if(process.env.NODE_ENV !== 'production'){ unoptimized = true }
+    
     const src_with_basePath = path.join(`${basePath}/`,`${src}`)
 
     imgWidth = Number(imgWidth)

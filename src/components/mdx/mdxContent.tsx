@@ -16,11 +16,11 @@ import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
 import { getImgDataList } from '@/libs/post';
 
-// const file_type = {
-//   image_files: ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'],
-//   audio_files: ['mp3', 'wav', 'm4a', 'ogg', '3gp', 'flac'], // ,'webm'
-//   video_files: ['mp4', 'webm', 'ogv', 'mov', 'mkv']
-// }
+const file_type = {
+  image_files: ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'],
+  audio_files: ['mp3', 'wav', 'm4a', 'ogg', '3gp', 'flac'], // ,'webm'
+  video_files: ['mp4', 'webm', 'ogv', 'mov', 'mkv']
+}
 
 export const MDXContent = async(props : { source:string, slugs?: string[] }) => {
   const content = props.source
@@ -50,8 +50,22 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
       if(file === undefined) return source;
       
       const modified_filename = file.replaceAll(' ','%20')
-      if(modified_filename.slice(-4) === '.mdx') {
+      const filetype = modified_filename.slice(-4)
+      if(filetype === '.mdx') {
         return `[${text1}](${siteSetting.site.url}${modified_filename.replace('/posts/', '/post/').replace('.mdx', '')})`
+      }
+      else if(file_type.image_files.indexOf(filetype.slice(0, 3)) > -1){
+        // myNextImages
+      }
+      else if(file_type.audio_files.indexOf(filetype.slice(0, 3)) > -1){
+        // TODO
+      }
+      else if(file_type.video_files.indexOf(filetype.slice(0, 3)) > -1){
+        // For videos, please try to use YouTube whenever possible.
+        return `[${text1}](${siteSetting.site.url}${modified_filename})`
+      }
+      else { // (ex. zip)
+        return `[${text1}](${siteSetting.site.url}${modified_filename})`
       }
       // const url = `${siteSetting.site.url}/${file[0]==='/'?file.slice(1):file}`
       return `[${text1}](${modified_filename})`
