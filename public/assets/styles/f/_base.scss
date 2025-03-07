@@ -43,6 +43,10 @@
         background-color: $background-color;
     }
 
+    .skeleton-bg {
+        @apply bg-[#ebebeb]
+    }
+
     .skeleton {
         @apply bg-gradient-to-r from-[#ebebeb] from-50% via-[#fff] via-75% to-[#ebebeb] to-100%
     }

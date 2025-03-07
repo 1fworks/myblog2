@@ -311,23 +311,22 @@ export const MyNextImage = (
     
     const width = Math.max(imgWidth, imgData.width)
     const height = Math.max(imgHeight, imgData.height)
-
+    
+    const default_size = `${cover?'w-full h-full':(width > 0 ? `w-full mx-auto`:'mx-auto')}`
+    
     const skeleton_div_className = isLoaded?'isLoaded':
-        `skeleton ${imgWidth === 0 && imgHeight === 0?'temporary_img':''} animate-shimmer-animation \
-        ${cover?
-            'w-full h-full':(width > 0 ? `w-fit mx-auto`:'w-1/2 mx-auto')} \
-        ${cover?'':
-            ratio > 0?
-                `aspect-[${ratio}]`:(width > 0 ?`aspect-[${width/height}]`:'aspect-video')}`
+        `skeleton ${imgWidth === 0 && imgHeight === 0?'temporary_img':''} animate-shimmer-animation ${default_size}`
     
     if(loadFail)
         return <FileNotFound filename={filename}/>
     
     return (
-    <div className={`${cover?'w-full h-full':'my-img'}`}>
+    <div
+        className={`${cover?'w-full h-full':'my-img'}`}
+    >
         <div
             ref={animateBoxRef}
-            className={`${cover?'w-full h-full':''} relative ${!animate || animateEnd || !cover?'':'img-box-wrapping-paper animate-climb100-animation'}`} // relative
+            className={`${cover?'w-full h-full':'w-full'} relative ${!animate || animateEnd || !cover?'':'img-box-wrapping-paper animate-climb100-animation'}`} // relative
             style={{animationDelay: `${Math.max(delay, 0)}ms`}}
             onAnimationEnd={()=>{if(!animateEnd) setAnimateEnd(true)}}
         >
@@ -381,7 +380,13 @@ export const MyNextImage = (
                             </div>
                         </div>
                     }
-                    <div ref={skeletonRef} className={skeleton_div_className}>
+                    <div
+                        ref={skeletonRef} className={skeleton_div_className}
+                        style={!cover?{
+                            maxWidth: (width > 0 ? `${width}px` : '50%'),
+                            aspectRatio: (width > 0 ? `${width/height}` : '16/9'),
+                        }:{}}
+                    >
                         { process.env.NODE_ENV === 'production' &&
                             <ExportedImage
                                 ref={imgRef}
@@ -424,13 +429,16 @@ export const MyNextImage = (
                     </div>
                 </div>
             }
-            {/* { isOriginalImage !== undefined &&
-                <>
-                { isOriginalImage && <div>original</div> }
-                { !isOriginalImage && <div>optimized img</div> }
-                <div>size = {width} {height}</div>
-                </>
-            } */}
+            { isOriginalImage === undefined &&
+                <div
+                    className={`skeleton-bg rounded-md ${default_size}`}
+                    style={!cover?{
+                        maxWidth: (width > 0 ? `${width}px` : '50%'),
+                        aspectRatio: (width > 0 ? `${width/height}` : '16/9'),
+                    }:{}}
+                >
+                </div>
+            }
         </div>
     </div>
     )

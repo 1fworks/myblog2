@@ -13,6 +13,10 @@
         background-color: $dark-background-color;
     }
 
+    .skeleton-bg {
+        @apply bg-[#292a2b]
+    }
+
     .skeleton {
         @apply bg-gradient-to-r from-[#292a2b] from-50% via-[#7b7e80] via-75% to-[#292a2b] to-100%
     }

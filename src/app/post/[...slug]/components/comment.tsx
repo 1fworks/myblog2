@@ -16,21 +16,23 @@ export const Comment = () => {
   if(!mounted) return null;
   return (
     <div className='giscus-box'>
-      <Giscus
-        repo={`${siteSetting.proj.github}/${siteSetting.proj.repo}`}
-        repoId={`${siteSetting.proj.repoId}`}
-        category="Announcements"
-        categoryId={`${siteSetting.proj.categoryId}`}
-        mapping="pathname"
-        strict="0"
-        reactionsEnabled="1"
-        emitMetadata="0"
-        inputPosition="top"
-        theme={theme==="light"?
-          `${siteSetting.site.url}/assets/styles/giscus-theme.css`
-          :"noborder_gray"} //noborder_light
-        lang="ko"
-      />
+      { process.env.NODE_ENV === 'production' &&
+        <Giscus
+          repo={`${siteSetting.proj.github}/${siteSetting.proj.repo}`}
+          repoId={`${siteSetting.proj.repoId}`}
+          category="Announcements"
+          categoryId={`${siteSetting.proj.categoryId}`}
+          mapping="pathname"
+          strict="0"
+          reactionsEnabled="1"
+          emitMetadata="0"
+          inputPosition="top"
+          theme={theme==="light"?
+            `${siteSetting.site.url}/assets/styles/giscus-theme.css`
+            :"noborder_gray"} //noborder_light
+          lang="ko"
+        />
+      }
     </div>
   )
 }
