@@ -4,6 +4,9 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    webpackMemoryOptimizations: isProduction ? false : true
+  },
   basePath: isProduction ? '/myblog2' : '',
   // assetPrefix: isProduction ? '/myblog2/' : '',
   // Configure `pageExtensions` to include markdown and MDX files

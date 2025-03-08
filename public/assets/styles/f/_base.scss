@@ -260,4 +260,15 @@
             }
         }
     }
+
+    .wave-player-2024 {
+        svg {
+            fill: $text-less-cloudy;
+        }
+        button:hover {
+            svg {
+                fill: $text-base-color;
+            }
+        }
+    }
 }

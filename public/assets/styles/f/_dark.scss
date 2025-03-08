@@ -212,4 +212,15 @@
             }
         }
     }
+
+    .wave-player-2024 {
+        svg {
+            fill: $dark-text-less-cloudy;
+        }
+        button:hover {
+            svg {
+                fill: $dark-text-base-color;
+            }
+        }
+    }
 }}

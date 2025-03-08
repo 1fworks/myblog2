@@ -8,10 +8,12 @@ import rehypeToc from 'rehype-toc';
 import rehypeReact from 'rehype-react';
 import remarkMdx from 'remark-mdx';
 import remarkGfm from 'remark-gfm';
-import { rehypeObsidianImage } from "@/libs/rehypeObsidianImage";
-import { rehypeUnwrapMyNextImagesFromParagraph } from "@/libs/rehypeUnwrapMyNextImagesFromParagraph";
+import { rehypeObsidianMedia } from "@/libs/rehypeObsidianMedia";
+import { rehypeUnwrapMyMediaFromParagraph } from "@/libs/rehypeUnwrapMyMediaFromParagraph";
 import { rehypeRemovePtagInSideList } from '@/libs/rehypeRemovePtagInList';
 import { MyNextImage } from "../image/mynextImage";
+import { WavePlayer2024 } from '../audio/wavePlayer2024';
+import { MyAudio } from '../audio/audio';
 import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
 import { getImgDataList } from '@/libs/post';
@@ -56,19 +58,24 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
       }
       else if(file_type.image_files.indexOf(filetype.slice(1, 4)) > -1){
         // myNextImages
+        return `[${text1}](${modified_filename})`
       }
       else if(file_type.audio_files.indexOf(filetype.slice(1, 4)) > -1){
-        // TODO
+        if(text1 === 'waveplayer-2024')
+          return `[${text1}](${siteSetting.site.url}${modified_filename})`
+        else
+          return `[audiofile-${text1}](${siteSetting.site.url}${modified_filename})`
       }
       else if(file_type.video_files.indexOf(filetype.slice(1, 4)) > -1){
         // For videos, please try to use YouTube whenever possible.
-        return `[${text1}](${siteSetting.site.url}${modified_filename})`
+        // TODO
+        return `[videofile-${text1}](${siteSetting.site.url}${modified_filename})`
       }
       else { // (ex. zip)
-        return `[${text1}](${siteSetting.site.url}${modified_filename})`
+        return `[file-${text1}](${siteSetting.site.url}${modified_filename})`
       }
       // const url = `${siteSetting.site.url}/${file[0]==='/'?file.slice(1):file}`
-      return `[${text1}](${modified_filename})`
+      // return `[${text1}](${modified_filename})`
     })
     
     
@@ -95,7 +102,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     <div>
       <MDXRemote
         source={markdownsource}
-        components={{MyNextImage}}
+        components={{MyNextImage, WavePlayer2024, MyAudio}}
         options={{
           parseFrontmatter: true,
           mdxOptions: {
@@ -120,8 +127,8 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
                 }
               ],
               // rehypeUnwrapImages,
-              () => rehypeObsidianImage(imgInfoList),
-              rehypeUnwrapMyNextImagesFromParagraph,
+              () => rehypeObsidianMedia(imgInfoList),
+              rehypeUnwrapMyMediaFromParagraph,
               rehypeRemovePtagInSideList,
               rehypeReact,
             ],

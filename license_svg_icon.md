@@ -7,3 +7,4 @@
 - Ionicons icon pack by Ionions, MIT License: [Ionicons icon pack](https://www.iconfinder.com/iconsets/ionicons)
 - Tiny App Icons by edent, MIT License: [Tiny App Icons](https://www.svgrepo.com/collection/tiny-app-icons)
 - The GameJolt logo is part of the "Brand Icons" collection, and it is covered under the Logo License: [Gamejolt SVG Vector](https://www.svgrepo.com/collection/brand-icons)
+- Solar Bold Icons by Solar Icons, CC Attribution License: [Solar Bold Icons](https://www.svgrepo.com/collection/solar-bold-icons)
