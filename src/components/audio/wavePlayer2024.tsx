@@ -19,6 +19,8 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
   
   const canvasCtx = useRef<CanvasRenderingContext2D>(null)
 
+  const audioCtx = useRef<AudioContext>(undefined);
+  
   const source = useRef<MediaElementAudioSourceNode>(undefined)
   const analyser = useRef<AnalyserNode>(undefined)
   const bufferLength = useRef<number>(-1)
@@ -131,7 +133,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         }
       }
     }
-  }, [init])
+  }, [init, mounted])
 
   const update = useCallback((init:boolean = false) => {
     if(!audioRef.current) return;
@@ -147,7 +149,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
       else return;
     }
     draw();
-  }, [draw])
+  }, [draw, mounted])
 
   const drawWave = useCallback(() => {
     if(canvasRef.current) {
@@ -156,38 +158,43 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
       if(audioRef.current && audioRef.current.paused !== paused)
         setPaused(audioRef.current.paused)
     }
-  }, [paused, update])
+  }, [paused, update, mounted])
 
   const getDecodeAudioData = useCallback(async () => {
-    if(!audioData.current) return;
-    const audioCtx = new (window.AudioContext || (window as Window).webkitAudioContext)();
-    await audioCtx.decodeAudioData(audioData.current)
+    if(!audioData.current || !audioCtx.current) return;
+    await audioCtx.current.decodeAudioData(audioData.current)
     .then(audioBuff => {
         audioBuffer.current = audioBuff;
         update(true);
       }
     );
-  }, [update])
+  }, [update, mounted])
 
   useEffect(() => {
     setMounted(true);
+  }, [])
 
-    fetch(`${audioUrl}`)
-    .then(res => res.blob())
-    .then(async data => {
-      audioData.current = await data.arrayBuffer()
-      getDecodeAudioData()
-      if(audioRef.current) {
-        audioRef.current.src = audioUrl
-      }
-      endTimeUpdate()
-      setLoadState(1)
-    })
-    .catch((err)=>{
-      console.log(err)
-      setLoadState(0)
-    })
-  }, [audioUrl, getDecodeAudioData]);
+  const audiofile_request = useRef<boolean>(false)
+  useEffect(() => {
+    if(mounted) {
+      if(audiofile_request.current) return;
+      audiofile_request.current = true
+      fetch(`${audioUrl}`)
+      .then(res => res.blob())
+      .then(async data => {
+        audioData.current = await data.arrayBuffer()
+        audioCtx.current = new (window.AudioContext || (window as Window).webkitAudioContext)()
+        getDecodeAudioData()
+        if(audioRef.current) {
+          audioRef.current.src = URL.createObjectURL(data)
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+        setLoadState(0)
+      })
+    }
+  }, [mounted, audioUrl, getDecodeAudioData]);
 
   useEffect(()=>{
     if(mounted) {
@@ -198,58 +205,59 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
   }, [mounted])
 
   useEffect(()=>{
-    if(canvasRef.current) {
+    if(mounted) {
       color.current  = theme === 'dark' ? '#afafaf' : '#aaaaaa'
       color1.current = theme === 'dark' ? '#ff5277' : '#ff0000'
       color2.current = theme === 'dark' ? '#a1a1a1' : '#eeeeee'
       color3.current = theme === 'dark' ? '#f1f1f1' : '#ff9999'
-      const observer = new ResizeObserver((entries)=>{
-        entries.forEach(entry=>{
-          const { width, height } = entry.contentRect
-          if(canvasRef.current) {
-            canvasRef.current.width = width;
-            canvasRef.current.height = height;
-            canvasRef.current.style.maxWidth = `${Math.floor(width)}px`;
-            canvasRef.current.style.maxHeight = `${Math.floor(height)}px`;
-          }
+      if(canvasRef.current) {
+        const observer = new ResizeObserver((entries)=>{
+          entries.forEach(entry=>{
+            const { width, height } = entry.contentRect
+            if(canvasRef.current) {
+              canvasRef.current.width = width;
+              canvasRef.current.height = height;
+              canvasRef.current.style.maxWidth = `${Math.floor(width)}px`;
+              canvasRef.current.style.maxHeight = `${Math.floor(height)}px`;
+            }
+          })
+          update(true);
         })
-        update(true);
-      })
-      observer.observe(canvasRef.current.parentElement as HTMLDivElement)
-      animateRef.current = requestAnimationFrame(drawWave)
-      return () => {
-        observer.disconnect()
-        if(animateRef.current){
-          cancelAnimationFrame(animateRef.current)
-          animateRef.current = null
+        observer.observe(canvasRef.current.parentElement as HTMLDivElement)
+        animateRef.current = requestAnimationFrame(drawWave)
+        return () => {
+          observer.disconnect()
+          if(animateRef.current){
+            cancelAnimationFrame(animateRef.current)
+            animateRef.current = null
+          }
         }
       }
     }
-  }, [theme, init, update, drawWave])
+  }, [mounted, theme, init, update, drawWave])
 
   const initAudioContent = useCallback(() => {
-    if(!audioRef.current || init) return;
-    const audioCtx = new (window.AudioContext || (window as Window).webkitAudioContext)();
-    source.current = audioCtx.createMediaElementSource(audioRef.current);
-    analyser.current = audioCtx.createAnalyser();
+    if(!audioRef.current || init || !audioCtx.current) return;
+    source.current = audioCtx.current.createMediaElementSource(audioRef.current);
+    analyser.current = audioCtx.current.createAnalyser();
     source.current.connect(analyser.current);
-    analyser.current.connect(audioCtx.destination);
+    analyser.current.connect(audioCtx.current.destination);
     analyser.current.fftSize = 2048;
     bufferLength.current = analyser.current.frequencyBinCount;
     dataArray.current = new Uint8Array(bufferLength.current);
     setInit(true)
-  }, [init])
-
-  useEffect(()=>{
-    if(loadState === 1) {
-      initAudioContent()
+  }, [init, mounted])
+  
+  const activateAudioContext = () => {
+    if(audioCtx.current) {
+      if(audioCtx.current.state === 'suspended')
+        audioCtx.current.resume().catch(err => console.error("AudioContext Activation failed:", err));
     }
-  }, [loadState, initAudioContent])
-
-  if(!mounted) return null;
+  }
 
   const buttonEvent = () => {
     if(audioRef.current) {
+      activateAudioContext()
       const audio_ary = document.querySelectorAll('audio')
       if (audioRef.current.paused) {
         for(let i=0;i<audio_ary.length;i++){
@@ -268,6 +276,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
 
   const mouseupCanvas = () => {
     if(!audioRef.current || !canvasRef.current) return;
+    activateAudioContext()
     const audio_ary = document.querySelectorAll('audio')
     for(let i=0;i<audio_ary.length;i++){
       audio_ary[i].pause();
@@ -296,7 +305,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
       if(audioRef.current?.paused) update(true)
     }
   }
-
+  
   if(loadState === 0) {
     return (<FileNotFound filename={ audioUrl.split('/').slice(-1)[0] } />)
   }
@@ -304,51 +313,63 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
   return (
     <div className="wave-player-2024">
       <audio ref={audioRef}
-        onPlay={()=>{setPaused(false); initAudioContent()}}
+        onPlay={()=>{setPaused(false);}}
         onPause={()=>{setPaused(true); update(true)}}
+        onLoadedData={()=>{
+          endTimeUpdate()
+          setLoadState(1)
+          initAudioContent()
+        }}
       />
-      <button onClick={buttonEvent} className="no-style">
-        { audioRef.current &&
-          <>
-            { !paused &&
-              <svg viewBox="0 0 24 24" fill="none">
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M2 6C2 4.11438 2 3.17157 2.58579 2.58579C3.17157 2 4.11438 2 6 2C7.88562 2 8.82843 2 9.41421 2.58579C10 3.17157 10 4.11438 10 6V18C10 19.8856 10 20.8284 9.41421 21.4142C8.82843 22 7.88562 22 6 22C4.11438 22 3.17157 22 2.58579 21.4142C2 20.8284 2 19.8856 2 18V6Z"></path>
-                  <path d="M14 6C14 4.11438 14 3.17157 14.5858 2.58579C15.1716 2 16.1144 2 18 2C19.8856 2 20.8284 2 21.4142 2.58579C22 3.17157 22 4.11438 22 6V18C22 19.8856 22 20.8284 21.4142 21.4142C20.8284 22 19.8856 22 18 22C16.1144 22 15.1716 22 14.5858 21.4142C14 20.8284 14 19.8856 14 18V6Z"></path>
-                </g>
-              </svg>
+      { !mounted &&
+        <div className="canvas-box"></div>
+      }
+      { mounted &&
+        <>
+          <button onClick={buttonEvent} className="no-style">
+            { audioRef.current &&
+              <>
+                { !paused &&
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path d="M2 6C2 4.11438 2 3.17157 2.58579 2.58579C3.17157 2 4.11438 2 6 2C7.88562 2 8.82843 2 9.41421 2.58579C10 3.17157 10 4.11438 10 6V18C10 19.8856 10 20.8284 9.41421 21.4142C8.82843 22 7.88562 22 6 22C4.11438 22 3.17157 22 2.58579 21.4142C2 20.8284 2 19.8856 2 18V6Z"></path>
+                      <path d="M14 6C14 4.11438 14 3.17157 14.5858 2.58579C15.1716 2 16.1144 2 18 2C19.8856 2 20.8284 2 21.4142 2.58579C22 3.17157 22 4.11438 22 6V18C22 19.8856 22 20.8284 21.4142 21.4142C20.8284 22 19.8856 22 18 22C16.1144 22 15.1716 22 14.5858 21.4142C14 20.8284 14 19.8856 14 18V6Z"></path>
+                    </g>
+                  </svg>
+                }
+                { paused &&
+                  <svg viewBox="1.2 0 25.2 24" fill="none">
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path d="M21.4086 9.35258C23.5305 10.5065 23.5305 13.4935 21.4086 14.6474L8.59662 21.6145C6.53435 22.736 4 21.2763 4 18.9671L4 5.0329C4 2.72368 6.53435 1.26402 8.59661 2.38548L21.4086 9.35258Z"></path>
+                    </g>
+                  </svg>
+                }
+              </>
             }
-            { paused &&
-              <svg viewBox="1.2 0 25.2 24" fill="none">
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M21.4086 9.35258C23.5305 10.5065 23.5305 13.4935 21.4086 14.6474L8.59662 21.6145C6.53435 22.736 4 21.2763 4 18.9671L4 5.0329C4 2.72368 6.53435 1.26402 8.59661 2.38548L21.4086 9.35258Z"></path>
-                </g>
-              </svg>
+            { !audioRef.current &&
+              <svg />
             }
-          </>
-        }
-        { !audioRef.current &&
-          <svg />
-        }
-      </button>
-      <div className="flex flex-row w-full justify-between items-center">
-        <div ref={startTimeRef} className="time text-right">00:00</div>
-        <div className="w-full canvas-box px-1">
-          <div className="w-full h-full">
-            <canvas ref={canvasRef}
-              className="w-full h-full"
-              onMouseUp={mouseupCanvas}
-              onMouseEnter={mouseenterCanvas}
-              onMouseLeave={mouseleaveCanvas}
-              onMouseMove={mousemoveCanvas}/>
+          </button>
+          <div className="flex flex-row w-full justify-between items-center">
+            <div ref={startTimeRef} className="time text-right">00:00</div>
+            <div className="w-full canvas-box px-1">
+              <div className="w-full h-full">
+                <canvas ref={canvasRef}
+                  className="w-full h-full"
+                  onMouseUp={mouseupCanvas}
+                  onMouseEnter={mouseenterCanvas}
+                  onMouseLeave={mouseleaveCanvas}
+                  onMouseMove={mousemoveCanvas}/>
+                </div>
             </div>
-        </div>
-        <div ref={endTimeRef} className="time time-end text-left">00:00</div>
-      </div>
+            <div ref={endTimeRef} className="time time-end text-left">00:00</div>
+          </div>
+        </>
+      }
     </div>
   )
 }
