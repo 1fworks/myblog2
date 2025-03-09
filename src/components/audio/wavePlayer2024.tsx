@@ -207,8 +207,8 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
   useEffect(()=>{
     if(mounted) {
       color.current  = theme === 'dark' ? '#afafaf' : '#aaaaaa'
-      color1.current = theme === 'dark' ? '#ff5277' : '#ff0000'
-      color2.current = theme === 'dark' ? '#a1a1a1' : '#eeeeee'
+      color1.current = theme === 'dark' ? '#ff5277' : '#ff5277'
+      color2.current = theme === 'dark' ? '#a1a1a1' : '#dddddd'
       color3.current = theme === 'dark' ? '#f1f1f1' : '#ff9999'
       if(canvasRef.current) {
         const observer = new ResizeObserver((entries)=>{

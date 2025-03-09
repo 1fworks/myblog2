@@ -356,6 +356,7 @@ export const MyNextImage = (
                                         height={imgData.height}
                                         sizes="100vw"
                                         unoptimized={isOriginalImage}
+                                        placeholder="empty"
                                     />
                                 }
                                 { process.env.NODE_ENV !== 'production' &&
@@ -368,6 +369,7 @@ export const MyNextImage = (
                                         sizes="100vw"
                                         quality={100}
                                         unoptimized={isOriginalImage}
+                                        placeholder="empty"
                                     />
                                 }
                                 { !unoptimized && !isOriginalImage && !loadOriginalImgFail &&
@@ -404,6 +406,7 @@ export const MyNextImage = (
                                 sizes="100vw"
                                 unoptimized={isOriginalImage}
                                 onError={()=>{setLoadFail(true)}}
+                                placeholder="empty"
                             />
                         }
                         { process.env.NODE_ENV !== 'production' &&
@@ -424,6 +427,7 @@ export const MyNextImage = (
                                 quality={100}
                                 unoptimized={isOriginalImage}
                                 onError={()=>{setLoadFail(true)}}
+                                placeholder="empty"
                             />
                         }
                     </div>

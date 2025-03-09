@@ -21,7 +21,7 @@ function moveFoldersByName(folder, folderName, destination, log = false) {
             const currentPath = path.join(folder, file.name);
             if (file.isDirectory() && file.name === folderName) {
                 const newPath = path.join(file.parentPath.replace('public', r2_folder_name), folderName);
-                if (!fs.existsSync(newPath)) {
+                if (!fs.existsSync(path.join(newPath, '/'))) {
                     fs.mkdirSync(newPath, { recursive: true });
                 }
                 fs.readdir(currentPath, { withFileTypes: true }, (err, files)=> {
@@ -45,8 +45,12 @@ function moveFoldersByName(folder, folderName, destination, log = false) {
             } else if (file.isDirectory()) {
                 moveFoldersByName(currentPath, folderName, destination);
             } else { // hash json file
-                const newPath = path.join(file.parentPath.replace('public', r2_folder_name), file.name);
+                const newFolder = path.join(file.parentPath.replace('public', r2_folder_name), '/')
+                const newPath = path.join(newFolder, file.name);
                 if(file.name == hashes_filename) {
+                    if (!fs.existsSync(newFolder)) {
+                        fs.mkdirSync(newFolder, { recursive: true });
+                    }
                     fs.rename(currentPath, newPath, (err)=>{
                         if (err) {
                             console.error('rename error:', err);
@@ -60,4 +64,6 @@ function moveFoldersByName(folder, folderName, destination, log = false) {
     });
 }
 
+console.log('mov nextImageExportOptimizer folders...')
 moveFoldersByName(sourceFolder, 'nextImageExportOptimizer', targetFolder);
+console.log('mov done!')

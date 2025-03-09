@@ -2,6 +2,7 @@ import config from '../../../next.config.js';
 import fs from 'fs';
 import path from 'path';
 import { sync } from 'glob';
+import crypto from 'crypto';
 
 const image_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
 const cache_filename = 'next-image-export-optimizer-hashes.json'
@@ -39,19 +40,25 @@ try {
     // './r2folder/test/nextImageExportOptimizer/imgfile-opt-128.WEBP',
     // './r2folder/test/nextImageExportOptimizer/imgfile-opt-1080.WEBP',
     // './r2folder/test/next-image-export-optimizer-hashes.json' ... ]
-
+    
+    const json_data = {}
+    useful_files.forEach((file)=>{
+        const data = fs.readFileSync(file)
+        const sha256 = crypto.createHash('sha256')
+        sha256.update(data)
+        json_data[file] = sha256.digest('hex')
+    })
+    
     console.log(`copy useful_files to '${env_public}'...`)
     useful_files.forEach(file=>{
         const dest = file.replace(r2_folder_name, 'public')
         let dest_folder = dest.split('/')
         dest_folder.pop()
-        dest_folder = dest_folder.join('/')
+        dest_folder = path.join(dest_folder.join('/'), '/')
         if (!fs.existsSync(dest_folder)) {
             fs.mkdirSync(dest_folder, { recursive: true });
         }
-        fs.rename(file, dest, (err) => {
-            if (err) throw err;
-        });
+        fs.renameSync(file, dest)
     })
 
     console.log(`delete useless_files in '${r2_folder_name}'...`)
@@ -62,6 +69,9 @@ try {
     catch(err) {
         throw err;
     }
+
+    console.log('create my-uwu-img-data.json...')
+    fs.writeFileSync(`${r2_folder_name}/my-uwu-img-data.json`, JSON.stringify(json_data, null, 2))
 
     console.log('----- ready to optimize images!')
 }
