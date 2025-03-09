@@ -7,7 +7,7 @@ const nextConfig = {
   experimental: {
     webpackMemoryOptimizations: isProduction ? false : true
   },
-  basePath: isProduction ? '' : '', // github pages -> '/myblog2' : ''
+  basePath: isProduction ? `${process.env.BASE_PATH||""}` : '', // github pages -> '/myblog2' : ''
   // assetPrefix: isProduction ? '/myblog2/' : '',
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
