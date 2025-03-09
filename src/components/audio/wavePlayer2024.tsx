@@ -1,6 +1,6 @@
 'use client'
 
-import { MouseEvent, useEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { FileNotFound } from "../mdx/fileNotFound";
 
@@ -58,7 +58,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
     }
   }
   
-  const draw = () => {
+  const draw = useCallback(() => {
     endTimeUpdate();
     if(!audioRef.current || !startTimeRef.current || !canvasRef.current) return;
     const currentTime = Math.round(audioRef.current.currentTime);
@@ -85,11 +85,11 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         let min = 1.0;
         let max = -1.0;
         for(let channel=0;channel<audioBuffer.current.numberOfChannels;channel++){
-          let channelData = audioBuffer.current.getChannelData(channel);
-          let bufferLength = channelData.length;
-          let step = Math.ceil(bufferLength / canvasRef.current.width);
+          const channelData = audioBuffer.current.getChannelData(channel);
+          const bufferLength = channelData.length;
+          const step = Math.ceil(bufferLength / canvasRef.current.width);
           for (let j = 0; j < step; j++) {
-              let datum = channelData[(i * step) + j];
+              const datum = channelData[(i * step) + j];
               if (datum < min)
                   min = datum;
               if (datum > max)
@@ -99,7 +99,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         
         let val = 0;
         if(init){
-          let headpos = Math.min(logspace(1, bufferLength.current, 80 + i, canvasRef.current.width + 80), bufferLength.current - 1);
+          const headpos = Math.min(logspace(1, bufferLength.current, 80 + i, canvasRef.current.width + 80), bufferLength.current - 1);
           val = dataArray.current[Math.floor(headpos)] / 256;
           if(Math.floor(headpos) + 1 < canvasRef.current.width)
             val = val * (1 - Math.abs(headpos % 1)) + dataArray.current[Math.floor(headpos) + 1] / 256 * (Math.abs(headpos % 1));
@@ -131,9 +131,9 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         }
       }
     }
-  }
+  }, [init])
 
-  const update = (init:boolean = false) => {
+  const update = useCallback((init:boolean = false) => {
     if(!audioRef.current) return;
     const fps = 20;
     const interval = 1000/fps;
@@ -147,18 +147,18 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
       else return;
     }
     draw();
-  }
+  }, [draw])
 
-  const drawWave = () => {
+  const drawWave = useCallback(() => {
     if(canvasRef.current) {
       update()
       animateRef.current = requestAnimationFrame(drawWave)
       if(audioRef.current && audioRef.current.paused !== paused)
         setPaused(audioRef.current.paused)
     }
-  }
+  }, [paused, update])
 
-  const getDecodeAudioData = async () => {
+  const getDecodeAudioData = useCallback(async () => {
     if(!audioData.current) return;
     const audioCtx = new (window.AudioContext || (window as Window).webkitAudioContext)();
     await audioCtx.decodeAudioData(audioData.current)
@@ -167,7 +167,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         update(true);
       }
     );
-  }
+  }, [update])
 
   useEffect(() => {
     setMounted(true);
@@ -187,7 +187,7 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
       console.log(err)
       setLoadState(0)
     })
-  }, []);
+  }, [audioUrl, getDecodeAudioData]);
 
   useEffect(()=>{
     if(mounted) {
@@ -225,17 +225,9 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
         }
       }
     }
-  }, [theme, init])
+  }, [theme, init, update, drawWave])
 
-  useEffect(()=>{
-    if(loadState === 1) {
-      initAudioContent()
-    }
-  }, [loadState])
-
-  if(!mounted) return null;
-
-  const initAudioContent = () => {
+  const initAudioContent = useCallback(() => {
     if(!audioRef.current || init) return;
     const audioCtx = new (window.AudioContext || (window as Window).webkitAudioContext)();
     source.current = audioCtx.createMediaElementSource(audioRef.current);
@@ -246,7 +238,15 @@ export const WavePlayer2024 = ({audioUrl}:{audioUrl:string}) => {
     bufferLength.current = analyser.current.frequencyBinCount;
     dataArray.current = new Uint8Array(bufferLength.current);
     setInit(true)
-  }
+  }, [init])
+
+  useEffect(()=>{
+    if(loadState === 1) {
+      initAudioContent()
+    }
+  }, [loadState, initAudioContent])
+
+  if(!mounted) return null;
 
   const buttonEvent = () => {
     if(audioRef.current) {
