@@ -14,7 +14,7 @@ const buffer = fs.readFileSync(`${r2_folder_name}/my-uwu-img-data.json`, 'utf-8'
 const json_data = JSON.parse(buffer)
 
 const file_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg', 'json']
-const new_images = sync(`${target_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true })
+const new_images = sync(`${target_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
 const update = []
 const remove = []
 const maintain = []

@@ -37,7 +37,7 @@ export const readContentAndFrontMatterFromMdxfile = (slug:string[]) => {
 
 // getAllPosts(['_description.mdx']);
 export const getAllPosts = (except:undefined|string[] = undefined) => {
-  const postPaths: string[] = sync(`${POSTS_PATH}/**/*.mdx`, { posix: true, dotRelative: true } );
+  const postPaths: string[] = sync(`${POSTS_PATH}/**/*.mdx`, { posix: true, dotRelative: true, nocase: true } );
   return postPaths.map((path) => {
     const postPath = path.slice(path.indexOf(BASE_PATH))
     if(postPath[BASE_PATH.length+1] === '_') return undefined;
@@ -85,7 +85,7 @@ export const getAllPostsWithContent = (except:undefined|string[] = undefined) =>
 
 // only archive folder
 export const getAllFolder = () => {
-  const files: string[] = sync(`${POSTS_PATH}/**/*.mdx`, { posix: true, dotRelative: true } );
+  const files: string[] = sync(`${POSTS_PATH}/**/*.mdx`, { posix: true, dotRelative: true, nocase: true } );
   const folderPaths: string[] = files.map(file=>{
     if(file.split('/').slice(-1)[0][0] !== '_') {
       const tmp = file.split('/')
@@ -116,11 +116,11 @@ export const getAllSpecificFolderForFile = (filename: string, slugs: string[] = 
   let folderPaths: string[] = []
   
   if(slugs.length > 0)
-    folderPaths = sync(`${publicFolder}/${slugs.join("/")}/${filename}`)
+    folderPaths = sync(`${publicFolder}/${slugs.join("/")}/${filename}`, { posix: true, dotRelative: true, nocase: true })
   if(folderPaths.length === 0)
-    folderPaths = sync(`${publicFolder}/${filename}`, { posix: true, dotRelative: true } );
+    folderPaths = sync(`${publicFolder}/${filename}`, { posix: true, dotRelative: true, nocase: true } );
   if(folderPaths.length === 0)
-    folderPaths = sync(`${publicFolder}/**/${filename}`, { posix: true, dotRelative: true } );
+    folderPaths = sync(`${publicFolder}/**/${filename}`, { posix: true, dotRelative: true, nocase: true } );
 
   return folderPaths.map(path => {
     return path.slice(path.indexOf(imgPath)).replace("/public", "")
@@ -132,10 +132,10 @@ export const getDescription = (slugs:string[])=>{
   const slugPath = `${BASE_PATH}/${slugs.join("/")}`;
   const currFolder = path.join(process.cwd(), `${slugPath}`)
   const folder = sync(`${currFolder}/*/`, { posix: true, dotRelative: true }).filter((path)=>{
-    if(sync(`${path}/*.mdx`).length > 0) return true;
+    if(sync(`${path}/*.mdx`, { posix: true, dotRelative: true, nocase: true }).length > 0) return true;
   })
   const folder_n = folder.length
-  const file_n = sync(`${currFolder}/*.mdx`, { posix: true, dotRelative: true })
+  const file_n = sync(`${currFolder}/*.mdx`, { posix: true, dotRelative: true, nocase: true })
     .map((file)=>{if(file.split('/').slice(-1)[0][0] !== '_') return file})
     .filter((element)=>element !== undefined)
     .length;
@@ -164,7 +164,7 @@ export const getImgDataList = () => {
     sync(`${POSTS_PATH}/**/*.*`, { posix: true, dotRelative: true } )
     .map((file)=>{
       const tmp = file.split('.')
-      if(image_files.includes(tmp[tmp.length-1])) return file
+      if(image_files.includes(tmp[tmp.length-1].toLowerCase())) return file
     })
     .filter((element)=>element!==undefined)
 

@@ -24,7 +24,7 @@ async function main() {
         console.log('download images from bucket!')
         await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
 
-        const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true })
+        const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
         .filter(file=>file.split('/').slice(-2)[0] !== 'nextImageExportOptimizer');
         
         const temp = public_images.map(img=>{
@@ -40,7 +40,7 @@ async function main() {
             useful_files.push(...file_ary)
         })
 
-        const cache_files = sync(`${r2_folder}/**/${cache_filename}`, { posix: true, dotRelative: true } );
+        const cache_files = sync(`${r2_folder}/**/${cache_filename}`, { posix: true, dotRelative: true, nocase: true } );
         useful_files.push(...cache_files)
 
         // useful_files
@@ -74,7 +74,7 @@ async function main() {
         console.log(`delete useless_files in '${r2_folder_name}'...`)
         const removal_folder_name = `./${r2_folder_name}/${env_public.replace('public/', '')}`
         try {
-            const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true })
+            const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
             remove_list.forEach((file)=>{
                 json_data[file] = "remove"
             })

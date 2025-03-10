@@ -27,7 +27,7 @@ export async function GET(){
     sync(`${POSTS_PATH}/**/*.*`, { posix: true, dotRelative: true } )
     .map((file)=>{
       const tmp = file.split('.')
-      if(image_files.includes(tmp[tmp.length-1])) return file
+      if(image_files.includes(tmp[tmp.length-1].toLowerCase())) return file
     })
     .filter((element)=>element!==undefined)
   )
