@@ -11,34 +11,30 @@ if (!fs.existsSync(targetFolder)) {
 }
 
 function moveFoldersByName(folder, folderName, destination) {
-    fs.readdirSync(folder, { withFileTypes:true }).forEach(files => {
-        files.forEach((file) => {
-            const currentPath = path.join(folder, file.name);
-            if (file.isDirectory() && file.name === folderName) {
-                const newPath = path.join(file.parentPath.replace('public', r2_folder_name), folderName);
-                if (!fs.existsSync(path.join(newPath, '/'))) {
-                    fs.mkdirSync(newPath, { recursive: true });
-                }
-                fs.readdirSync(currentPath, { withFileTypes:true }).forEach((files)=>{
-                    files.forEach((file)=>{
-                        const oldName = `${currentPath}/${file.name}`
-                        const newName = `${newPath}/${file.name}`
-                        fs.renameSync(oldName, newName)
-                    })
-                })
-            } else if (file.isDirectory()) {
-                moveFoldersByName(currentPath, folderName, destination);
-            } else { // hash json file
-                const newFolder = path.join(file.parentPath.replace('public', r2_folder_name), '/')
-                const newPath = path.join(newFolder, file.name);
-                if(file.name == hashes_filename) {
-                    if (!fs.existsSync(newFolder)) {
-                        fs.mkdirSync(newFolder, { recursive: true });
-                    }
-                    fs.renameSync(currentPath, newPath)
-                }
+    fs.readdirSync(folder, { withFileTypes:true }).forEach(file => {
+        const currentPath = path.join(folder, file.name);
+        if (file.isDirectory() && file.name === folderName) {
+            const newPath = path.join(file.parentPath.replace('public', r2_folder_name), folderName);
+            if (!fs.existsSync(path.join(newPath, '/'))) {
+                fs.mkdirSync(newPath, { recursive: true });
             }
-        });
+            fs.readdirSync(currentPath, { withFileTypes:true }).forEach((file)=>{
+                const oldName = `${currentPath}/${file.name}`
+                const newName = `${newPath}/${file.name}`
+                fs.renameSync(oldName, newName)
+            })
+        } else if (file.isDirectory()) {
+            moveFoldersByName(currentPath, folderName, destination);
+        } else { // hash json file
+            const newFolder = path.join(file.parentPath.replace('public', r2_folder_name), '/')
+            const newPath = path.join(newFolder, file.name);
+            if(file.name == hashes_filename) {
+                if (!fs.existsSync(newFolder)) {
+                    fs.mkdirSync(newFolder, { recursive: true });
+                }
+                fs.renameSync(currentPath, newPath)
+            }
+        }
     });
 }
 
