@@ -47,27 +47,31 @@ export async function download_bucket(bucket_name, localdir=""){
 }
 
 export async function delete_files(bucket_name, files) {
-    const s3 = getS3()
-    const res = await s3.send(new DeleteObjectsCommand({
-        Bucket: bucket_name,
-        Delete: {
-            Objects: files.map((file)=>{
-                return { Key: file }
-            })
-        }
-    }))
+    if(files.length > 0) {
+        const s3 = getS3()
+        const res = await s3.send(new DeleteObjectsCommand({
+            Bucket: bucket_name,
+            Delete: {
+                Objects: files.map((file)=>{
+                    return { Key: file }
+                })
+            }
+        }))
+    }
     // console.log(res)
 }
 
 export async function upload_files(bucket_name, files, localdir="") {
-    const s3 = getS3()
-    files.forEach(async(file)=>{
-        const local_file = path.join(localdir, file)
-        const res = await s3.send(new PutObjectCommand({
-            Bucket: bucket_name,
-            Key: file,
-            Body: fs.createReadStream(local_file)
-        }))
-        console.log(res)
-    })
+    if(files.length > 0) {
+        const s3 = getS3()
+        files.forEach(async(file)=>{
+            const local_file = path.join(localdir, file)
+            const res = await s3.send(new PutObjectCommand({
+                Bucket: bucket_name,
+                Key: file,
+                Body: fs.createReadStream(local_file)
+            }))
+            // console.log(res)
+        })
+    }
 }

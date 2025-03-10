@@ -10,13 +10,8 @@ if (!fs.existsSync(targetFolder)) {
     fs.mkdirSync(targetFolder, { recursive: true });
 }
 
-function moveFoldersByName(folder, folderName, destination, log = false) {
-    fs.readdir(folder, { withFileTypes: true }, (err, files) => {
-        if (err) {
-            console.error('readdir error:', err);
-            return;
-        }
-
+function moveFoldersByName(folder, folderName, destination) {
+    fs.readdirSync(folder, { withFileTypes:true }).forEach(files => {
         files.forEach((file) => {
             const currentPath = path.join(folder, file.name);
             if (file.isDirectory() && file.name === folderName) {
@@ -24,23 +19,12 @@ function moveFoldersByName(folder, folderName, destination, log = false) {
                 if (!fs.existsSync(path.join(newPath, '/'))) {
                     fs.mkdirSync(newPath, { recursive: true });
                 }
-                fs.readdir(currentPath, { withFileTypes: true }, (err, files)=> {
-                    if(err) {
-                        console.log('readdir error:', err)
-                    }
-                    else {
-                        files.forEach((file)=>{
-                            const oldName = `${currentPath}/${file.name}`
-                            const newName = `${newPath}/${file.name}`
-                            fs.rename(oldName, newName, (err) => {
-                                if (err) {
-                                    console.error('rename error:', err);
-                                } else {
-                                    if(log) console.log(`${oldName} -> ${newName} (success)`);
-                                }
-                            });
-                        })
-                    }
+                fs.readdirSync(currentPath, { withFileTypes:true }).forEach((files)=>{
+                    files.forEach((file)=>{
+                        const oldName = `${currentPath}/${file.name}`
+                        const newName = `${newPath}/${file.name}`
+                        fs.renameSync(oldName, newName)
+                    })
                 })
             } else if (file.isDirectory()) {
                 moveFoldersByName(currentPath, folderName, destination);
@@ -51,13 +35,7 @@ function moveFoldersByName(folder, folderName, destination, log = false) {
                     if (!fs.existsSync(newFolder)) {
                         fs.mkdirSync(newFolder, { recursive: true });
                     }
-                    fs.rename(currentPath, newPath, (err)=>{
-                        if (err) {
-                            console.error('rename error:', err);
-                        } else {
-                            if(log) console.log(`${currentPath} -> ${newPath} (success)`);
-                        }
-                    })
+                    fs.renameSync(currentPath, newPath)
                 }
             }
         });

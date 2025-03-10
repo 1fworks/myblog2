@@ -51,9 +51,13 @@ new_images.forEach(img=>{
 if(fs.existsSync('.env.local')){
     dotenv.config({path:'.env.local'})
 }
-console.log(`remove ${remove.length} file(s)...`)
-delete_files(process.env.BUCKET_NAME, remove)
-console.log(`upload ${update.length} file(s)...`)
-upload_files(process.env.BUCKET_NAME, update, r2_folder_name)
 
+async function upload_delete_files() {
+    console.log(`remove ${remove.length} file(s)...`)
+    await delete_files(process.env.BUCKET_NAME, remove)
+    console.log(`upload ${update.length} file(s)...`)
+    await upload_files(process.env.BUCKET_NAME, update, r2_folder_name)
+}
+
+upload_delete_files()
 console.log('----- ready to deploy my blog!')
