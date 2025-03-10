@@ -7,9 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "s3test": "node .r2/s3/test.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.758.0",
     "@giscus/react": "^3.1.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
@@ -19,7 +21,9 @@
     "@types/lunr": "^2.3.7",
     "@types/mdx": "^2.0.13",
     "@types/rss": "^0.0.32",
+    "aws-sdk": "^2.1692.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "fuse.js": "^7.0.0",
     "gray-matter": "^4.0.3",
     "ignore-loader": "^0.1.2",
@@ -64,7 +68,6 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "wrangler": "^3.114.0"
+    "typescript": "^5"
   }
 }

@@ -1,4 +1,4 @@
-import config from '../../../next.config.js';
+import config from '../next.config.js';
 import fs from 'fs';
 import path from 'path';
 

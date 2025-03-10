@@ -1,10 +1,13 @@
-import config from '../../../next.config.js';
+import config from '../next.config.js';
 import fs from 'fs';
 import path from 'path';
 import { sync } from 'glob';
 import crypto from 'crypto';
+import dotenv from 'dotenv';
+import { download_bucket } from './s3/bucket_manager.js'
 
 const image_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
+const file_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg', 'json']
 const cache_filename = 'next-image-export-optimizer-hashes.json'
 
 const r2_folder_name = 'r2folder'
@@ -14,6 +17,12 @@ const public_folder = path.join(process.cwd(), env_public)
 const r2_folder = path.join(process.cwd(), `${r2_folder_name}/`)
 
 try {
+    if(fs.existsSync('.env.local')){
+        dotenv.config({path:'.env.local'})
+    }
+    console.log('download images from bucket!')
+    download_bucket(process.env.BUCKET_NAME, r2_folder_name)
+
     const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true })
     .filter(file=>file.split('/').slice(-2)[0] !== 'nextImageExportOptimizer');
     
@@ -49,7 +58,7 @@ try {
         json_data[file] = sha256.digest('hex')
     })
     
-    console.log(`copy useful_files to '${env_public}'...`)
+    console.log(`mov useful_files to '${env_public}'...`)
     useful_files.forEach(file=>{
         const dest = file.replace(r2_folder_name, 'public')
         let dest_folder = dest.split('/')
@@ -64,6 +73,10 @@ try {
     console.log(`delete useless_files in '${r2_folder_name}'...`)
     const removal_folder_name = `./${r2_folder_name}/${env_public.replace('public/', '')}`
     try {
+        const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true })
+        remove_list.forEach((file)=>{
+            json_data[file] = "remove"
+        })
         fs.rmSync(removal_folder_name, { recursive:true, force:true })
     }
     catch(err) {

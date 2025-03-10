@@ -30,7 +30,7 @@ export const Footer = () => {
             rss
           </Link> © {siteSetting.author.name} {new Date().getFullYear()}
         </p>
-        <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Github Pages</p>
+        <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Cloudflare Pages</p>
       </div>
     </footer>
   )
