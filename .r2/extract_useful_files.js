@@ -54,7 +54,7 @@ async function main() {
         
         const hash_obj = await Promise.all(
             useful_files.map(async(file)=>{
-                const data = await fs.promises.readFile(file)
+                const data = fs.readFileSync(file)
                 const sha256 = crypto.createHash('sha256')
                 sha256.update(data)
                 return {[file]: sha256.digest('hex')}
@@ -69,21 +69,10 @@ async function main() {
                 let dest_folder = dest.split('/')
                 dest_folder.pop()
                 dest_folder = path.join(dest_folder.join('/'), '/')
-                try {
-                    await fs.promises.access(dest_folder)
+                if(!fs.existsSync(dest_folder)){
+                    fs.mkdirSync(dest_folder, {recursive: true})
                 }
-                catch(err) {
-                    await fs.promises.mkdir(dest_folder, { recursive: true })
-                }
-                try {
-                    await fs.promises.rename(file, dest)
-                }
-                catch(err) {
-                    console.error(dest_folder, file, dest)
-                    console.error('cwd: ', process.cwd())
-                    console.error(err)
-                    throw new Error("rename error");
-                }
+                fs.renameSync(file, dest)
             })
         )
 
