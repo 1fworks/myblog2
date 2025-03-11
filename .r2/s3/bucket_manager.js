@@ -2,6 +2,7 @@ import { S3Client, ListObjectsCommand, GetObjectCommand, PutObjectCommand, Delet
 
 import path from 'path';
 import fs from 'fs';
+import { finished } from 'stream/promises';
 
 const getS3 = () => {
     const s3 = new S3Client({
@@ -24,22 +25,25 @@ export async function download_bucket(bucket_name, localdir=""){
     }
     try {
         const list = await s3.send(new ListObjectsCommand({Bucket: bucket_name}))
-        
-        list.Contents.forEach(async(data)=>{
-            const filename = data.Key
-            const temp = filename.split('/')
-            temp.pop()
-            const parentPath = path.join(`${localdir}/`, temp.join('/'), '/')
-            if(!fs.existsSync(parentPath)){
-                fs.mkdirSync(parentPath, {recursive: true})
-            }
-            const download_file = await s3.send(new GetObjectCommand({
-                Bucket:process.env.BUCKET_NAME,
-                Key: filename
-            }))
-            const writeStream = fs.createWriteStream(path.join(localdir, filename))
-            download_file.Body.pipe(writeStream)
-        })
+        await Promise.all(
+            list.Contents.map(async(data)=>{
+                const filename = data.Key
+                const temp = filename.split('/')
+                temp.pop()
+                const parentPath = path.join(`${localdir}/`, temp.join('/'), '/')
+                if(!fs.existsSync(parentPath)){
+                    fs.mkdirSync(parentPath, {recursive: true})
+                }
+                const download_file = await s3.send(new GetObjectCommand({
+                    Bucket:process.env.BUCKET_NAME,
+                    Key: filename
+                }))
+                const writeStream = fs.createWriteStream(path.join(localdir, filename))
+                download_file.Body.pipe(writeStream)
+                await finished(writeStream)
+                // fs.writeFileSync(path.join(localdir, filename), download_file.Body);
+            })
+        )
     }
     catch(err) {
         console.log(err)

@@ -21,8 +21,9 @@ async function main() {
         if(fs.existsSync('.env.local')){
             dotenv.config({path:'.env.local'})
         }
-        console.log('download images from bucket!')
+        console.log('download images from bucket...')
         await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
+        console.log('download complete!')
 
         const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
         .filter(file=>file.split('/').slice(-2)[0] !== 'nextImageExportOptimizer');
@@ -40,9 +41,9 @@ async function main() {
             useful_files.push(...file_ary)
         })
 
-        const cache_files = sync(`${r2_folder}/**/${cache_filename}`, { posix: true, dotRelative: true, nocase: true } );
+        const cache_files = sync(`${r2_folder}${env_public.slice(env_public.indexOf('public')+'public'.length+1)}**/${cache_filename}`, { posix: true, dotRelative: true, nocase: true } );
         useful_files.push(...cache_files)
-
+        
         // useful_files
         // [ ...
         // './r2folder/test/nextImageExportOptimizer/imgfile-opt-256.WEBP',
@@ -51,28 +52,35 @@ async function main() {
         // './r2folder/test/nextImageExportOptimizer/imgfile-opt-1080.WEBP',
         // './r2folder/test/next-image-export-optimizer-hashes.json' ... ]
         
-        const json_data = {}
-        useful_files.forEach((file)=>{
-            const data = fs.readFileSync(file)
-            const sha256 = crypto.createHash('sha256')
-            sha256.update(data)
-            json_data[file] = sha256.digest('hex')
-        })
+        const hash_obj = await Promise.all(
+            useful_files.map(async(file)=>{
+                const data = await fs.promises.readFile(file)
+                const sha256 = crypto.createHash('sha256')
+                sha256.update(data)
+                return {[file]: sha256.digest('hex')}
+            })
+        )
+        const json_data = Object.assign({}, ...hash_obj)
         
         console.log(`mov useful_files to '${env_public}'...`)
-        useful_files.forEach(file=>{
-            const dest = file.replace(r2_folder_name, 'public')
-            let dest_folder = dest.split('/')
-            dest_folder.pop()
-            dest_folder = path.join(dest_folder.join('/'), '/')
-            if (!fs.existsSync(dest_folder)) {
-                fs.mkdirSync(dest_folder, { recursive: true });
-            }
-            fs.renameSync(file, dest)
-        })
+        await Promise.all(
+            useful_files.map(async(file)=>{
+                const dest = file.replace(r2_folder_name, 'public')
+                let dest_folder = dest.split('/')
+                dest_folder.pop()
+                dest_folder = path.join(dest_folder.join('/'), '/')
+                try {
+                    await fs.promises.access(dest_folder)
+                }
+                catch(err) {
+                    await fs.promises.mkdir(dest_folder, { recursive: true })
+                }
+                await fs.promises.rename(file, dest)
+            })
+        )
 
         console.log(`delete useless_files in '${r2_folder_name}'...`)
-        const removal_folder_name = `./${r2_folder_name}/${env_public.replace('public/', '')}`
+        const removal_folder_name = `./${r2_folder_name}/`
         try {
             const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
             remove_list.forEach((file)=>{

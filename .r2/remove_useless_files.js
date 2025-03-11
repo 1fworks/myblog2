@@ -21,7 +21,8 @@ const maintain = []
 const prev_files = Object.keys(json_data)
 prev_files.forEach((prev_file)=>{
     const key = prev_file.slice(prev_file.indexOf(r2_folder_name)+r2_folder_name.length+1)
-    if(!new_images.includes(prev_file)){
+    const index = new_images.indexOf(prev_file)
+    if(index < 0){
         remove.push(key)
     }
     else {
@@ -40,7 +41,6 @@ prev_files.forEach((prev_file)=>{
             else maintain.push(key)
         }
     }
-    const index = new_images.indexOf(prev_file)
     if(index > -1) new_images.splice(index, 1)
 })
 new_images.forEach(img=>{
@@ -48,11 +48,10 @@ new_images.forEach(img=>{
     update.push(key)
 })
 
-if(fs.existsSync('.env.local')){
-    dotenv.config({path:'.env.local'})
-}
-
 async function upload_delete_files() {
+    if(fs.existsSync('.env.local')){
+        dotenv.config({path:'.env.local'})
+    }
     console.log(`remove ${remove.length} file(s)...`)
     await delete_files(process.env.BUCKET_NAME, remove)
     console.log(`upload ${update.length} file(s)...`)
