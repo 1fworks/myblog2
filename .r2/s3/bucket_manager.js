@@ -46,7 +46,8 @@ export async function download_bucket(bucket_name, localdir=""){
         )
     }
     catch(err) {
-        throw err
+        console.log(err)
+        throw new Error('download bucket error')
     }
 }
 
@@ -66,7 +67,8 @@ export async function delete_files(bucket_name, files) {
         // console.log(res)
     }
     catch(err) {
-        throw err
+        console.log(err)
+        throw new Error('delete files error')
     }
 }
 
@@ -86,6 +88,7 @@ export async function upload_files(bucket_name, files, localdir="") {
         }
     }
     catch(err) {
-        throw err
+        console.log(err)
+        throw new Error('upload files error')
     }
 }

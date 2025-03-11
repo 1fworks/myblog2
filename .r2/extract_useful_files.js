@@ -80,7 +80,8 @@ async function main() {
                 }
                 catch(err) {
                     console.log(dest_folder, file, dest)
-                    throw err;
+                    console.log(err)
+                    throw new Error("rename error");
                 }
             })
         )
