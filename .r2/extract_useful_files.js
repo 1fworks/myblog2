@@ -79,8 +79,8 @@ async function main() {
                     await fs.promises.rename(file, dest)
                 }
                 catch(err) {
-                    console.log(dest_folder, file, dest)
-                    console.log(err)
+                    console.error(dest_folder, file, dest)
+                    console.error(err)
                     throw new Error("rename error");
                 }
             })
@@ -101,7 +101,7 @@ async function main() {
         console.log('----- ready to optimize images!')
     }
     catch(err) {
-        console.log(err)
+        console.error(err)
         return true
     }
     return false
