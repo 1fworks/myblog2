@@ -106,4 +106,7 @@ async function main() {
     }
     return false
 }
-if(main()) process.exit(1)
+if(main()){
+    process.stdout.write('=-=-= (。>︿<)。 flush! =-=-=\n')
+    process.exit(1)
+}

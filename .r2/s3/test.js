@@ -12,4 +12,9 @@ async function main(){
     await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
     console.log('download complete!')
 }
-main()
+try {
+    main()
+}
+catch(err) {
+    console.log(err)
+}
