@@ -14,6 +14,9 @@ export const Comment = () => {
   }, []);
 
   if(!mounted) return null;
+
+  const custom_theme = `${siteSetting.site.url}/assets/styles/giscus-theme.css`
+
   return (
     <div className='giscus-box'>
       { process.env.NODE_ENV === 'production' &&
@@ -27,9 +30,7 @@ export const Comment = () => {
           reactionsEnabled="1"
           emitMetadata="0"
           inputPosition="top"
-          theme={theme==="light"?
-            `${siteSetting.site.url}/assets/styles/giscus-theme.css`
-            :"noborder_gray"} //noborder_light
+          theme={theme === "dark"?"noborder_gray":custom_theme} //noborder_light
           lang="ko"
         />
       }
