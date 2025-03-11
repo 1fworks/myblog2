@@ -79,7 +79,7 @@ export default async function PostPage({ params }: { params : Promise<{ slug: st
             <MiniArchive files={files} l_curr={list_curr} />
           </div>
           <div className="w-full mt-14 mb-20">
-            <Comment/>
+            <Comment customTheme={`${siteSetting.site.url}/assets/styles/giscus-theme.css`}/>
           </div>
         </>
       )

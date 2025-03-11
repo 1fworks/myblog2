@@ -5,7 +5,7 @@ import Giscus from '@giscus/react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react';
 
-export const Comment = () => {
+export const Comment = ({customTheme}:{customTheme:string}) => {
   const [ mounted, setMounted ] = useState(false);
   const { theme } = useTheme();
 
@@ -14,9 +14,6 @@ export const Comment = () => {
   }, []);
 
   if(!mounted) return null;
-
-  const custom_theme = `${siteSetting.site.url}/assets/styles/giscus-theme.css`
-
   return (
     <div className='giscus-box'>
       { process.env.NODE_ENV === 'production' &&
@@ -30,7 +27,7 @@ export const Comment = () => {
           reactionsEnabled="1"
           emitMetadata="0"
           inputPosition="top"
-          theme={theme === "dark"?"noborder_gray":custom_theme} //noborder_light
+          theme={theme==="light"?customTheme:"noborder_gray"} //noborder_light
           lang="ko"
         />
       }
