@@ -87,11 +87,11 @@ async function main() {
                 json_data[file] = "remove"
             })
             fs.rmSync(removal_folder_name, { recursive:true, force:true })
+            fs.mkdirSync(r2_folder_name, { recursive:true })
         }
         catch(err) {
             throw err;
         }
-
         console.log('create my-uwu-img-data.json...')
         fs.writeFileSync(`${r2_folder_name}/my-uwu-img-data.json`, JSON.stringify(json_data, null, 2))
 
