@@ -65,7 +65,7 @@ async function upload_delete_files() {
     return false
 }
 
-if(upload_delete_files()){
+if(await upload_delete_files()){
     process.stdout.write('=-=-= (。>︿<)。 flush! =-=-=\n', ()=>{
         process.exit(1)
     })

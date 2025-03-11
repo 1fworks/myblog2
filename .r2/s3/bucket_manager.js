@@ -50,7 +50,7 @@ export async function download_bucket(bucket_name, localdir=""){
                         fs.mkdirSync(parentPath, {recursive: true})
                     }
                     const download_file = await s3.send(new GetObjectCommand({
-                        Bucket:process.env.BUCKET_NAME,
+                        Bucket:bucket_name,
                         Key: filename
                     }))
                     const writeStream = fs.createWriteStream(path.join(localdir, filename))
