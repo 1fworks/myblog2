@@ -1,5 +1,5 @@
 import { siteSetting } from "@/app/site.setting"
-import Link from "next/link"
+// import Link from "next/link"
 
 export const Footer = () => {
   return (
