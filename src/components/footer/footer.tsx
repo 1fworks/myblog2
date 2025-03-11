@@ -12,7 +12,7 @@ export const Footer = () => {
           </svg>
         </div>
         <p className='w-fit mx-auto blog-data-1'>
-          <Link className='no-style mr-3' href='/feed.xml'>
+          <a className='no-style mr-3' href='/feed.xml'>
             {
               // Gentlecons Interface Icons by Konstantin Filatov, CC Attribution License
               // https://www.svgrepo.com/collection/gentlecons-interface-icons
@@ -28,7 +28,7 @@ export const Footer = () => {
               </g>
             </svg>
             rss
-          </Link> © {siteSetting.author.name} {new Date().getFullYear()}
+          </a> © {siteSetting.author.name} {new Date().getFullYear()}
         </p>
         <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Cloudflare Pages</p>
       </div>
