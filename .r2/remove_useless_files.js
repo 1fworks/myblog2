@@ -56,7 +56,7 @@ async function upload_delete_files() {
     await delete_files(process.env.BUCKET_NAME, remove)
     console.log(`upload ${update.length} file(s)...`)
     await upload_files(process.env.BUCKET_NAME, update, r2_folder_name)
+    console.log('----- ready to deploy my blog!')
 }
 
 upload_delete_files()
-console.log('----- ready to deploy my blog!')
