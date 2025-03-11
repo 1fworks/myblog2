@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build-cloudflare-pages": "npx next build && node .r2/extract_useful_files.js && npx next-image-export-optimizer && node .r2/movfolder.js && node .r2/remove_useless_files.js",
+    "build-cloudflare-pages": "npx next build && node .r2/extract_useful_files.js && npx next-image-export-optimizer && node .r2/movfolder.js && node .r2/update_bucket_content.js",
     "start": "next start",
     "lint": "next lint",
     "s3test": "node .r2/s3/test.js"
