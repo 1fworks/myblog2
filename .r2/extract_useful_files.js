@@ -25,7 +25,7 @@ async function main() {
         await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
         console.log('download complete!')
 
-        const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
+        const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true, absolute: false })
         .filter(file=>file.split('/').slice(-2)[0] !== 'nextImageExportOptimizer');
         
         const temp = public_images.map(img=>{
@@ -34,14 +34,14 @@ async function main() {
             tmp.pop()
             filename = [...(filename.slice(0, filename.length-1)),'nextImageExportOptimizer',tmp.join('.')].join('/')
             filename = filename.slice(filename.indexOf('public')).slice('public'.length+1)
-            return sync(`${r2_folder}${filename}*`, { posix: true, dotRelative: true })
+            return sync(`${r2_folder}${filename}*`, { posix: true, dotRelative: true, absolute: false })
         })
         const useful_files = []
         temp.forEach((file_ary)=>{
             useful_files.push(...file_ary)
         })
 
-        const cache_files = sync(`${r2_folder}${env_public.slice(env_public.indexOf('public')+'public'.length+1)}**/${cache_filename}`, { posix: true, dotRelative: true, nocase: true } );
+        const cache_files = sync(`${r2_folder}${env_public.slice(env_public.indexOf('public')+'public'.length+1)}**/${cache_filename}`, { posix: true, dotRelative: true, nocase: true, absolute: false } );
         useful_files.push(...cache_files)
         
         // useful_files
@@ -89,7 +89,7 @@ async function main() {
 
         console.log(`delete useless_files in '${r2_folder_name}'...`)
         const removal_folder_name = `./${r2_folder_name}/`
-        const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
+        const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true, absolute: false })
         remove_list.forEach((file)=>{
             json_data[file] = "remove"
         })
