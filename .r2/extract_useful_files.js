@@ -75,23 +75,25 @@ async function main() {
                 catch(err) {
                     await fs.promises.mkdir(dest_folder, { recursive: true })
                 }
-                await fs.promises.rename(file, dest)
+                try {
+                    await fs.promises.rename(file, dest)
+                }
+                catch(err) {
+                    console.log(dest_folder, file, dest)
+                    throw err;
+                }
             })
         )
 
         console.log(`delete useless_files in '${r2_folder_name}'...`)
         const removal_folder_name = `./${r2_folder_name}/`
-        try {
-            const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
-            remove_list.forEach((file)=>{
-                json_data[file] = "remove"
-            })
-            fs.rmSync(removal_folder_name, { recursive:true, force:true })
-            fs.mkdirSync(r2_folder_name, { recursive:true })
-        }
-        catch(err) {
-            throw err;
-        }
+        const remove_list = sync(`${r2_folder}/**/{${file_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true })
+        remove_list.forEach((file)=>{
+            json_data[file] = "remove"
+        })
+        fs.rmSync(removal_folder_name, { recursive:true, force:true })
+        fs.mkdirSync(r2_folder_name, { recursive:true })
+        
         console.log('create my-uwu-img-data.json...')
         fs.writeFileSync(`${r2_folder_name}/my-uwu-img-data.json`, JSON.stringify(json_data, null, 2))
 
@@ -99,6 +101,8 @@ async function main() {
     }
     catch(err) {
         console.log(err)
+        return 0
     }
+    return 1
 }
-main()
+return main()

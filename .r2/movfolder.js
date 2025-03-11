@@ -6,9 +6,6 @@ const r2_folder_name = 'r2folder'
 const hashes_filename =  'next-image-export-optimizer-hashes.json'
 const sourceFolder = config.env.nextImageExportOptimizer_imageFolderPath;
 const targetFolder = path.join(`${r2_folder_name}/`, sourceFolder.replace('public/',''))
-if (!fs.existsSync(targetFolder)) {
-    fs.mkdirSync(targetFolder, { recursive: true });
-}
 
 async function moveFoldersByName(folder, folderName, destination) {
     const files = await fs.promises.readdir(folder, { withFileTypes:true })
@@ -51,8 +48,17 @@ async function moveFoldersByName(folder, folderName, destination) {
 }
 
 async function main() {
-    console.log('mov nextImageExportOptimizer folders...')
-    await moveFoldersByName(sourceFolder, 'nextImageExportOptimizer', targetFolder);
-    console.log('mov done!')
+    try {
+        if (!fs.existsSync(targetFolder)) {
+            fs.mkdirSync(targetFolder, { recursive: true });
+        }
+        console.log('mov nextImageExportOptimizer folders...')
+        await moveFoldersByName(sourceFolder, 'nextImageExportOptimizer', targetFolder);
+        console.log('mov done!')
+    }
+    catch(err) {
+        return 0
+    }
+    return 1
 }
-main()
+return main()
