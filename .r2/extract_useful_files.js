@@ -34,7 +34,7 @@ async function main() {
             tmp.pop()
             filename = [...(filename.slice(0, filename.length-1)),'nextImageExportOptimizer',tmp.join('.')].join('/')
             filename = filename.slice(filename.indexOf('public')).slice('public'.length+1)
-            return sync(`${r2_folder}${filename}*`, { posix: true, dotRelative: true, absolute: false })
+            return sync(`${r2_folder}${filename}-opt-*`, { posix: true, dotRelative: true, absolute: false })
         })
         const useful_files = []
         temp.forEach((file_ary)=>{
@@ -54,7 +54,7 @@ async function main() {
         
         const hash_obj = await Promise.all(
             useful_files.map(async(file)=>{
-                const data = fs.readFileSync(file)
+                const data = await fs.promises.readFile(file)
                 const sha256 = crypto.createHash('sha256')
                 sha256.update(data)
                 return {[file]: sha256.digest('hex')}
@@ -69,10 +69,19 @@ async function main() {
                 let dest_folder = dest.split('/')
                 dest_folder.pop()
                 dest_folder = path.join(dest_folder.join('/'), '/')
-                if(!fs.existsSync(dest_folder)){
-                    fs.mkdirSync(dest_folder, {recursive: true})
+                try {
+                    await fs.promises.access(dest_folder)
                 }
-                fs.renameSync(file, dest)
+                catch(err) {
+                    await fs.promises.mkdir(dest_folder, { recursive: true })
+                }
+                try {
+                    await fs.promises.rename(file, dest)
+                }
+                catch(err) {
+                    console.error(err)
+                    throw new Error("rename error");
+                }
             })
         )
 

@@ -8,21 +8,24 @@ const sourceFolder = config.env.nextImageExportOptimizer_imageFolderPath;
 const targetFolder = path.join(`${r2_folder_name}/`, sourceFolder.replace('public/',''))
 
 async function moveFoldersByName(folder, folderName, destination) {
-    const files = fs.readdirSync(folder, { withFileTypes:true })
+    const files = await fs.promises.readdir(folder, { withFileTypes:true })
     await Promise.all(
         files.map(async(file) => {
             const currentPath = path.join(folder, file.name);
             if (file.isDirectory() && file.name === folderName) {
                 const newPath = path.join(file.parentPath.replace('public', r2_folder_name), folderName);
-                if(!fs.existsSync(path.join(newPath, '/'))){
-                    fs.mkdirSync(newPath, { recursive: true })
+                try {
+                    await fs.promises.access(path.join(newPath, '/'))
                 }
-                const files = fs.readdirSync(currentPath, { withFileTypes:true })
+                catch(err) {
+                    await fs.promises.mkdir(newPath, { recursive: true })
+                }
+                const files = await fs.promises.readdir(currentPath, { withFileTypes:true })
                 await Promise.all(
                     files.map(async(file)=>{
                         const oldName = `${currentPath}/${file.name}`
                         const newName = `${newPath}/${file.name}`
-                        fs.renameSync(oldName, newName)
+                        await fs.promises.rename(oldName, newName)
                     })
                 )
             } else if (file.isDirectory()) {
@@ -31,17 +34,20 @@ async function moveFoldersByName(folder, folderName, destination) {
                 const newFolder = path.join(file.parentPath.replace('public', r2_folder_name), '/')
                 const newPath = path.join(newFolder, file.name);
                 if(file.name == hashes_filename) {
-                    if(!fs.existsSync(newFolder)){
-                        fs.mkdirSync(newFolder, { recursive: true })
+                    try {
+                        await fs.promises.access(newFolder)
                     }
-                    fs.renameSync(currentPath, newPath)
+                    catch(err) {
+                        await fs.promises.mkdir(newFolder, { recursive: true })
+                    }
+                    await fs.promises.rename(currentPath, newPath)
                 }
             }
         })
     )
 }
 
-async function main() {
+export async function main() {
     try {
         if (!fs.existsSync(targetFolder)) {
             fs.mkdirSync(targetFolder, { recursive: true });
