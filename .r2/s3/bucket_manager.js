@@ -46,36 +46,46 @@ export async function download_bucket(bucket_name, localdir=""){
         )
     }
     catch(err) {
-        console.log(err)
+        throw err
     }
 }
 
 export async function delete_files(bucket_name, files) {
-    if(files.length > 0) {
-        const s3 = getS3()
-        const res = await s3.send(new DeleteObjectsCommand({
-            Bucket: bucket_name,
-            Delete: {
-                Objects: files.map((file)=>{
-                    return { Key: file }
-                })
-            }
-        }))
+    try {
+        if(files.length > 0) {
+            const s3 = getS3()
+            const res = await s3.send(new DeleteObjectsCommand({
+                Bucket: bucket_name,
+                Delete: {
+                    Objects: files.map((file)=>{
+                        return { Key: file }
+                    })
+                }
+            }))
+        }
+        // console.log(res)
     }
-    // console.log(res)
+    catch(err) {
+        throw err
+    }
 }
 
 export async function upload_files(bucket_name, files, localdir="") {
-    if(files.length > 0) {
-        const s3 = getS3()
-        files.forEach(async(file)=>{
-            const local_file = path.join(localdir, file)
-            const res = await s3.send(new PutObjectCommand({
-                Bucket: bucket_name,
-                Key: file,
-                Body: fs.createReadStream(local_file)
-            }))
-            // console.log(res)
-        })
+    try {
+        if(files.length > 0) {
+            const s3 = getS3()
+            files.forEach(async(file)=>{
+                const local_file = path.join(localdir, file)
+                const res = await s3.send(new PutObjectCommand({
+                    Bucket: bucket_name,
+                    Key: file,
+                    Body: fs.createReadStream(local_file)
+                }))
+                // console.log(res)
+            })
+        }
+    }
+    catch(err) {
+        throw err
     }
 }

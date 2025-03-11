@@ -57,6 +57,7 @@ async function main() {
         console.log('mov done!')
     }
     catch(err) {
+        console.log(err)
         return true
     }
     return false
