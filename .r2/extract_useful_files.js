@@ -80,6 +80,7 @@ async function main() {
                 }
                 catch(err) {
                     console.error(dest_folder, file, dest)
+                    console.error('cwd: ', process.cwd())
                     console.error(err)
                     throw new Error("rename error");
                 }
