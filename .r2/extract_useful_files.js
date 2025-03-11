@@ -101,8 +101,8 @@ async function main() {
     }
     catch(err) {
         console.log(err)
-        return 0
+        return true
     }
-    return 1
+    return false
 }
-return main()
+if(main()) process.exit(1)

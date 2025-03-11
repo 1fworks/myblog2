@@ -60,9 +60,9 @@ async function upload_delete_files() {
         console.log('----- ready to deploy my blog!')
     }
     catch(err) {
-        return 0
+        return true
     }
-    return 1
+    return false
 }
 
-return upload_delete_files()
+if(upload_delete_files()) process.exit(1)
