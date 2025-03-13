@@ -27,12 +27,14 @@ export default {
         'text': 'color',
         'svg': 'stroke, fill',
         'svg_button': 'stroke, fill, transform',
+        'bgimg': 'filter, background-position, background-size'
       },
       animation: {
         "stair-animation": "stair-kf 300ms ease forwards",
         "climb70-animation": "climb70-kf 300ms ease forwards",
         "climb100-animation": "climb100-kf 300ms ease forwards",
         "shimmer-animation": "shimmer-kf 1s infinite ease-in-out",
+        "fade-in-animation": "fade-in-kf 1s linear forwards",
       },
       keyframes: {
         "climb100-kf": {
@@ -66,13 +68,13 @@ export default {
           }
         },
         "shimmer-kf": {
-          '0%': {
-            'background-position': '200% 0;',
-          },
-          '100%': {
-            'background-position': '0% 0;',
-          }
-        }
+          '0%': { 'background-position': '200% 0;', },
+          '100%': { 'background-position': '0% 0;', }
+        },
+        "fade-in-kf": {
+          from: { opacity: "0%;", },
+          to: { opacity: "100%;", }
+        },
       }
     },
   },

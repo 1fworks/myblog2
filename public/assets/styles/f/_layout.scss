@@ -12,6 +12,71 @@
         font-family: var(--anton-font);
     }
 
+    .bg-home, .bg-archive {
+        .bg-left {
+            background-position: 100% 0%;
+        }
+        .bg-right {
+            background-position: 0% 0%;
+        }
+    }
+    .bg-art, .bg-project {
+        .bg-right {
+            background-position: 50% 0%;
+        }
+    }
+    .bg-about {
+        .bg-left {
+            background-position: 110% 0%;
+        }
+        .bg-right {
+            background-position: 20% 0%;
+        }
+    }
+    .bgimg {
+        @apply absolute left-0 top-0 right-0 bottom-0 pointer-events-none -z-50;
+        .bgimg-segment {
+            @apply w-full h-full flex flex-row transition-[gap];
+            div {
+                @apply w-full h-full transition-bgimg grow basis-0;
+            }
+        }
+        @include media-query($on-pc) {
+            .bgimg-segment:not(.bg-post) {
+                .bg-left {
+                    @apply hidden;
+                }
+                div {
+                    background-position: 50% 0%;
+                }
+                &.bg-about {
+                    div {
+                        background-position: 40% 0%;
+                    }
+                }
+            }
+        }
+    }
+    .bg-post {
+        gap: $on-mobile;
+        @include media-query($on-pc) {
+            @apply gap-96;
+        }
+        @include media-query($on-mobile) {
+            @apply gap-32;
+        }
+        @include media-query($on-super-mini) {
+            @apply gap-10;
+        }
+        div {
+            @apply max-h-lvh;
+            background-position-y: 30%;
+            @include media-query($on-mobile) {
+                background-position-y: 20%;
+            }
+        }
+    }
+
     .uwu {
         @apply w-full min-h-dvh -mt-12 pt-12;
         @apply flex flex-col place-content-between;
@@ -50,6 +115,12 @@
 
     .post-data {
         @apply mt-5 mb-20;
+        @include media-query($on-mobile) {
+            @apply mb-[3.3rem];
+        }
+        @include media-query($on-mini) {
+            @apply mb-10;
+        }
     }
 
     .wrapper {
@@ -650,7 +721,7 @@
         font-family: var(--pretendard-font);
         @apply h-fit;
         @apply relative w-full mx-auto mb-3 rounded-md transition-animate-box;
-        @apply translate-y-10 overflow-hidden;
+        @apply translate-y-10 overflow-hidden backdrop-blur-[2px];
         .list-data {
             @apply pl-16 pr-5 py-2 flex gap-2 justify-between content-center;
             @include media-query($on-mobile) {
@@ -677,13 +748,13 @@
             }
         }
         .title {
-            @apply decoration-0 transition-title text-wrap;
+            @apply decoration-0 transition-title text-wrap font-bold;
             @include media-query($on-mobile) {
                 @apply left-14;
             }
         }
         .date {
-            @apply opacity-50 text-sm transition-date;
+            @apply opacity-50 text-sm transition-date text-nowrap;
         }
         &.folder {
             .folder-info {
@@ -718,7 +789,8 @@
         }
         &:hover, &.current-post {
             .title {
-                @apply font-bold underline;
+                @apply underline; // font-bold
+                font-weight: 900;
             }
             .date {
                 @apply opacity-100;
@@ -748,6 +820,13 @@
         @apply border-2 border-solid;
         .archive-list {
             @apply opacity-100 translate-y-0 my-2;
+            .list-data {
+                .date {
+                    @include media-query($on-minimini) {
+                        @apply hidden;
+                    }
+                }
+            }
         }
     }
 

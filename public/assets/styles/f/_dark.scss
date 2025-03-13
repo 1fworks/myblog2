@@ -5,11 +5,22 @@
     background-color: $dark-background-color;
     color: $dark-text-base-color;
 
+    .bgimg {
+        .bgimg-segment {
+            div {
+                @apply invert-[0.06];
+            }
+            .bg-dark {
+                @apply invert-[0.052];
+            }
+        }
+    }
+
+    // .navmenu,
     .modal > .modal-darker,
     .modal-active > .modal-darker,
     .img-modal > .modal-darker,
-    .img-modal-active > .modal-darker,
-    .navmenu {
+    .img-modal-active > .modal-darker {
         background-color: $dark-background-color;
     }
 

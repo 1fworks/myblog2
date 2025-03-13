@@ -8,6 +8,18 @@
     background-color: $background-color;
     color: $text-base-color;
 
+
+    .bgimg {
+        .bgimg-segment {
+            div {
+                @apply invert-[0.95];
+            }
+            .bg-dark {
+                @apply invert-[0.92];
+            }
+        }
+    }
+
     & {
         strong {
             font-size: $large-font-size;
@@ -35,11 +47,11 @@
         }
     }
 
+    // .navmenu,
     .modal > .modal-darker,
     .modal-active > .modal-darker,
     .img-modal > .modal-darker,
-    .img-modal-active > .modal-darker,
-    .navmenu {
+    .img-modal-active > .modal-darker {
         background-color: $background-color;
     }
 

@@ -10,6 +10,8 @@ import styles from 'assets/styles/main.module.scss'
 import { NavMenu } from '@/components/header/navMenu';
 import ImgModal from '@/components/image/imgModal';
 import { Wrapper } from '@/components/wrapper/wrapper';
+import { BgImage } from '@/components/image/bgImage';
+import { basePath } from './site.setting';
 
 const anton = Anton({
   subsets: ['latin'],
@@ -92,8 +94,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`scroll-smooth`} suppressHydrationWarning>
-      <body className={`${pretendard.variable} ${wantedsans.variable} ${anton.variable} ${styles.mytheme}`}>
-        <ThemeProvider>
+      <body className={`relative ${pretendard.variable} ${wantedsans.variable} ${anton.variable} ${styles.mytheme}`}>
+        <ThemeProvider defaultTheme='dark'>
+          <BgImage basePath={basePath}/>
           <ImgModal/>
           <NavMenu/>
           <Wrapper>{children}</Wrapper>
