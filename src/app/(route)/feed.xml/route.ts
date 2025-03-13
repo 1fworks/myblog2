@@ -27,7 +27,7 @@ export async function GET(){
         if(element.frontmatter.title) {
             feed.item({
                 title: element.frontmatter.title,
-                description: description,
+                description: description.length < 200 ? description : `${description.slice(0, 150)}...`,
                 url: `${siteSetting.site.url}${element.url.replace(BASE_PATH, '/post')}`,
                 date: element.frontmatter.date ? element.frontmatter.date : (element.frontmatter.update ? element.frontmatter.update : new Date())
             })

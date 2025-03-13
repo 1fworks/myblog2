@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useMediaQuery } from 'usehooks-ts'
 
 export const BgImage = ({basePath}:{basePath:string}) => {
@@ -45,7 +45,7 @@ export const BgImage = ({basePath}:{basePath:string}) => {
                 }
             }
         }
-    }, [path, imgSource])
+    }, [path, imgSource, basePath])
 
     if(!mounted) return null;
     
