@@ -16,7 +16,11 @@
         }
     }
 
-    // .navmenu,
+    .navmenu {
+        @include media-query($on-mobile) {
+            background-color: $dark-background-color;
+        }
+    }
     .modal > .modal-darker,
     .modal-active > .modal-darker,
     .img-modal > .modal-darker,

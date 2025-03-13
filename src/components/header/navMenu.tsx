@@ -80,11 +80,11 @@ export const NavMenu = () => {
       <div className="navmenu">
         <ThemeSwitch/>
         <div className={`menulist ${hamburger?'hamburger-menu':''} self-center`}>
-          <MenuLink link={''}        linktext={'Home'}    isSelected={('/'        === page)} delay={0} />
-          <MenuLink link={'archive'} linktext={'Archive'} isSelected={('post'     === page || 'archive' === page)} delay={100} />
-          <MenuLink link={'art'}     linktext={'Art'}     isSelected={('art'      === page)} delay={200} />
-          <MenuLink link={'project'} linktext={'Project'} isSelected={('project'  === page)} delay={300} />
-          <MenuLink link={'about'}   linktext={'About'}   isSelected={('about'    === page)} delay={400} />
+          <MenuLink link={''}        linktext={'Home'}    isSelected={('/'        === page)} delay={50} />
+          <MenuLink link={'archive'} linktext={'Archive'} isSelected={('post'     === page || 'archive' === page)} delay={150} />
+          <MenuLink link={'art'}     linktext={'Art'}     isSelected={('art'      === page)} delay={250} />
+          <MenuLink link={'project'} linktext={'Project'} isSelected={('project'  === page)} delay={350} />
+          <MenuLink link={'about'}   linktext={'About'}   isSelected={('about'    === page)} delay={450} />
         </div>
         <HamburgerMenu/>
       </div>
