@@ -1,12 +1,24 @@
 import { getFiles } from "./archive/[[...slug]]/page";
 import { GET as getImageData } from "./(route)/api/getAllArtImages/route";
 import { RecentPostAndArt } from "@/components/recent/recent";
+import { siteSetting } from "./site.setting";
+import type { Metadata } from 'next'
 
-import { Metadata } from "next";
-import { metadata as layoutMetadata } from "@/app/layout";
-
-export const metadata: Metadata = layoutMetadata;
-export const dynamic = 'force-static'
+export const metadata : Metadata = {
+  title: siteSetting.site.title,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    siteName: siteSetting.site.title,
+    title: siteSetting.site.title,
+    description: siteSetting.site.description,
+    type: 'website',
+    url: siteSetting.site.url,
+    images: siteSetting.site.image,
+  },
+}
+export const dynamic = 'force-static';
 
 export default async function Home() {
   const files = (await getFiles(undefined)).files.slice(0, 2)

@@ -1,12 +1,25 @@
 import { Metadata } from "next";
-import { editMetadata } from "@/libs/metadata";
+import { siteSetting } from "../site.setting";
 import { getAllPostsWithFrontMatter } from "@/libs/post";
 import { MyNextImage } from "@/components/image/mynextImage";
 import { findFile } from "@/libs/findFile";
 import dayjs from "dayjs";
 import Link from "next/link";
 
-export const metadata: Metadata = editMetadata('Project');
+export const metadata: Metadata = {
+  title: 'Project',
+  alternates: {
+    canonical: `/project`,
+  },
+  openGraph: {
+    siteName: `Project | ${siteSetting.site.title}`,
+    title: `Project | ${siteSetting.site.title}`,
+    description: siteSetting.site.description,
+    type: 'website',
+    url: `${siteSetting.site.url}/project`,
+    images: siteSetting.site.image,
+  }
+}
 export const dynamic = 'force-static'
 
 export default function Project() {

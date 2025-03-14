@@ -1,8 +1,21 @@
 import { Metadata } from "next";
-import { editMetadata } from "@/libs/metadata";
+import { siteSetting } from "../site.setting";
 import UWU from './about.mdx'
 
-export const metadata: Metadata = editMetadata('About');
+export const metadata: Metadata = {
+  title: 'About',
+  alternates: {
+    canonical: `/about`,
+  },
+  openGraph: {
+    siteName: `About | ${siteSetting.site.title}`,
+    title: `About | ${siteSetting.site.title}`,
+    description: siteSetting.site.description,
+    type: 'website',
+    url: `${siteSetting.site.url}/about`,
+    images: siteSetting.site.image,
+  }
+}
 export const dynamic = 'force-static'
 
 export default function About() {

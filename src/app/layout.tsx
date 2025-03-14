@@ -63,10 +63,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteSetting.site.url),
   alternates: {
     canonical: '/',
-    languages: {
-      'en-US': '/en-US',
-      'ko-KR' : '/ko-KR'
-    },
+    // languages: {
+    //   'en-US': '/en-US',
+    //   'ko-KR' : '/ko-KR'
+    // },
   },
 
   openGraph: {
