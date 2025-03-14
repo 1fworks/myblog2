@@ -19,9 +19,9 @@ export const RecentPostAndArt = ({ className, posts, images }:
 ) => {
   return (
     <div className={className}>
-      <h1 className='font-anton animate-climb100-animation'>
+      <div className='h1-style animate-climb100-animation'>
         Recent
-      </h1>
+      </div>
       { posts.map((post, i)=>{
         return (
           <div className="w-full" key={`recent-post ${i}`}>
@@ -32,7 +32,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
           </div>
         )
       })}
-      <div className="mini-gallery">
+      <article className="mini-gallery">
         { images.map((image, i)=>{
           const filename = image.filename.split('/').slice(-1)[0]
           return (
@@ -54,7 +54,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
             </div>
           )
         })}
-      </div>
+      </article>
     </div>
   )
 }

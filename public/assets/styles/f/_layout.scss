@@ -170,10 +170,10 @@
             & > div {
                 @apply mx-auto mb-9 -rotate-12 w-fit h-fit;
             }
-            h1, h2, a {
+            h1, .h1-style, h2, .h2-style, a {
                 @apply m-0 whitespace-nowrap select-none no-underline;
             }
-            h1 {
+            h1, .h1-style {
                 @apply text-7xl;
                 @include media-query($on-mobile) {
                     @apply text-6xl;
@@ -182,7 +182,7 @@
                     @apply text-5xl;
                 }
             }
-            h2 {
+            h2, .h2-style {
                 @apply mx-auto;
                 @include media-query($on-mobile) {
                     @apply text-3xl mx-0;
@@ -251,7 +251,7 @@
         font-family: var(--pretendard-font);
     }
 
-    h1,h2,h3,h4,h5,h6 {
+    h1, .h1-style, h2, .h2-style, h3, h4, h5, h6 {
         font-family: var(--pretendard-font);
         @apply transition-[text-decoration-color];
         @apply w-fit underline break-keep;
@@ -268,10 +268,10 @@
         }
     }
 
-    h1 {
+    h1, .h1-style {
         @apply text-4xl my-6;
     }
-    h2 {
+    h2, .h2-style {
         @apply text-3xl my-5;
     }
     h3 {
@@ -445,7 +445,9 @@
 
     nav.toc a,
     h1[id],
+    .h1-style[id],
     h2[id],
+    .h2-style[id],
     h3[id],
     h4[id],
     h5[id],
@@ -629,7 +631,7 @@
                 @apply mt-3;
             }
         }
-        h1 {
+        h1, .h1-style {
             @apply text-6xl;
             @include media-query($on-mobile) {
                 @apply text-5xl;
@@ -691,11 +693,11 @@
         p {
             @apply text-sm;
         }
-        h1 {
+        h1, .h1-style {
             @apply no-underline text-5xl mt-2 mb-2 font-bold transition-animate-text;
             &.large {
                 font-family: var(--anton-font);
-                @apply text-9xl transition-animate-text;
+                @apply text-9xl transition-animate-text no-underline;
             }
             @include media-query($on-mobile) {
                 @apply text-[2.5rem];
@@ -712,7 +714,7 @@
         }
     }
     .post-data {
-        h1 {
+        h1, .h1-style {
             @apply pr-5;
         }
     }
@@ -873,6 +875,9 @@
             }
             &.item-right {
                 @apply justify-self-start;
+                .h1-style {
+                    @extend .font-anton;
+                }
             }
         }
         @include media-query($on-pc) {
@@ -892,7 +897,7 @@
         @include media-query($on-super-mini) {
             @apply p-3;
         }
-        h1, h2 {
+        h1, .h1-style, h2, .h2-style {
             @apply mt-0;
         }
         .item-left {
@@ -908,6 +913,9 @@
                 }
             }
             h1 {
+                @apply no-underline my-0;
+            }
+            .h1-style {
                 @extend .font-anton;
                 @apply text-[12rem] no-underline my-0 inline transition-animate-text;
                 line-height: 13rem;
@@ -923,7 +931,7 @@
                     @apply text-9xl;
                 }
             }
-            h2 {
+            h2, .h2-style {
                 @extend .font-anton;
                 @apply text-7xl no-underline my-0 inline;
                 @include media-query($on-mini) {
@@ -994,6 +1002,9 @@
         }
         @include media-query($on-mini) {
             @apply px-3;
+        }
+        h1, .h1-style {
+            @apply no-underline;
         }
     }
     .about-link {

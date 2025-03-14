@@ -55,7 +55,7 @@ export default async function PostPage({ params }: { params : Promise<{ slug: st
 
       return (
         <>
-          <div className="post">
+          <article className="post">
             <div className="post-data">
               <Link className="link-color no-style" href={folder_link}>
                 <button className="button-disable">← {folder}</button>
@@ -69,7 +69,7 @@ export default async function PostPage({ params }: { params : Promise<{ slug: st
             <div className="post-content">
               <MDXContent source={content} slugs={slugs}/>
             </div>
-          </div>
+          </article>
           <div className="postnav">
             <div className="post-data">
               <Link className="link-color no-style" href={folder_link}>

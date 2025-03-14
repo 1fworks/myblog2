@@ -28,8 +28,8 @@ export default function Project() {
           {
             ['P','R','O','J','E','C','T'].map((text, i)=>{
               return (
-                <h1
-                  className="large opacity-0 animate-climb100-animation"
+                <span
+                  className="h1-style large opacity-0 animate-climb100-animation"
                   key={`text ${i}`}
                   style={{
                     animationDelay:`${i*50}ms`,
@@ -37,7 +37,7 @@ export default function Project() {
                   }}
                 >
                   {text}
-                </h1>
+                </span>
               )
             })
           }
@@ -53,36 +53,37 @@ export default function Project() {
           }
           if(!post.frontmatter.date || !preview.src) return null;
           return (
-            <Link
-              className="no-style"
-              href={post.url.replace('/public/posts', '/post')}
-              key={`project ${i}`}
-            >
-              <div
-                className="proj-item opacity-0 animate-climb100-animation"
-                style={{animationDelay:`${(i+1)*200}ms`}}
+            <article key={`project ${i}`}>
+              <Link
+                className="no-style"
+                href={post.url.replace('/public/posts', '/post')}
               >
-                <div className="proj-text">
-                  <div className="proj-title">{post.frontmatter.title}</div>
-                  <p>{i == 0 || post_year != previous_post_year ? post_year : ''}</p>
+                <div
+                  className="proj-item opacity-0 animate-climb100-animation"
+                  style={{animationDelay:`${(i+1)*200}ms`}}
+                >
+                  <div className="proj-text">
+                    <div className="proj-title">{post.frontmatter.title}</div>
+                    <p>{i == 0 || post_year != previous_post_year ? post_year : ''}</p>
+                  </div>
+                  { post.frontmatter.short_description &&
+                    <p className="short-description">{post.frontmatter.short_description}</p>
+                  }
+                  <div className="skeleton">
+                    <MyNextImage
+                      filename={preview.filename}
+                      src={preview.src}
+                      clickable={false}
+                      ratio={16/5}
+                      cover={true}
+                      animate={false}
+                      imgWidth={750}
+                      imgHeight={234}
+                    />
+                  </div>
                 </div>
-                { post.frontmatter.short_description &&
-                  <p className="short-description">{post.frontmatter.short_description}</p>
-                }
-                <div className="skeleton">
-                  <MyNextImage
-                    filename={preview.filename}
-                    src={preview.src}
-                    clickable={false}
-                    ratio={16/5}
-                    cover={true}
-                    animate={false}
-                    imgWidth={750}
-                    imgHeight={234}
-                  />
-                </div>
-              </div>
-            </Link>
+              </Link>
+            </article>
           )
         })
       }

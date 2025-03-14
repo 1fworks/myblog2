@@ -27,14 +27,18 @@ export default async function Home() {
                 className="flex flex-row opacity-0 animate-climb70-animation"
                 style={{animationDuration:`${1000}ms`}}
               >
-                <h2 className="pl-1 transition-text">F</h2><h2>&apos;</h2><h2>s</h2>
+                <h2>
+                  <span className="h2-style pl-1 transition-text">F</span>
+                  <span className="h2-style pl-1 transition-text">&apos;</span>
+                  <span className="h2-style pl-1 transition-text">s</span>
+                </h2>
               </div>
-              <div className="flex flex-row -mt-1 overflow-hidden">
+              <h1 className="flex flex-row -mt-1 overflow-hidden">
                 {
                   ['B', 'L', 'O', 'G'].map((text, i)=>{
                     return (
-                      <h1
-                        className="opacity-0 animate-climb70-animation"
+                      <span
+                        className="h1-style opacity-0 animate-climb70-animation"
                         style={{
                           animationDelay: `${(i+1)*100}ms`,
                           animationDuration: `${1000}ms`
@@ -42,11 +46,11 @@ export default async function Home() {
                         key={`text ${text}`}
                       >
                         {text}
-                      </h1>
+                      </span>
                     )
                   })
                 }
-              </div>
+              </h1>
             </div>
             <div
               className="blog-description opacity-0 animate-climb70-animation"

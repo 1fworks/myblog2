@@ -5,7 +5,7 @@ import Link from "next/link"
 export const folderListItem = (folder: {url:string, description:string, folder:number, file:number}, key:string, delay:number) => {
   return (
     <Link className="no-style" href={folder.url} key={key}>
-      <div
+      <article
         className="archive-list folder opacity-0 animate-climb100-animation"
         style={{animationDelay: `${delay}ms`}}
       >
@@ -24,7 +24,7 @@ export const folderListItem = (folder: {url:string, description:string, folder:n
           <div className="title">{folder.description}</div>
           <div className="folder-info">folder: {folder.folder}, file: {folder.file}</div>
         </div>
-      </div>
+      </article>
     </Link>
   )
 }

@@ -143,7 +143,7 @@
         }
     }
 
-    h1,h2,h3,h4,h5,h6 {
+    h1,.h1-style,h2,.h2-style,h3,h4,h5,h6 {
         color: $dark-text-less-em;
         text-decoration-color: $dark-text-input-active;
         &[id]{
@@ -189,7 +189,7 @@
     }
     
     .post-data {
-        h1 {
+        h1,.h1-style {
             background-color: $dark-post-title;
         }
     }

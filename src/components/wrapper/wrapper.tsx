@@ -13,9 +13,9 @@ export const Wrapper = ({children}:{children:React.ReactNode}) => {
     }
       <div className='grow-0'>
         <div className='space'></div>
-        <div className='wrapper'>
+        <main className='wrapper'>
           {children}
-        </div>
+        </main>
       </div>
     { condition.indexOf(path) > -1 &&
       <div className='empty-div grow'></div>

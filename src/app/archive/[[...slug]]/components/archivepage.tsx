@@ -117,7 +117,7 @@ export const ArchivePageWithSearchBar = ({
       <div className="text-change relative overflow-hidden">
         <div className={`absolute transition-transform duration-500 ease-[cubic-bezier(.68,-0.55,.15,.99)] inset-0 flex flex-col justify-center items-center ${value.length > 0?'':'translate-y-full'}`}>
           <div className='archive w-fit m-auto'>
-            <h1 className='mx-auto large text-center opacity-70'>Search</h1>
+            <div className='h1-style mx-auto large text-center opacity-70'>Search</div>
           </div>
         </div>
         <div className={`transition-transform duration-500 ease-[cubic-bezier(.68,-0.55,.15,.99)] ${value.length > 0?'-translate-y-full':''}`}>
@@ -137,12 +137,12 @@ export const ArchivePageWithSearchBar = ({
             style={{animationDuration:`${500}ms`}}
           >
             { data.archive_route.length === 0 && 
-              <div className="flex flex-row w-fit mx-auto overflow-hidden">
+              <h1 className="flex flex-row w-fit mx-auto overflow-hidden">
               {
                 ['A','R','C','H','I','V','E'].map((text, i)=>{
                   return (
-                    <h1
-                      className='large opacity-0 animate-climb70-animation'
+                    <span
+                      className='h1-style large opacity-0 animate-climb70-animation'
                       key={`text ${i}`}
                       style={{
                         animationDelay: `${i*50}ms`,
@@ -150,11 +150,11 @@ export const ArchivePageWithSearchBar = ({
                       }}
                     >
                       {text}
-                    </h1>
+                    </span>
                   )
                 })
               }
-              </div>
+              </h1>
             }
             { data.archive_route.length !== 0 &&
               <h1>{data.archive_detail.description.description}</h1>

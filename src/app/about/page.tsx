@@ -8,12 +8,12 @@ export const dynamic = 'force-static'
 export default function About() {
   return (
     <div className="about-box mini-spotlight">
-      <div className="about flex flex-row w-fit overflow-hidden opacity-70">
+      <h1 className="about flex flex-row w-fit overflow-hidden opacity-70">
         {
           ['A','B','O','U','T'].map((text, i)=>{
             return (
-              <h1
-                className="large opacity-0 animate-climb100-animation"
+              <span
+                className="h1-style large opacity-0 animate-climb100-animation"
                 key={`text ${i}`}
                 style={{
                   animationDelay:`${i*50}ms`,
@@ -21,11 +21,11 @@ export default function About() {
                 }}
               >
                 {text}
-              </h1>
+              </span>
             )
           })
         }
-      </div>
+      </h1>
       <UWU/>
     </div>
   )

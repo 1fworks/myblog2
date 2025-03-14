@@ -30,7 +30,7 @@ export const FileListItem = ({file, key_string, delay, current=false, year=false
 export const fileListItem = (file: {url:string, title: string, date:string}, key:string, delay:number, current?:boolean, year?:boolean) => {
   return (
     <Link className="no-style" href={file.url} key={key}>
-      <div
+      <article
         className={`archive-list file ${delay >= 0?'opacity-0 animate-climb100-animation':''} ${current?'current-post':''}`}
         style={{animationDelay: `${Math.max(delay, 0)}ms`}}
       >
@@ -49,7 +49,7 @@ export const fileListItem = (file: {url:string, title: string, date:string}, key
           <div className="title">{file.title}</div>
           <div className="date">{dayjs(file.date).format(`MMM DD${year?', YYYY':''}`)}</div>
         </div>
-      </div>
+      </article>
     </Link>
   )
 }

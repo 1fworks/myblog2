@@ -171,7 +171,7 @@
         }
     }
 
-    h1,h2,h3,h4,h5,h6 {
+    h1,.h1-style,h2,.h2-style,h3,h4,h5,h6 {
         color: $text-less-em;
         text-decoration-color: $text-input;
         &[id]{
@@ -231,7 +231,7 @@
     }
 
     .post-data {
-        h1 {
+        h1, .h1-style {
             background-color: $post-title;
         }
     }

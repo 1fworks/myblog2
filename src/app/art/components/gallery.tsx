@@ -10,7 +10,7 @@ export const Gallery = ({ listName, imageList, className="" }
   className: string,
 }) => {
   return (
-    <div className={`gallery ${className}`}>
+    <section className={`gallery ${className}`}>
       <h1 id={listName} className='animate-climb100-animation' style={{animationDuration:`${500}ms`}}>
         <a className={`anchor`} href={`#${listName}`}>
           {listName.replace('_', ' ').toUpperCase()}
@@ -36,6 +36,6 @@ export const Gallery = ({ listName, imageList, className="" }
           )
         })}
       </div>
-    </div>
+    </section>
   )
 }
