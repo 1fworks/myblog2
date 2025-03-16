@@ -8,6 +8,10 @@
         @apply transition-none;
     }
 
+    hr {
+        @apply my-5;
+    }
+
     .font-anton {
         font-family: var(--anton-font);
     }
@@ -287,6 +291,12 @@
         @apply text-lg my-1;
     }
 
+    .post {
+        h1, h2, h3, h4, h5, h6 {
+            @apply font-bold;
+        }
+    }
+
     .navmenu {
         @apply p-2 h-12 flex flex-row content-center transition-colors;
         .mode { // theme icon
@@ -462,9 +472,20 @@
             @apply size-5 inline-block relative left-2 -z-10;
         }
     }
-    nav.toc a{
-        &::after {
-            @apply size-5 block absolute left-0 -translate-y-full -translate-x-[120%];
+    nav.toc {
+        a  {
+            &::after {
+                @apply size-5 block absolute left-0 -translate-y-full -translate-x-[120%];
+            }
+        }
+        ol {
+            ol {
+                a {
+                    &::after {
+                        @apply left-5;
+                    }
+                }
+            }
         }
     }
     

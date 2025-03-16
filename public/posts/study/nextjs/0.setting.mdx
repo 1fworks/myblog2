@@ -1,0 +1,220 @@
+---
+title: 0. 개발환경 세팅
+date: 2025-03-14T14:30:00
+update: 2025-03-14T14:30:00
+---
+**[Next.js](https://nextjs.org/)의 'App Router'** 방식으로 블로그를 만드는 과정을 정리해 보았습니다.
+
+빈 도화지에서 모든 걸 만들어가는 것은 꽤나 힘들고 알아야 할 것들이 많더군요. 잊어버리기 전에 적어둔단 느낌으로 여기에 메모해 두겠습니다.
+
+그러므로 지금부터 제가 작성할 블로그 개발 일지는 꽤나 불친절한 가이드일 수 있습니다. 이 점은 유의해주시길!
+
+---
+
+[React](https://ko.react.dev/)의 프레임워크 인지라 혹시 Next.js로 프로젝트를 시작할 생각이 있으시다면 `React`에 대한 기능과 사용법을 알고있어야 합니다.
+
+(저를 위해 정리해둔 '[React 메모](Memo.React.mdx)'를 올려놨습니다.
+사실 이것만 알고 있어도 Next.js를 사용하는 것엔 문제 없더군요. 서버하고의 상호작용을 위해선 더 많은 것을 알아야 하겠지만 개인 블로그에선 충분한 것 같습니다.)
+
+이제 `Next.js`에 대한 정보와 세팅법을 간단히(?) 소개해 드리겠습니다.
+
+---
+
+# 렌더링 및 라우팅 방식
+
+일단 그것부터 설명해야겠군요.
+
+> React를 사용하면 컴포넌트라 불리는 조각들을 사용하여 사용자 인터페이스를 만들 수 있습니다.
+
+리액트 홈페이지에서 이렇게 소개해주는데 이 컴포넌트 조각이라는 것을 알아야 합니다.
+
+```jsx
+function Greeting(props) {
+  return <h1>Hello, {props.name}!</h1>;
+}
+```
+
+제일 많이 쓰이는 함수형 컴포넌트입니다. 저렇게 작성한 코드가 'Hello, stranger!' 하고 홈페이지에 렌더링이 되어서 보여지는 것이죠. 저런 조각들을 컴포넌트라고 부릅니다.
+
+보통은 HTML + CSS 를 거쳐서 UI를 그리는 과정을 거칩니다.
+그런데 리액트에서는 현재 Props와 State에 기반하여 UI를 어떻게 구성하고 어떤 DOM 결과를 브라우저에 제공할건지 계산하는 과정을 거칩니다.
+
+(DOM(Document Object Model)은 직역하면 문서 객체 모델.. 인데 웹페이지를 구성하는 태그들을 JavaScript가 이용할 수 있도록 브라우저 내에서 트리 구조로 만든 객체 모델. 이라고 알고만 있으시면 됩니다.)
+
+`Next.js`에서는 이 리액트 문법을 지원해주는데 여러 방식으로 렌더링 합니다.
+
+1. **pre-Rendering**
+	1. **SSG**(Static Site Generation)
+		- 빌드 시 HTML을 미리 생성하고 정적 파일로 제공하는 방식
+	2. **ISR**(Incremental Static Regeneration)
+		- 정적 컴포넌트 + 주기적 업데이트
+2. **CSR**(Client-Side Rendering)
+	- 브라우저에서 JavaScript를 실행해서 콘텐츠를 생성하는 방식
+3. **SSR**(Server-Side Rendering)
+	- 서버에서 HTML을 생성하고 클라이언트로 전송하는 방식
+
+그리고 `Next.js`는 **두 가지 방식의 라우팅**을 제공합니다.
+
+1. **Pages Router** (기존 방식)
+	- `pages/` 디렉토리 내의 파일 구조를 기반으로 라우팅이 이루어짐
+	- **클라이언트 컴포넌트**를 사용
+2. **App Router**
+	- `app/` 디렉토리를 사용하며 더 유연하고 강력한 라우팅을 제공
+	- **서버 컴포넌트** 개념이 도입
+	- 폴더 기반 라우팅
+	- 레이아웃 지원
+
+
+이제 여러분은 어떤 라우팅 방식으로 만들건지 결정해야 합니다.
+
+저는 데이터는 서버 컴포넌트에서 받아서 전달하고, 사용자 상호작용은 클라이언트 컴포넌트로 처리하는 게 최적의 구조라고 판단했습니다.
+또한 폴더 기반 라우팅과 레이아웃 기능이 편해보였으므로 **App Router**로 선택했습니다.
+
+클라이언트 사이드에서의 상호작용이 많은 앱이면 **Pages Router** 방식이 더 나을 수도 있습니다! `Pages Router` 방식을 선택하셨다면 '김평안' 님의 [Next.js로 블로그 만들기](https://bepyan.github.io/blog/nextjs-blog) 게시글을 보시는 걸 추천드립니다. 정리 엄청 잘되어있습니다.
+
+![[imgs/nextjs_two_type_router.png]]
+
+공식 문서에 2가지 방식에 대한 [메뉴얼](https://nextjs.org/docs)을 제공해줍니다.
+(서로 사용하는 함수나 문법이 다르니 아무거나 찾아보시면 안됩니다...)
+
+
+---
+
+# 초기 세팅
+
+![[imgs/nodejs.png]]
+
+먼저 Node가 설치되어 있어야 합니다. [nodejs.org](https://nodejs.org/ko/download)에서 받을 수 있는데 **LTS 버전**으로 받는 걸 추천드립니다. 버전은 가장 최신 것을 받아도 상관없지만 `v18.x`, `v20.x` 이 더 안정적인 버전이 아닐까 싶습니다. (저는 `v22.x` 를 쓰고 있는데 별 문제는 없었습니다.)
+저기서 다운받은 후에 설치하시게 되면 `npm`이라는 것도 같이 설치됩니다. **node package manager**인데 python의 pip 같은 존재라고 생각하시면 됩니다. 패키지 설치와 스크립트 실행을 도와주는 프로그램입니다.
+
+**소스 코드 편집기**는 뭘 쓰시나요!
+
+![[imgs/visualstudiocode.png]]
+
+[비주얼 코드](https://code.visualstudio.com/)를 쓰고 있습니다. 가볍고 빨라서 좋아요. 확장 프로그램을 설치할 수도 있고요. 알림으로 이거 쓰면 좋아요! 하고 추천해주기도 합니다.
+
+![[imgs/nextjs_installation.png]]
+
+Node도 설치됐고 코드 에디터도 준비되었다면 이제 Next.js 프로젝트의 [설치 가이드](https://nextjs.org/docs/app/getting-started/installation)를 따라가시면 됩니다.
+
+참고로 저는 15.1.16 버전으로 개발하였습니다.
+
+```powershell
+npx create-next-app@15.1.16
+```
+
+Next.js 프로젝트를 하나 생성할 때 이런 창을 보시게 될겁니다.
+
+```powershell
+What is your project named? my-app
+Would you like to use TypeScript? No / Yes
+Would you like to use ESLint? No / Yes
+Would you like to use Tailwind CSS? No / Yes
+Would you like your code inside a `src/` directory? No / Yes
+Would you like to use App Router? (recommended) No / Yes
+Would you like to use Turbopack for `next dev`?  No / Yes
+Would you like to customize the import alias (`@/*` by default)? No / Yes
+What import alias would you like configured? @/*
+```
+
+- **TypeScript** : 정적 타입을 검사해주는 기능을 제공합니다. 코드 작성 중 또는 컴파일 시 오류를 사전에 방지할 수 있어 유지보수성과 안정성을 높이는데 유용합니다.
+- **ESLint** : JavaScript 및 TypeScript 코드를 분석하고 문제를 식별하며, 일관된 코드 스타일을 유지하도록 돕는 정적 코드 분석 도구입니다.
+- **Turbopack** : Next.js에서 제공하는 '고성능 번들러' 라고 합니다. 변경된 부분만 다시 빌드해서 시간을 단축한다고 합니다.
+
+나머지 세팅은 상황에 맞게 알아서... 잘 모르시겠다면 기본값을 따라 Enter를 누르셔도 무방합니다.
+
+설치한 다음 터미널에서 `npm run dev` 또는 `npx next dev`를 입력하시면 `localhost:3000` 로 접근할 수 있는 로컬 서버가 구동됩니다.
+
+---
+
+# ES6 사용
+
+기본적으로 Next.js 에서는 **ES Module**을 사용하는 세팅으로 설정됩니다. (가끔 검색하다 보면 **CommonJS**로 작성되어 있는 예시도 있어서 당혹스럽긴 합니다.)
+
+`ES Module`과 `CommonJS`는 이런 문법 차이가 있습니다.
+
+```tsx
+// ES6의 가져오기
+import moduleA from 'moduleA';
+moduleA.method();
+
+import { method1, method2 } from 'moduleB';
+const val = method1()
+
+// 내보내기
+export const key = 'value';
+export default functionName;
+```
+
+```tsx
+// CommonJS의 가져오기
+const moduleA = require('moduleA');
+moduleA.method();
+
+const moduleB = require('moduleB');
+const val1 = moduleB.method1()
+
+const { method1, method2 } = moduleB;
+const val2 = method1()
+
+// 내보내기
+module.exports = { key: 'value' };
+```
+
+---
+
+# next.config.ts
+
+프로젝트를 개발할 때 사용할 세팅들을 설정할 수 있는 파일입니다. `next.config.mjs`, `.js` 뭐 이런 이름으로 만들어지기도 하지만 결국엔 `ES6`문법으로 생성됩니다.
+
+[next.config.js](https://nextjs.org/docs/app/api-reference/config/next-config-js) 꽤 많은 옵션을 지원해줍니다. 자주 쓸만한 옵션 몇 개 적어드리겠습니다.
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // 빌드 시 output 설정 변경
+  output: 'export',
+
+  // 애플리케이션 기본 경로를 바꾸고 싶을 때
+  basePath: '/myblog',
+
+  // 애플리케이션의 정적 자산이 호스팅되는 경로를 바꾸고 싶을 때
+  assetPrefix: '/myblog',
+
+  // redirect 기능을 쓰고 싶을 때
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
+
+  // 이미지 로더 방식을 바꾸고 싶을 때
+  images: {
+    loader: 'custom',
+    loaderFile: './my/image/loader.js',
+  },
+  
+  // eslint 기능을 꺼버리고 싶을 때
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+
+  // 메모리 관리를 효율적으로 수행하게 조정
+  experimental: {
+    webpackMemoryOptimizations: true
+  },
+};
+
+export default nextConfig;
+```
+
+이것 말고도 더 많은 옵션이 있습니다. 필요한 기능이 있을 때 문서를 한 번 뒤져보시는게 좋습니다.
+
+---
+
+이제 본격적으로 페이지를 생성하고 게시글을 파싱하는 과정으로 넘어가겠습니다.

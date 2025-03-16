@@ -1,0 +1,65 @@
+---
+title: 6. SEO 최적화하기
+date: 2025-03-15T19:00:00
+update: 2025-03-15T19:00:00
+---
+# 적절한 tag 사용
+
+검색 엔진에 잘 노출되기 위한 작업이 필요합니다. 첫 번째는 **태그를 잘 활용하는 것**.
+
+| tag         | description                                |
+| ----------- | ------------------------------------------ |
+| `<title>`   | 웹 페이지 제목. 검색 결과에 가장 먼저 보이는 부분              |
+| `<h1~h6>`   | 페이지의 주요 제목. 검색 엔진이 콘텐츠를 이해하는 데 도움을 준다.     |
+| `<main>`    | 문서의 주요 콘텐츠. 핵심 내용을 포함한다.                   |
+| `<article>` | 독립적인 콘텐츠 블록. 블로그 게시물, 뉴스 기사 같은 것들이 어울리는 태그 |
+| `<section>` | 주제를 구분하는 콘텐츠 블록.                           |
+| `<header>`  | 섹션 또는 문서의 머리글 정의                           |
+| `<footer>`  | 섹션 또는 문서의 꼬리글 정의                           |
+
+# Open Graph & Metadata
+
+검색 엔진에 잘 노출되기 위한 두 번째 작업. **Open Graph를 활용하는 것**.
+링크를 공유할 때 이런 형태로 나오는 걸 본 적이 있을 겁니다. 바로 이게 **Open Graph** 입니다.
+
+![[imgs/myOpenGraph.png]]
+
+Meta Description 태그를 이용해서 블로그의 정보를 제공할 수 있습니다.
+
+```tsx
+export const metadata: Metadata = {
+	//...
+	openGraph: {
+	    siteName: 'siteName',
+	    title: 'title',
+	    description: 'description',
+	    type: 'website',
+	    url: 'https://memory.with-1f.work',
+	    images: 'https://memory.with-1f.work/img.png',
+	},
+	twitter: {
+	    images: 'https://memory.with-1f.work/img.png'
+	}
+	//...
+}
+```
+
+이런식으로 layout.tsx 또는 page.tsx에 넣어주면 아래와 같이 적용됩니다.
+
+```html
+<meta property="og:url" content="https://memory.with-1f.work">
+<meta property="og:type" content="website">
+<meta property="og:title" content="title">
+<meta property="og:description" content="description">
+<meta property="og:image" content="https://memory.with-1f.work/img.png">
+
+<!-- Twitter Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta property="twitter:domain" content="memory.with-1f.work">
+<meta property="twitter:url" content="https://memory.with-1f.work">
+<meta name="twitter:title" content="title">
+<meta name="twitter:description" content="description">
+<meta name="twitter:image" content="https://memory.with-1f.work/img.png">
+```
+
+페이스북, 트위터 등 여러 곳에 다 적용이 됩니다!

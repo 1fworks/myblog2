@@ -1,0 +1,163 @@
+---
+title: "[Memo] React"
+date: 2025-03-16T22:00:00
+update: 2025-03-16T22:00:00
+---
+리액트의 컴포넌트를 만들 때 jsx, tsx 파일을 사용합니다.
+# JSX
+- JavaScript와 HTML을 합쳐놓은 느낌의 문법...
+- JavaScript로 변환된다고 보면 됩니다.
+## 문법
+- 변수나 함수를 써야할 때는 `{중괄호}`로 감쌉니다.
+- 속성을 다르게 써야하는 부분
+	- `class` → `className`
+	- `for` → `htmlFor`
+
+---
+
+# Props
+
+컴포넌트 간 데이터를 전달하는 데 사용되는 **읽기 전용 객체**
+
+```jsx
+// 값을 넘겨주는 방법
+const App = () => {
+	<Welcome name="stranger"/>
+}
+```
+
+```jsx
+// 넘겨받은 값을 사용하는 2가지 방법
+function Welcome({name}) {
+  return <h1>Hello, {name}</h1>;
+}
+
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+```
+
+---
+
+# Hook
+
+브라우저 DOM 환경에서 실행되는 웹 애플리케이션을 위한 **Hook**
+함수형 컴포넌트에 상태(state)와 기타 기능을 추가할 수 있게 도와주는 기능입니다.
+
+## 1. useState
+
+컴포넌트에 **state 변수**를 추가할 수 있는 React Hook
+
+>`const [state, setState] = useState(initialState)`
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      You pressed me {count} times
+    </button>
+  );
+}
+```
+
+위 처럼 두 가지를 제공합니다.
+1. 렌더링 간에 데이터를 유지하기 위한 **state 변수**
+2. 변수를 업데이트하고 React가 컴포넌트를 다시 렌더링하도록 유발하는 **state setter 함수**
+
+count 값을 그냥 변경하면 화면에 변경된 count 값이 적용되지 않지만 setCount 를 사용하면 재렌더링이 일어나 새로운 count 값이 적용된 화면으로 새로 그려줍니다.
+
+## 2. useEffect
+
+**외부 시스템과 컴포넌트를 동기화**하는 React Hook
+
+>`useEffect(setup, dependencies?)`
+```jsx
+// 렌더링 될 때 마다 실행
+useEffect(()=>{
+	console.log('렌더링 때마다 실행');
+});
+
+// 처음 렌더링 되거나 의존성 배열 값이 바뀔때마다 실행
+useEffect(()=>{
+	console.log('name 변수가 바뀔 때마다 실행');
+},[name]);
+
+// 처음 렌더링이 될 때만 실행
+useEffect(()=>{
+	console.log('처음 렌더링 때만 실행');
+},[]);
+```
+
+- 처음 마운트 될 때나 setState 같은 함수가 호출되면 재렌더링이 일어납니다. 이때 dependencies 배열에 있는 값의 변경을 감지되면 setup 함수를 호출합니다.
+
+## 3. useRef
+
+**렌더링에 필요하지 않은 값**을 **참조**할 수 있는 React Hook
+DOM 요소를 직접 참조하거나, 상태 변경 없이 값을 저장하고 싶을 때 사용합니다.
+- **직접 DOM을 다룰 일**이 줄어듦
+
+>`const ref = useRef(initialValue)`
+```jsx
+import { useRef } from 'react';
+
+export default function Counter() {
+  let ref = useRef(0);
+
+  function handleClick() {
+    ref.current = ref.current + 1;
+    alert('You clicked ' + ref.current + ' times!');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Click me!
+    </button>
+  );
+}
+```
+
+```jsx
+export const App = () => {
+	const inputRef = useRef(null)
+	const clickEvent = () => {
+		inputRef.current.focus()
+	}
+	
+	return (
+		...
+			<input ref={inputRef}/>
+		...
+			<button onClick={clickEvent}/>
+		...
+	)
+}
+```
+
+- 값 저장 뿐만이 아니라 태그 객체를 참조하는 식으로 사용할 수도 있습니다. querySelector로 찾아가는 번거로움을 줄일 수 있습니다.
+
+## 4. useMemo
+
+재렌더링 사이에 계산 결과를 캐싱할 수 있게 해주는 React Hook
+렌더링 할 때마다 cost가 높은 함수가 있을 경우 성능이 감소할 수 있는데 이때 로직의 재계산을 생략시킬 수 있습니다.
+
+>`const cachedValue = useMemo(calculateValue, dependencies)`
+```jsx
+import { useMemo } from 'react';
+
+function TodoList({ todos, tab }) {
+  const visibleTodos = useMemo(
+    () => filterTodos(todos, tab),
+    [todos, tab]
+  );
+  // ...
+}
+```
+
+- `calculateValue`: 캐싱하려는 값을 계산하는 함수. 마지막 렌더링 이후 `dependencies`가 변경되지 않으면 동일한 값을 다시 반환합니다. 그렇지 않다면 `calculateValue`를 호출하고 결과를 반환하며, 나중에 재사용할 수 있도록 저장합니다.

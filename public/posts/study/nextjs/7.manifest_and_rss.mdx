@@ -1,0 +1,98 @@
+---
+title: 7. manifest, RSS, sitemap
+date: 2025-03-16T03:42:00
+update: 2025-03-16T03:42:00
+---
+# PWA 지원을 위한 manifest
+
+PWA(Progressive Web App)는 웹 기술과 네이티브 앱의 장점을 결합한 웹 앱으로, 모바일 기기에서 앱과 같은 사용자 경험을 제공해주는 기능입니다.
+
+![[imgs/pwa_test.png]]
+
+바로 이겁니다. 앱처럼 설치할 수 있게 해주는 기능이죠. 모바일도 가능합니다.
+
+
+[manifest.json](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/manifest)게시글에 따라 app/manifest.json, app/manifest.webmanifest 파일을 넣거나 app/manifest.ts 파일을 통해 생성할 수 있습니다.
+
+```tsx
+import type { MetadataRoute } from 'next'
+ 
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Next.js App',
+    short_name: 'Next.js App',
+    description: 'Next.js App',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#fff',
+    theme_color: '#fff',
+    icons: [
+      {
+        src: '/favicon.ico',
+        sizes: 'any',
+        type: 'image/x-icon',
+      },
+    ],
+  }
+}
+```
+
+`background_color`는 로딩 중에 나오는 색상, `theme_color`는 로딩 완료 후 나오는 색상이라고 합니다. `theme_color`에는 앱의 분위기에 맞춰서 정하시면 될 것 같습니다.
+
+---
+
+# RSS, Feed
+
+**RSS**(Rich Site Summary)는 뉴스나 블로그 사이트에서 주로 사용하는 콘텐츠 표현 방식입니다. 사용자는 RSS 리더와 같은 프로그램 및 서비스를 이용하여 사이트 방문 없이 최신 정보들만 골라 한 자리에서 볼 수 있는데 이를 위해 웹 관리자는 **feed.xml**과 같은 **RSS 피드**를 제공해야 합니다.
+
+![[imgs/rss_feed_test.png]]
+
+
+Next.js에서는 `route.ts` 파일을 통해 **static route handler**를 생성할 수 있는데 이걸 이용해서 **feed.xml**를 만들 수 있습니다.
+[Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)에 적힌 내용대로 `/app/feed.xml/route.ts` 파일을 생성합니다. 그리고 [rss](https://www.npmjs.com/package/rss) 라이브러리를 이용해서 피드를 생성하고 반환해주면 됩니다. 그러면 `/feed.xml` 경로로 접근해서 RSS 피드를 읽어올 수 있도록 만들 수 있습니다.
+
+```powershell
+npm i rss
+```
+
+>`app/feed.xml/route.ts`
+```ts
+import RSS from 'rss';
+
+export async function GET(){
+    const posts = getAllPostsWithContent(['_description.mdx'])
+    const orderedDate = sortPost(posts)
+    const recentPost = orderedDate[0].frontmatter;
+    const feed = new RSS({
+        // Title of your site or feed
+        title: "title",
+        // A short description of the feed.
+        description: "description",
+        // Url to the site that the feed is for.
+        site_url: "https://memory.with-1f.work",
+        // Url to the rss feed
+        feed_url: "https://memory.with-1f.work/feed.xml",
+        // Copyright information for this feed
+        copyright: "copyright",
+        // The language of the content of this feed
+        language: "lang",
+        // The publication date for content in the feed
+        pubDate: "date",
+    })
+
+    feed.item({
+        title: "title",
+        description: "description",
+        url:"url", // link to the item
+        date:"date", // any format that js Date can parse.
+    })
+    
+    return new Response(feed.xml(), {
+        headers: {
+            "Content-Type": "application/atom+xml; charset=utf-8",
+        },
+    })
+}
+```
+
+이런 식으로 작성하시면 됩니다. 다른 `feedOption`에 대한 내용은 [node-rss github](https://github.com/dylang/node-rss)에서 보실 수 있습니다.

@@ -51,7 +51,7 @@ export const BgImage = ({basePath}:{basePath:string}) => {
     
     return (
         <div
-            className="bgimg"
+            className="bgimg overflow-hidden"
         >
             { loaded &&
                 <>

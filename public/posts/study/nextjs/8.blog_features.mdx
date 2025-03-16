@@ -1,0 +1,176 @@
+---
+title: 8. 블로그에 넣을만한 기능들
+date: 2025-03-16T06:00:00
+update: 2025-03-16T06:00:00
+---
+# 검색 기능
+
+## 1. Lunr.js
+
+[Lunr.js](https://lunrjs.com/)는 영어를 기본으로 하면서 **토큰화** & **역색인**하는 구조를 가집니다.
+- 좀 더 정교한 검색에 어울리는 라이브러리입니다.
+- 한국어용 stemmer, stop word를 제공해줍니다.
+
+```powershell
+npm install lunr lunr-languages
+```
+
+```js
+import lunr from "lunr";
+import stemmersupport from 'lunr-languages/lunr.stemmer.support.js'
+import multi from 'lunr-languages/lunr.multi.js'
+import lunr_ko from 'lunr-languages/lunr.ko.js'
+
+stemmersupport(lunr)
+multi(lunr)
+lunr_ko(lunr)
+
+const documents = [
+  { id: '1', title: '제목 테스트', body: '임시로 넣은 문장' },
+  { id: '2', title: '가나다라마바사', body: '0123456789' },
+  { id: '3', title: 'Lunr 검색 엔진', body: '빠르고 가벼운 검색' }
+]
+
+const idx = lunr(function(){
+  //this.use(lunr.multiLanguage('ko', 'en'))
+  this.use(lunr.ko)
+  this.ref('id')
+  this.field('title', { boost: 10 })
+  this.field('body', { boost: 10 })
+
+  documents.forEach((doc)=>{
+    this.add(doc)
+  })
+})
+
+const getSearchData = (search) => {
+  return idx.search(search).map(results=>
+    documents.find(data=>data.id === results.ref)
+  )
+}
+
+console.log(getSearchData("가벼운"))
+// [ { id: '3', title: 'Lunr 검색 엔진', body: '빠르고 가벼운 검색' } ]
+console.log(getSearchData("테스트"))
+// [ { id: '1', title: '제목 테스트', body: '임시로 넣은 문장' } ]
+```
+
+쓰려고 작성했다가 버려진 코드입니다. 주워가실 분은 주워가시길..
+
+## 2. Fuse.js
+
+[Fuse.js](https://www.fusejs.io/)는 "Levenshtein Distance" 기반의 **문자열 유사도**를 보고 검색해줍니다.
+- 라이브러리가 가볍고 사용법이 간단합니다.
+- 언어를 따지지 않고 비슷한 글자를 찾아준다는 것이 장점입니다.
+
+```js
+const Fuse = require('fuse.js');
+const fuseOptions = {
+    keys: [
+        "title",
+        "author.firstName"
+    ]
+};
+
+const fuse = new Fuse(list, fuseOptions);
+const searchPattern = "search word"
+
+return fuse.search(searchPattern)
+```
+
+사용법이 무척 간단합니다. `Fuse` 객체를 만들고 '검색에 쓸 list 데이터'와 '검색 설정 및 범위에 대한 데이터'를 집어넣고 `fuse.search()` 를 수행하면 끝입니다.
+
+[데모](https://www.fusejs.io/demo.html)에서 바로 테스트 해보실 수 있습니다.
+
+
+---
+
+# 댓글 시스템
+
+설치와 사용법이 간단한 라이브러리를 추천해 드리겠습니다. (깃허브 계정이 있어야 댓글을 달 수 있다는 단점이 있습니다.)
+
+## 1. utterances
+
+![[imgs/utterances_0.png]]
+
+**utterances**는 깃허브의 `Issues` 기능을 활용합니다. 사용법이 간단하고 가볍습니다.
+
+![[imgs/utterances_1.png]]
+
+먼저 [Utterances App](https://github.com/apps/utterances)에 접속해서 Install을 누르고 원하는 repo에 설치합니다.
+
+![[imgs/utterances_2.png]]
+
+그 다음 [utteranc.es](https://utteranc.es/)에 들어가서 repo 이름을 입력하고 어떤 설정을 사용할 것인지 체크해나갑니다.
+
+![[imgs/utterances_3.png]]
+
+설정을 마쳤다면 마지막에 복사할 수 있는 script 코드가 나옵니다. 이걸 복사하신 다음 댓글이 나오길 원하는 위치에 붙여넣으시면 됩니다!
+
+## 2. giscus
+
+![[imgs/giscus_0.png]]
+
+**giscus**는 깃허브의 `Discussions` 기능을 활용합니다.
+(개인적으로 `utterances`보다 대댓글이 깔끔하고 이쁘게 출력되는 것 같습니다.)
+
+![[imgs/giscus_1.png]]
+
+사용법은 utterances와 비슷합니다. [giscus App](https://github.com/apps/giscus)에 들어가서 install 버튼을 누른 후 원하는 repo에 설치를 합니다.
+
+![[imgs/giscus_2.png]]
+
+마찬가지로 [giscus.app](https://giscus.app/ko)에서 repo 이름을 입력한 후 사용할 설정에 체크해 나갑니다.
+(그전에 repo의 Discussions 기능이 켜져 있는지 확인해야 합니다! `Settings-General-Features`에서 활성화 가능합니다.)
+
+![[imgs/giscus_3.png]]
+
+마지막에 나오는 script를 복사해서 아무 곳이나 붙여넣습니다. (이왕이면 포스트 페이지에 씌워지는 `layout.tsx` 같은 곳이 좋습니다.) 그런 다음 `.giscus` 및 `.giscus-frame` 선택자를 댓글이 나오길 원하는 컨테이너에 적어놓으시면 됩니다!
+
+```html
+<div class="giscus"></div>
+```
+
+[giscus-component](https://github.com/giscus/giscus-component)란 것도 있습니다. `React`를 기반으로 돌아가는 `Next.js`에서 쓰기에 아주 좋습니다. 사용법은 거의 비슷합니다.
+
+
+---
+
+# 이미지 확대
+
+제 블로그는 그림도 올리는 곳이기 때문에 이미지를 확대해서 보여주는 기능을 넣었습니다.
+
+![[imgs/zoom_test.webp]]
+
+translate와 scale을 이용해서 적절하게 확대되도록 만들었는데... 이미 이 기능을 구현해서 배포하는 곳이 있었습니다. 따흑
+
+[medium-zoom](https://github.com/francoischalifour/medium-zoom) 이라는 자바스크립트 라이브러리가 있습니다.
+
+```powershell
+npm install medium-zoom
+```
+
+사용법도 간단한 것 같습니다.
+
+```js
+import mediumZoom from 'medium-zoom'
+
+// CSS selector
+mediumZoom('[data-zoomable]')
+
+// HTMLElement
+mediumZoom(document.querySelector('#cover'))
+
+// NodeList
+mediumZoom(document.querySelectorAll('[data-zoomable]'))
+
+// Array
+const images = [
+  document.querySelector('#cover'),
+  ...document.querySelectorAll('[data-zoomable]'),
+]
+
+mediumZoom(images)
+```
+
+그냥 import한 다음에 조건에 맞는 속성이나 id나 class를 가진 태그들을 찾아서 적용시켜주면 끝나는 것 같습니다.

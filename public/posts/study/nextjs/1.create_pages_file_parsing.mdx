@@ -1,0 +1,159 @@
+---
+title: 1. 페이지 생성 및 파일 파싱
+date: 2025-03-14T15:00:00
+update: 2025-03-14T15:00:00
+---
+App Router 라우팅 방식으로 페이지를 생성했습니다. 참고하시길!
+
+---
+
+# 페이지 생성 방식
+
+블로그의 게시글을 보여줄 때 **어떤 파일**을 사용할 것인지, **경로**는 어떻게 구성할 것인지 고민해야 합니다. 저는 파일 경로와 동일하게 나오게 구성했습니다.
+
+![[imgs/path_example.png]]
+
+![[imgs/directory.png]]
+
+마크다운과 MDX 파일을 이용한 페이지 생성이 가능합니다. [Markdown and MDX](https://nextjs.org/docs/app/building-your-application/configuring/mdx) 가이드도 적혀있습니다. MDX에서는 리액트 컴포넌트를 임베드할 수도 있습니다!
+
+또한 `remark`와 `rehype`를 이용해서 파싱할 수 있습니다. 여기에 대한 내용은 나중에 다루겠습니다.
+
+---
+
+# 페이지 생성
+
+(프로젝트의 구조는 [Project structure](https://nextjs.org/docs/app/getting-started/project-structure)게시글에서 더 자세히 살펴볼 수 있습니다.)
+
+제가 할 것은 `/post/*.(md/mdx)` 형태로 접근해서 게시글을 여는 것입니다.
+
+```powershell
+  my-project
+  ├── src
+  │   └── app
+  │       └── post
+  │           └── [...slug]
+  |                └── page.(tsx/js)
+  ├── mdxfiles
+  │   └── **/*.(md/mdx)
+```
+
+이런 폴더 및 파일 구조로 이루어져 있다고 가정하겠습니다. 그러면 아래와 같은 페이지를 생성시킬 수 있습니다.
+
+| example URL | params                 |
+| ----------- | ---------------------- |
+| `/post/a`   | `{ slug: ['a'] }`      |
+| `/post/a/b` | `{ slug: ['a', 'b'] }` |
+경로에 따라 저런 params의 값을 가져오게 됩니다.
+
+---
+
+# 경로 생성
+
+`generateStaticParams` 라는 함수를 이용해서 경로를 정적으로 생성시킬 수 있습니다. 생성하지 않은 경로의 경우에 '404 페이지'가 뜨게 만들 수 있죠.
+
+(getStaticPaths, getStaticProps 라는 함수도 있는데 이건 Pages Router에서 쓸 수 있는 방식입니다. App Router에선 못쓰니 주의하시길)
+
+위에서 들었던 예시를 보시면 `/post/a` 로 접근하면 `{ slug: ['a'] }` params을 가져옵니다. 만일 `/post/b` 로만 페이지를 열 수 있게 만들려면 generateStaticParams를 어떻게 써야할까요.
+
+>`/src/app/post/[...slug]/page.tsx`
+```tsx
+export const generateStaticParams = () => {
+    return [
+	    { slug: ['b'] },
+    ]
+}
+export const dynamicParams = false;
+//...
+```
+
+이런 식으로 작성하시면 됩니다.
+(배열로 반환해야 합니다. 경로는 여러 개 존재할 수 있기 때문이죠.)
+
+이제 `/post/**/*.mdx` 로 접근하면 `C:\...\mdxfiles\**\*.mdx` 파일을 가져와서 글을 보여주도록 만들어봅시다.
+
+---
+
+# glob pattern
+
+[node-glob](https://github.com/isaacs/node-glob)라이브러리를 이용하면 쉽게 파일들의 경로를 구할 수 있습니다.
+
+>node-glob 라이브러리 설치
+```powershell
+npm i glob
+```
+
+```tsx
+const mdxfolder = path.join(process.cwd(), 'mdxfiles/')
+const files = sync(`${mdxfolder}/**/*.mdx`, { posix: true })
+console.log(files)
+
+> [ 'mdxfiles/post-1.mdx', 'mdxfiles/test/post-2.mdx' ]
+```
+
+이렇게 구한 파일 경로를 바탕으로 params을 구하시면 됩니다.
+
+```tsx
+const params = files.map(file=>(
+	{ slug: file.split('/').slice(1) }
+))
+console.log(params)
+
+> [ { slug: [ 'post-1.mdx' ] }, { slug: [ 'test', 'post-2.mdx' ] } ]
+```
+
+---
+
+# mdx 파일 파싱
+
+```powershell
+npm i gray-matter next-mdx-remote
+```
+
+저는 [gray-matter](https://github.com/jonschlinkert/gray-matter)와 [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)을 이용해서 mdx 파일의 내용을 파싱했습니다.
+
+## gray-matter
+
+YAML front matter parser 입니다.
+front-matter와 content를 분리해서 내용을 가져올 수 있습니다.
+- 문서의 처음 부분에 적어놓는 속성들을 front-matter라고 보시면 될 것 같습니다.
+
+```tsx
+import matter from 'gray-matter'
+
+export const Post = async({params}:{params:Promise<{slug:string[]}>}) => {
+    const filename = path.join(process.cwd(), 'mdxfiles/', (await params).slug.join('/'))
+    const { data, content } = matter.read(filename)
+    return (
+        <>
+            <div>{JSON.stringify(data, null, 2)}</div>
+            <div>{content}</div>
+        </>
+    )
+}
+
+export default Post
+```
+
+>md 파일 내용
+```md
+---
+value: 1234
+hello: hello, world
+---
+## h2 test
+post-1 content !!!
+- uwu
+```
+
+>브라우저에 나오는 화면
+```html
+{ "value": 1234, "hello": "hello, world" }
+## h2 test post-1 content !!! - uwu
+```
+
+---
+
+이렇게 md, mdx 파일을 파싱하여 블로그 글을 작성할 수 있습니다. 그런데 글자만 페이지에 나오니 밋밋한 느낌을 지울 수 없군요.
+
+다음은 텍스트를 가공하여 태그를 적용해 보겠습니다.

@@ -39,6 +39,5 @@ export async function GET(){
         headers: {
             "Content-Type": "application/atom+xml; charset=utf-8",
         },
-    }
-)
+    })
 }

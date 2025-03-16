@@ -1,0 +1,51 @@
+---
+title: 9. 배포 및 호스팅
+date: 2025-03-16T15:00:00
+update: 2025-03-16T15:00:00
+---
+개인 프로젝트 범위 내에서 무료로 빌드하고 호스팅까지 할 수 있는 곳이 있습니다. 제가 사용해본 방식만 간단하게 적어놓겠습니다.
+
+# 1. github pages
+
+![[imgs/github_pages_nextjs.png]]
+
+Setting-Pages 항목에서 repo의 어떤 branch를 deploy할 지 설정한 후 Configure를 눌러주면 워크플로를 정의해주는 YAML 파일을 생성하는 창으로 이동합니다.
+
+워크플로의 내용을 적어준 뒤에 파일을 생성해주면 Actions 기능이 동작하면서 빌드-배포 과정이 이루어집니다. 사실 내용도 적을게 없습니다. 자동으로 알아서 작성해줍니다.
+
+빌드 에러가 자꾸 발생한다면 이 부분을 주석처리 해주세요. 그리고 `next.config.js` 에서 `output` 값이 `export`로 되어있는지 봐주세요.
+
+```yml
+- name: Setup Pages
+  uses: actions/configure-pages@v5
+  with:
+    static_site_generator: next
+# 이 부분 모두 주석처리!
+```
+
+```js
+const nextConfig = {
+  output: "export",
+  // ...
+}
+```
+
+---
+
+# 2. cloudflare pages
+
+![[imgs/cloudflare_pages_nextjs.png]]
+
+cloudflare 계정이 있다면 이걸로 무료 호스팅을 받는 것도 좋은 선택입니다. 깃허브를 연결하고 사용할 repo, branch, 빌드 명령어 등 간단한 설정만 해주면 알아서 빌드 및 배포까지 해줍니다.
+
+github의 YAML파일처럼 직접 상세한 워크플로를 작성하진 못하지만 환경변수나 도메인 설정이 간편합니다.
+
+---
+
+# 3. vercel
+
+![[imgs/vercel_nextjs.png]]
+
+가장 속 편한 방법입니다. `vercel`은 Next.js 프로젝트를 배포하기에 매우 적합한 플랫폼입니다. git과 연동한 후에 repo, branch 등 설정한 후 install을 누르면 빌드 및 배포까지 알아서 해줍니다.
+- 서버리스 함수를 지원합니다.
+- 무료로 쓸 경우 데이터베이스 위치를 하나만 지정할 수 있던 걸로 기억하는데... 한국으로 설정되어 있지 않으면 데이터를 읽어오는게 좀 느렸던 것으로 기억합니다. 참고하시길
