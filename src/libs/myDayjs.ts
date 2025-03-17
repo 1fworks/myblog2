@@ -7,7 +7,9 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(localizedFormat)
 dayjs.extend(utc)
 dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Seoul")
 dayjs.locale("ko")
+dayjs.tz.setDefault("Asia/Seoul")
 
-export default dayjs;
+export default function my_dayjs(time:string) {
+    return dayjs(time).tz()
+};

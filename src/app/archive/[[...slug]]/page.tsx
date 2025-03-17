@@ -1,6 +1,6 @@
 import { getAllPostsWithContent, getDescription, frontmatter_type } from "@/libs/post";
 import { ArchivePageWithSearchBar } from "./components/archivepage";
-import dayjs from "@/components/date/myDayjs";
+import dayjs from "@/libs/myDayjs";
 
 import { generateMetadata } from "./generateMetadata";
 export { generateMetadata };

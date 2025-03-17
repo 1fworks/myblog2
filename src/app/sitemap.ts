@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { siteSetting } from './site.setting'
 import { getAllPostsWithFrontMatter } from '@/libs/post'
 import { BASE_PATH, frontmatter_type } from '@/libs/post'
-import dayjs from "@/components/date/myDayjs";
+import dayjs from "@/libs/myDayjs";
 
 export const dynamic = 'force-static'
 

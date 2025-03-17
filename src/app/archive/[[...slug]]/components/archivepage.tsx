@@ -6,7 +6,7 @@ import { searchwithfuse } from "@/libs/searchwithfuse";
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { getTextFromContext } from "@/libs/mdx";
 
-import dayjs from "@/components/date/myDayjs";
+import dayjs from "@/libs/myDayjs";
 
 import Link from "next/link";
 import { DividingLine, fileListItem } from "./filelistitem";

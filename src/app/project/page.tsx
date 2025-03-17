@@ -3,7 +3,7 @@ import { siteSetting } from "../site.setting";
 import { getAllPostsWithFrontMatter } from "@/libs/post";
 import { MyNextImage } from "@/components/image/mynextImage";
 import { findFile } from "@/libs/findFile";
-import dayjs from "@/components/date/myDayjs";
+import dayjs from "@/libs/myDayjs";
 import Link from "next/link";
 
 export const metadata: Metadata = {

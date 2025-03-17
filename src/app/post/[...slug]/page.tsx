@@ -19,7 +19,7 @@ export const dynamicParams = false;
 export const dynamic = 'force-static'
 
 import Link from "next/link";
-import dayjs from "@/components/date/myDayjs";
+import dayjs from "@/libs/myDayjs";
 import { MiniArchive } from "./components/miniArchive";
 
 export default async function PostPage({ params }: { params : Promise<{ slug: string[] }> }) {
