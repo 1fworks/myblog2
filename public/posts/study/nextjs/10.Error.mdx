@@ -1,0 +1,79 @@
+---
+title: 10. 자주 보게 되는 에러들
+date: 2025-03-18T02:35:00
+update: 2025-03-18T02:35:00
+---
+# 'use client' 지시어 미사용
+
+![[imgs/use_client.png]]
+
+React의 `useState`나 `useEffect`를 사용하려고 하면 가끔 이런 오류를 내뱉습니다. 서버 컴포넌트에서 React의 **Hook**을 쓰지마라! 하고 소리치는 것이죠.
+
+그리고 대부분의 상황에서 Hook을 그냥 사용하면 에러가 발생합니다. 그 이유는 서버 컴포넌트로 기본값이 잡혀있기 때문이죠. 그래서 이 컴포넌트는 **클라이언트 컴포넌트**로 사용할 것이다! 라고 알려줘야 합니다.
+
+```tsx
+'use client'
+```
+
+코드 최상단에 이렇게 적어주기만 하면 클라이언트 컴포넌트로 정의할 수 있습니다.
+
+
+---
+
+# Module Not Found
+
+![[imgs/module_not_found.png]]
+
+그렇다고 무작정 'use client' 를 사용하시면 안됩니다. 서버 컴포넌트에서만 수행할 수 있는 작업을 클라이언트에서 수행하려고 하면 이런 에러가 발생하기 때문이죠.
+
+예시로 fs 패키지의 기능을 사용하려는데 서버가 아닌 클라이언트 컴포넌트여서 모듈을 찾지 못하는 경우가 있습니다. 이때는 **서버 컴포넌트에서 값을 구하고 클라이언트 컴포넌트로 전달하는 식**으로 해결해야 합니다.
+
+
+---
+
+# Hydration error
+
+![[imgs/minified_react_error_418.png]]
+
+`Minified React error #418`
+
+개발 과정에선 보지 못했다가 배포 단계에서 갑자기 튀어나온 에러입니다. 이는 서버에서 렌더링한 HTML과 클라이언트가 달라서 발생하는 문제입니다.
+
+React가 이벤트 핸들러를 연결하여 서버에서 미리 렌더링된 HTML을 상호작용 가능한 애플리케이션으로 변환시키는 과정을 **Hydration**이라고 부르는데.. 여튼 서버에서 렌더링된 HTML과 클라이언트에서 보이는 HTML 뼈대를 동일하게 만들어줘야 **Hydration error**가 발생하지 않습니다.
+
+저의 경우에는 `new Date()`를 이용해서 날짜 계산을 했었는데 서버의 시간과 클라이언트의 시간이 달라서 **Hydration error**가 발생했었습니다. 그래서 날짜가 계산되는 locale, timezone을 일치시켜 줘야 했죠.
+
+```tsx
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+// import 'dayjs/locale/ko';
+// dayjs.locale('ko')
+dayjs.extend(localizedFormat)
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.locale("ko")
+dayjs.tz.setDefault("Asia/Seoul")
+
+export default dayjs;
+```
+
+```tsx
+import dayjs from './ko_dayjs'
+
+dayjs(value).tz().format('YYYY MM DD')
+```
+
+저는 dayjs 라이브러리를 이용해서 locale과 timezone을 일치하게 만들어 줬습니다. 비로써 서버에서나 클라이언트에서나 동일한 값이 나오게 만들 수 있었죠.
+
+```tsx
+  //...
+  useEffect(() => {
+    // 클라이언트에서만 실행
+    setCurrentDate(new Date());
+  }, []);
+  //...
+```
+
+다른 방법도 있긴 합니다. **useState**, **useEffect**를 이용하는 겁니다. 초기값을 null로 넣어두고 나중에 클라이언트에서 `new Date()`를 상태 값으로 기록하는 겁니다. 이렇게 하면 서버와 클라이언트 간의 초기값 차이를 없앨 수 있죠. (대신 느리게 반응하는 것처럼 보일 수 있습니다.)
