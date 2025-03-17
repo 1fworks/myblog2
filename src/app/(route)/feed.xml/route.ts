@@ -10,7 +10,7 @@ export const dynamic = 'force-static'
 
 const image_files = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
 
-export const getFirstImageFromContext = (content: string|undefined, url: string|undefined) => {
+const getFirstImageFromContext = (content: string|undefined, url: string|undefined) => {
   if(!content) return undefined
   const slugs = url?.replace('/public/posts/', '').split('/')
   slugs?.pop()
