@@ -52,21 +52,21 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
       if(file === undefined) return source;
       
       const modified_filename = file.replaceAll(' ','%20')
-      const filetype = modified_filename.slice(-4)
-      if(filetype === '.mdx') {
+      const filetype = modified_filename.split('.').slice(-1)[0].toLowerCase()
+      if(filetype === 'mdx') {
         return `[${text1}](${siteSetting.site.url}${modified_filename.replace('/posts/', '/post/').replace('.mdx', '')})`
       }
-      else if(file_type.image_files.indexOf(filetype.slice(1, 4)) > -1){
+      else if(file_type.image_files.indexOf(filetype) > -1){
         // myNextImages
         return `[${text1}](${modified_filename})`
       }
-      else if(file_type.audio_files.indexOf(filetype.slice(1, 4)) > -1){
+      else if(file_type.audio_files.indexOf(filetype) > -1){
         if(text1 === 'waveplayer-2024')
           return `[${text1}](${siteSetting.site.url}${modified_filename})`
         else
           return `[audiofile-${text1}](${siteSetting.site.url}${modified_filename})`
       }
-      else if(file_type.video_files.indexOf(filetype.slice(1, 4)) > -1){
+      else if(file_type.video_files.indexOf(filetype) > -1){
         // For videos, please try to use YouTube whenever possible.
         // TODO
         return `[videofile-${text1}](${siteSetting.site.url}${modified_filename})`

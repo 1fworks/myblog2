@@ -205,7 +205,7 @@ export const MyNextImage = (
             if(modal) {
                 modal.classList.add('img-modal-active')
                 modal.classList.remove('img-modal')
-                modal.style.zIndex = '10'
+                modal.style.zIndex = '11'
             }
 
             if(pixelated) {
