@@ -1,6 +1,6 @@
 import { FileListItem, DividingLine } from "@/app/archive/[[...slug]]/components/filelistitem";
 import { MyNextImage } from "@/components/image/mynextImage";
-import dayjs from "dayjs";
+import dayjs from "@/components/date/myDate";
 
 export const RecentPostAndArt = ({ className, posts, images }:
 {

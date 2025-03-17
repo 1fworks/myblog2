@@ -1,11 +1,7 @@
 'use client'
 
 import Link from "next/link";
-
-// import 'dayjs/locale/ko';
-import dayjs from 'dayjs';
-// import localizedFormat from 'dayjs/plugin/localizedFormat';
-// dayjs.extend(localizedFormat)
+import dayjs from "@/components/date/myDate";
 
 export const DividingLine = ({text, delay, view=true}:{text:string, delay:number, view?:boolean}) => {
   return (

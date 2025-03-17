@@ -5,9 +5,8 @@ import { FuseResult } from "fuse.js";
 import { searchwithfuse } from "@/libs/searchwithfuse";
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { getTextFromContext } from "@/libs/mdx";
-// import 'dayjs/locale/ko';
-import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+import dayjs from "@/components/date/myDate";
 
 import Link from "next/link";
 import { DividingLine, fileListItem } from "./filelistitem";
@@ -107,8 +106,7 @@ export const ArchivePageWithSearchBar = ({
   //   console.log(data.archive_route) // > archive > folder1 > folder2 ...
   //   console.log(data.archive_detail)
   // }, [])
-
-  dayjs.extend(localizedFormat)
+  
   const last_updated = data.archive_detail.files[0]?.date
   const files = sortby === 'newest' ? data.archive_detail.files : Object.assign([], data.archive_detail.files).reverse()
 
@@ -222,7 +220,7 @@ export const ArchivePageWithSearchBar = ({
             { files.length > 0 &&
               files.map((file, i)=>{
                 const delay = (data.archive_detail.folders.length + 1) * 100 + i * 100;
-                const view = (i == 0 || dayjs(files[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(files[Math.max(i, 0)].date).format('YYYY'))
+                const view = (i === 0 || dayjs(files[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(files[Math.max(i, 0)].date).format('YYYY'))
                 return (
                   <div className="w-full" key={`file ${i}`}>
                     <DividingLine view={view} key={`line ${i}`} text={dayjs(files[Math.max(i, 0)].date).format('YYYY')} delay={delay}/>
