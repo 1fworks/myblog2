@@ -10,6 +10,6 @@ dayjs.extend(timezone)
 dayjs.locale("ko")
 dayjs.tz.setDefault("Asia/Seoul")
 
-export default function my_dayjs(time:string) {
+export default function my_dayjs(time:string|undefined) {
     return dayjs(time).tz()
 };
