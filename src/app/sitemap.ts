@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { siteSetting } from './site.setting'
 import { getAllPostsWithFrontMatter } from '@/libs/post'
 import { BASE_PATH, frontmatter_type } from '@/libs/post'
+import dayjs from "@/components/date/myDayjs";
 
 export const dynamic = 'force-static'
 
@@ -21,7 +22,7 @@ export function sortPost(posts
         return 1
     else if(val2 === undefined)
         return -1
-    return (new Date(val2).getTime() - new Date(val1).getTime())
+    return (dayjs(val2).valueOf() - dayjs(val1).valueOf())
   })
 }
 

@@ -3,7 +3,7 @@ import { siteSetting } from "../site.setting";
 import { getAllPostsWithFrontMatter } from "@/libs/post";
 import { MyNextImage } from "@/components/image/mynextImage";
 import { findFile } from "@/libs/findFile";
-import dayjs from "@/components/date/myDate";
+import dayjs from "@/components/date/myDayjs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default function Project() {
   .sort((a, b)=>{
     if(a.frontmatter.date === undefined) return 1
     else if(b.frontmatter.date === undefined) return -1
-    return (new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
+    return (dayjs(b.frontmatter.date).valueOf() - dayjs(a.frontmatter.date).valueOf())
   }).filter((post)=>{
     if(post.frontmatter.preview !== undefined) return true;
   })

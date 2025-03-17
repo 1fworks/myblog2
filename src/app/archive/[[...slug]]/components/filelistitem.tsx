@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import dayjs from "@/components/date/myDate";
+import dayjs from "@/components/date/myDayjs";
 
 export const DividingLine = ({text, delay, view=true}:{text:string, delay:number, view?:boolean}) => {
   return (

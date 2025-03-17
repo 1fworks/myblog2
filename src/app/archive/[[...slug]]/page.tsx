@@ -1,5 +1,6 @@
 import { getAllPostsWithContent, getDescription, frontmatter_type } from "@/libs/post";
 import { ArchivePageWithSearchBar } from "./components/archivepage";
+import dayjs from "@/components/date/myDayjs";
 
 import { generateMetadata } from "./generateMetadata";
 export { generateMetadata };
@@ -32,7 +33,7 @@ export const getFiles = async(slugs: string[]|undefined) => {
   .sort((a, b)=>{
     if(a.date === undefined) return 1
     else if(b.date === undefined) return -1
-    return (new Date(b.date).getTime() - new Date(a.date).getTime())
+    return (dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
   })
 
   return { postdata: postdata, files: files }
@@ -59,7 +60,7 @@ export default async function Archive({ params }: { params : Promise<{slug: stri
   .sort((a, b)=>{
     if(a.date === undefined) return 1
     else if(b.date === undefined) return -1
-    return (new Date(b.date).getTime() - new Date(a.date).getTime())
+    return (dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
   }).map((data:{url:string})=>data.url)
 
   const folders = tmp.filter((v:string, i:number) => tmp.indexOf(v) === i).map((element:string)=>{
