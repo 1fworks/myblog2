@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { siteSetting } from './site.setting'
 import { URL } from "url";
 import './globals.css';
-import 'assets/styles/font.scss';
+// import 'assets/styles/font.scss';
 import styles from 'assets/styles/main.module.scss'
 import { NavMenu } from '@/components/header/navMenu';
 import ImgModal from '@/components/image/imgModal';

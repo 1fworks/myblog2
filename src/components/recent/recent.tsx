@@ -19,7 +19,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
 ) => {
   return (
     <div className={className}>
-      <div className='h1-style animate-climb100-animation'>
+      <div className='h1-style animate-climb100-animation' style={{animationDuration:"0.8s"}}>
         Recent
       </div>
       { posts.map((post, i)=>{

@@ -35,7 +35,7 @@ export const NavMenu = () => {
     
     return (
       <div
-        className={`${isSelected?"menulink-active":"menulink"} ${animate ? 'animate-stair-animation':'animate-none'}`}
+        className={`${isSelected?"menulink-active":"menulink"} ${animate ? 'opacity-0 animate-stair-animation':'animate-none'}`}
         style={{animationDelay: `${delay}ms`}}>
         <Link id={`link-${link}`} href={`/${link}`}>
           {linktext}
