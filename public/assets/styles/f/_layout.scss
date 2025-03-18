@@ -744,7 +744,7 @@
         font-family: var(--pretendard-font);
         @apply h-fit;
         @apply relative w-full mx-auto mb-3 rounded-md transition-animate-box;
-        @apply translate-y-10 overflow-hidden backdrop-blur-[2px];
+        @apply translate-y-10 backdrop-blur-[2px];
         .list-data {
             @apply pl-16 pr-5 py-2 flex gap-2 justify-between content-center;
             @include media-query($on-mobile) {

@@ -7,9 +7,10 @@ import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { getTextFromContext } from "@/libs/mdx";
 
 import dayjs from "@/libs/myDayjs";
+import { Dayjs } from "dayjs";
 
 import Link from "next/link";
-import { DividingLine, fileListItem } from "./filelistitem";
+import { DividingLine, FileListItem, fileListItem } from "./filelistitem";
 import { folderListItem } from "./folderlistitem";
 import { frontmatter_type } from "@/libs/post";
 
@@ -36,6 +37,7 @@ export const ArchivePageWithSearchBar = ({
         description: string;
         folder: number;
         file: number;
+        last_update: string;
       }[],
       files: { date:string, title:string, url:string }[]
     },
@@ -48,6 +50,11 @@ export const ArchivePageWithSearchBar = ({
   const [sortby, setSortby] = useState(data.archive_detail.description.order?"newest":"oldest")
   const [value, setValue] = useState("")
   const [searchResult, setSearchResult] = useState<FuseResult<{url:string, title:string, date:string}>[]>([])
+
+  const [ now, setNow ] = useState<Dayjs|undefined>(undefined)
+  useEffect(()=>{
+    setNow(dayjs())
+  }, [])
 
   useEffect(()=>{
     if(inputRef.current){
@@ -201,12 +208,13 @@ export const ArchivePageWithSearchBar = ({
       <div className="mini-spotlight">
         { value.length > 0 && searchResult.length > 0 &&
           searchResult.map((element, id: number)=>{
+            const isRecent = now ? (now.subtract(2, 'week').valueOf() - dayjs(element.item.date).valueOf() < 0) : false
             return (
               fileListItem({
                 url: element.item.url.replace('/public/posts','/post'),
                 title: element.item.title, 
                 date: element.item.date,
-              }, `search_result_${id}`, id * 100, false, true)
+              }, `search_result_${id}`, id * 100, false, true, isRecent)
             )
           })
         }
@@ -214,18 +222,20 @@ export const ArchivePageWithSearchBar = ({
           <>
             { data.archive_detail.folders.length > 0 &&
               data.archive_detail.folders.map((folder, i)=>{
-                return folderListItem(folder, `folder ${i}`, (i+1)*100)
+                const isRecent = now ? (now.subtract(2, 'week').valueOf() - dayjs(folder.last_update).valueOf() < 0) : false
+                return folderListItem(folder, `folder ${i}`, (i+1)*100, isRecent)
               })
             }
             { files.length > 0 &&
               files.map((file, i)=>{
                 const delay = (data.archive_detail.folders.length + 1) * 100 + i * 100;
                 const view = (i === 0 || dayjs(files[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(files[Math.max(i, 0)].date).format('YYYY'))
+                const isRecent = now ? (now.subtract(2, 'week').valueOf() - dayjs(file.date).valueOf() < 0) : false
                 return (
                   <div className="w-full" key={`file ${i}`}>
                     <DividingLine view={view} key={`line ${i}`} text={dayjs(files[Math.max(i, 0)].date).format('YYYY')} delay={delay}/>
                     {
-                      fileListItem(file, `file ${i}`, delay)
+                      <FileListItem file={file} key_string={`file ${i}`} delay={delay} isRecent={isRecent}/>
                     }
                   </div>
                 )

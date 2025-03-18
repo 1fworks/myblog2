@@ -29,7 +29,8 @@ export const getFiles = async(slugs: string[]|undefined) => {
         url: `/post/${tmp.join('/')}`,
       }
     }
-  }).filter((element)=>element !== undefined)
+  })
+  .filter((element)=>element !== undefined)
   .sort((a, b)=>{
     if(a.date === undefined) return 1
     else if(b.date === undefined) return -1
@@ -45,7 +46,7 @@ export default async function Archive({ params }: { params : Promise<{slug: stri
   
   const tmp = postdata.map((post:{frontmatter:frontmatter_type, url:string})=>{
     const tmp = post.url.split('/').slice(3)
-    if(tmp.length !== slugs.length + 2) return undefined
+    if(tmp.length < slugs.length + 2) return undefined
     for(let i=0;i<slugs.length;i++){
       if(slugs[i] !== tmp[i]) return undefined
     }
@@ -55,21 +56,56 @@ export default async function Archive({ params }: { params : Promise<{slug: stri
       date: date,
       title: title,
       url: `/archive/${tmp.slice(0, tmp.length-1).join('/')}`,
+      nestedFolderFile: (tmp.length > slugs.length + 2)
     }
-  }).filter((element)=>element !== undefined)
+  })
+  .filter((element)=>element !== undefined)
+  .map((data:{
+    url:string,
+    date:string|undefined,
+    nestedFolderFile: boolean
+  })=>{
+    return {
+      url: data.url,
+      last_update: data.date ? data.date : '1000-01-01',
+      nestedFolderFile: data.nestedFolderFile
+    }
+  })
+  
+  const folders = tmp.filter((v:{url:string, last_update:string, nestedFolderFile:boolean}, i:number) => { // tmp.indexOf(v) === i
+    if(v.nestedFolderFile) return false
+    for(let j=0;j<i;j+=1){
+      if(tmp[j].url === v.url) return false
+    }
+    return true
+  })
+  .map((v, i)=>{
+    let last_update = v.last_update
+    for(let j=0;j<tmp.length;j+=1){
+      if(i === j) continue
+      if(tmp[j].url.indexOf(v.url) === 0) {
+        if(dayjs(tmp[j].last_update).valueOf() > dayjs(last_update).valueOf()) last_update = tmp[j].last_update
+      }
+    }
+    return {
+      url: v.url,
+      last_update: last_update
+    }
+  })
   .sort((a, b)=>{
-    if(a.date === undefined) return 1
-    else if(b.date === undefined) return -1
-    return (dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
-  }).map((data:{url:string})=>data.url)
-
-  const folders = tmp.filter((v:string, i:number) => tmp.indexOf(v) === i).map((element:string)=>{
-    const folder_path = [...slugs, ...element.split('/').slice(-1)]
-    return {url: element, description:getDescription(folder_path)}
-  }).map((element)=>{
+    if(a.last_update === undefined) return 1
+    else if(b.last_update === undefined) return -1
+    return (dayjs(b.last_update).valueOf() - dayjs(a.last_update).valueOf())
+  })
+  .map((element)=>{
+    const folder_path = [...slugs, ...element.url.split('/').slice(-1)]
+    return { url: element.url, last_update:element.last_update, description:getDescription(folder_path) }
+  })
+  .map((element)=>{
     return {
       ...element.description,
-      url: element.url
+      url: element.url,
+      last_update: element.last_update,
     }
   })
 

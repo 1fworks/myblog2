@@ -1,6 +1,10 @@
+'use client'
+
 import { FileListItem, DividingLine } from "@/app/archive/[[...slug]]/components/filelistitem";
 import { MyNextImage } from "@/components/image/mynextImage";
+import { useEffect, useState } from "react";
 import dayjs from "@/libs/myDayjs";
+import { Dayjs } from "dayjs";
 
 export const RecentPostAndArt = ({ className, posts, images }:
 {
@@ -17,18 +21,24 @@ export const RecentPostAndArt = ({ className, posts, images }:
   }[],
 }
 ) => {
+  const [ now, setNow ] = useState<Dayjs|undefined>(undefined)
+  useEffect(()=>{
+    setNow(dayjs())
+  }, [])
+
   return (
     <div className={className}>
       <div className='h1-style animate-climb100-animation' style={{animationDuration:"0.8s"}}>
         Recent
       </div>
       { posts.map((post, i)=>{
+        const isRecent = now ? (now.subtract(2, 'week').valueOf() - dayjs(post.date).valueOf() < 0) : false
         return (
           <div className="w-full" key={`recent-post ${i}`}>
             { (i == 0 || dayjs(posts[Math.max(i-1, 0)].date).format('YYYY') !== dayjs(posts[Math.max(i, 0)].date).format('YYYY')) &&
               <DividingLine key={`line ${i}`} text={dayjs(posts[Math.max(i, 0)].date).format('YYYY')} delay={(i+1)*100}/>
             }
-            <FileListItem file={post} key_string={`recent-post ${i}`} delay={(i+1)*100} year={false}/>
+            <FileListItem file={post} key_string={`recent-post ${i}`} delay={(i+1)*100} year={false} isRecent={isRecent}/>
           </div>
         )
       })}

@@ -230,6 +230,12 @@
         }
     }
 
+    .notification-badge {
+        div {
+            background-color: $ping-col;
+        }
+    }
+
     .post-data {
         h1, .h1-style {
             background-color: $post-title;

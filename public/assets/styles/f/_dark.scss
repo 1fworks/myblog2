@@ -187,6 +187,12 @@
             }
         }
     }
+
+    .notification-badge {
+        div {
+            background-color: $dark-ping-col;
+        }
+    }
     
     .post-data {
         h1,.h1-style {
