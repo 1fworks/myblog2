@@ -12,6 +12,7 @@ import ImgModal from '@/components/image/imgModal';
 import { Wrapper } from '@/components/wrapper/wrapper';
 import { BgImage } from '@/components/image/bgImage';
 import { basePath } from './site.setting';
+import { getFiles } from "./archive/[[...slug]]/page";
 
 const anton = Anton({
   subsets: ['latin'],
@@ -87,18 +88,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const recent_file = (await getFiles(undefined)).files[0]
   return (
     <html lang="en" className={`scroll-smooth`} suppressHydrationWarning>
       <body className={`relative ${pretendard.variable} ${wantedsans.variable} ${anton.variable} ${styles.mytheme}`}>
         <ThemeProvider defaultTheme='dark'>
           <BgImage basePath={basePath}/>
           <ImgModal/>
-          <NavMenu/>
+          <NavMenu recent_file={recent_file}/>
           <Wrapper>{children}</Wrapper>
         </ThemeProvider>
       </body>

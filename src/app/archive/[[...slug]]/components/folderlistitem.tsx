@@ -11,7 +11,7 @@ export const folderListItem = (folder: {url:string, description:string, folder:n
       >
         { isRecent &&
           <div className="notification-badge absolute left-0 top-0 opacity-0 animate-fade-in-animation z-[1]" style={{animationDuration:'100ms'}}>
-            <div className="rounded-full absolute -translate-x-1/4 -translate-y-1/4 size-3">
+            <div className="notification-ping rounded-full absolute -translate-x-1/4 -translate-y-1/4">
               <div className="rounded-full w-full h-full animate-ping"></div>
             </div>
           </div>

@@ -5,13 +5,27 @@ import { closeImgModal, style_init } from "../image/mynextImage";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import dayjs from "@/libs/myDayjs";
+import { Dayjs } from "dayjs";
 
-export const NavMenu = () => {
+export const NavMenu = ({recent_file}:
+{
+  recent_file:{
+    date: string;
+  }
+}) => {
   const [ animate, setAnimate ] = useState(false)
   const [ hamburger, setHamburger ] = useState(false)
+  
+  const [ now, setNow ] = useState<Dayjs|undefined>(undefined)
+  useEffect(()=>{
+    setNow(dayjs())
+  }, [])
 
-  const MenuLink = ({ link, linktext, isSelected, delay }
-    : { link:string, linktext:string, isSelected:boolean, delay:number }) => {
+  const isRecent = now ? (now.subtract(2, 'week').valueOf() - dayjs(recent_file.date).valueOf() < 0) : false
+
+  const MenuLink = ({ link, linktext, isSelected, delay, isRecent = false }:
+    { link:string, linktext:string, isSelected:boolean, delay:number, isRecent?:boolean }) => {
 
     useEffect(()=>{
       const handleResize = () => {
@@ -37,6 +51,13 @@ export const NavMenu = () => {
       <div
         className={`${isSelected?"menulink-active":"menulink"} ${animate ? 'opacity-0 animate-stair-animation':'animate-none'}`}
         style={{animationDelay: `${delay}ms`}}>
+        { isRecent &&
+          <div className="notification-badge absolute left-0 top-0 opacity-0 animate-fade-in-animation z-[1]" style={{animationDuration:'100ms'}}>
+            <div className="rounded-full absolute -translate-x-full size-2">
+              <div className="rounded-full w-full h-full animate-ping"></div>
+            </div>
+          </div>
+        }
         <Link id={`link-${link}`} href={`/${link}`}>
           {linktext}
         </Link>
@@ -81,7 +102,7 @@ export const NavMenu = () => {
         <ThemeSwitch/>
         <div className={`menulist ${hamburger?'hamburger-menu':''} self-center`}>
           <MenuLink link={''}        linktext={'Home'}    isSelected={('/'        === page)} delay={50} />
-          <MenuLink link={'archive'} linktext={'Archive'} isSelected={('post'     === page || 'archive' === page)} delay={150} />
+          <MenuLink link={'archive'} linktext={'Archive'} isSelected={('post'     === page || 'archive' === page)} delay={150} isRecent={isRecent}/>
           <MenuLink link={'art'}     linktext={'Art'}     isSelected={('art'      === page)} delay={250} />
           <MenuLink link={'project'} linktext={'Project'} isSelected={('project'  === page)} delay={350} />
           <MenuLink link={'about'}   linktext={'About'}   isSelected={('about'    === page)} delay={450} />
