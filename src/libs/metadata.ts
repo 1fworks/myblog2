@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import path from "path";
-import { metadata as layoutMetadata } from "@/app/layout";
-import lodash from 'lodash';
+// import { metadata as layoutMetadata } from "@/app/layout";
+// import lodash from 'lodash';
 import { siteSetting } from "@/app/site.setting";
 import imageSize from "image-size";
 
@@ -42,8 +42,8 @@ export function editMetadata(
       },
     })
   }
-
-  const data = lodash.merge(Object.assign({}, layoutMetadata), {
+  
+  return {
     title: title ? title : url,
     description: description ? description : siteSetting.site.description,
     alternates: {
@@ -54,7 +54,5 @@ export function editMetadata(
       `${title ? title : url} | ${siteSetting.site.title}`,
       description
     )
-  })
-  
-  return data
+  }
 }
