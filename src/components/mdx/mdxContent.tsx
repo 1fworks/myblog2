@@ -50,7 +50,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     text = text.replace(/\[(.+?)\]\((.+?)\)/g, (source, text1, text2)=>{
       const filetype = text2.split('.').slice(-1)[0].toLowerCase()
       let filename = text2
-      if(filetype === 'gif') {
+      if(process.env.NODE_ENV === "production" && filetype === 'gif') {
         const tmp = filename.split('.')
         tmp.pop()
         tmp.push('webp')

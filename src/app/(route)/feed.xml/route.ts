@@ -22,7 +22,7 @@ const getFirstImageFromContext = (content: string|undefined, url: string|undefin
       const type = filename.split('.').slice(-1)[0].toLowerCase()
       if(image_files.includes(type)){
         let img_filename = filename
-        if(type === 'gif') {
+        if(process.env.NODE_ENV === "production" && type === 'gif') {
           const tmp = img_filename.split('.')
           tmp.pop()
           tmp.push('webp')
