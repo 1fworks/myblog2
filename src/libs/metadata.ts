@@ -47,10 +47,10 @@ export function editMetadata(
     title: title ? title : url,
     description: description ? description : siteSetting.site.description,
     alternates: {
-      canonical: `/${url.toLowerCase()}`,
+      canonical: `/${url}`,
     },
     ...myOpenGraph(
-      `${siteSetting.site.url}/${url.toLowerCase()}`,
+      `${siteSetting.site.url}/${url}`,
       `${title ? title : url} | ${siteSetting.site.title}`,
       description
     )
