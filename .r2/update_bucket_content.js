@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { upload_files, delete_files } from './s3/bucket_manager.js'
 
-const r2_folder_name = 'r2folder'
+const r2_folder_name = '.r2folder'
 const sourceFolder = config.env.nextImageExportOptimizer_imageFolderPath;
 const target_folder = path.join(process.cwd(), `/${r2_folder_name}/`, sourceFolder.replace('public/',''))
 
@@ -36,7 +36,7 @@ prev_files.forEach((prev_file)=>{
             sha256.update(data)
             const hash_data = sha256.digest('hex')
             if(hash_data !== hash) {
-                update.push(key)
+                update.push({key:key, source:`${r2_folder_name}/${key}`})
             }
             else maintain.push(key)
         }
@@ -45,7 +45,7 @@ prev_files.forEach((prev_file)=>{
 })
 new_images.forEach(img=>{
     const key = img.slice(img.indexOf(r2_folder_name)+r2_folder_name.length+1)
-    update.push(key)
+    update.push({key:key, source:`${r2_folder_name}/${key}`})
 })
 
 async function upload_delete_files() {
@@ -56,7 +56,7 @@ async function upload_delete_files() {
         console.log(`remove ${remove.length} file(s)...`)
         await delete_files(process.env.BUCKET_NAME, remove)
         console.log(`upload ${update.length} file(s)...`)
-        await upload_files(process.env.BUCKET_NAME, update, r2_folder_name)
+        await upload_files(process.env.BUCKET_NAME, update)
         console.log('----- ready to deploy my blog!')
     }
     catch(err) {

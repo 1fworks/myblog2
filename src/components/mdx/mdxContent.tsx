@@ -58,6 +58,12 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
       }
       else if(file_type.image_files.indexOf(filetype) > -1){
         // myNextImages
+        if(filetype === 'gif'){
+          const tmp = modified_filename.split('.')
+          tmp.pop()
+          tmp.push('webp')
+          return `[${text1}](${tmp.join('.')})`
+        }
         return `[${text1}](${modified_filename})`
       }
       else if(file_type.audio_files.indexOf(filetype) > -1){

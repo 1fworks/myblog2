@@ -2,7 +2,7 @@ import config from '../next.config.js';
 import fs from 'fs';
 import path from 'path';
 
-const r2_folder_name = 'r2folder'
+const r2_folder_name = '.r2folder'
 const hashes_filename =  'next-image-export-optimizer-hashes.json'
 const sourceFolder = config.env.nextImageExportOptimizer_imageFolderPath;
 const targetFolder = path.join(`${r2_folder_name}/`, sourceFolder.replace('public/',''))

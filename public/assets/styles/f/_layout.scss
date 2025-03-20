@@ -144,7 +144,7 @@
     }
 
     .modal, .img-modal, .modal-active, .img-modal-active {
-        @apply backdrop-blur-0 fixed left-0 top-0 -z-10 w-dvw h-lvh transition-[backdrop-filter] duration-300;
+        @apply backdrop-blur-0 fixed left-0 top-0 -z-10 w-dvw h-lvh transition-[backdrop-filter]; // duration-300
         // @include media-query($on-mobile){
         //     @apply mt-12;
         // }

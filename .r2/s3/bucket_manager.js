@@ -18,15 +18,13 @@ const getS3 = () => {
     return s3
 }
 
-export async function download_bucket(bucket_name, localdir=""){
-    const s3 = getS3()
-    if(localdir.length > 0 && !fs.existsSync(path.join(localdir, '/'))){
-        fs.mkdirSync(path.join(localdir, '/'), {recursive:true});
-    }
+const s3 = getS3()
+
+export async function get_bucket_list(bucket_name){
+    const list = []
+    let isTruncated = true
+    let marker = undefined
     try {
-        const list = []
-        let isTruncated = true
-        let marker = undefined
         while(isTruncated) {
             const list_obj = await s3.send(new ListObjectsCommand({
                 Bucket: bucket_name,
@@ -36,6 +34,19 @@ export async function download_bucket(bucket_name, localdir=""){
             isTruncated = list_obj.IsTruncated
             marker = list_obj.Contents.slice(-1)[0].Key
             list.push(...list_obj.Contents)
+        }
+        return list
+    }
+    catch(err) {
+        console.log(err)
+        return []
+    }
+}
+
+export async function download_files_from_list(list, localdir=""){
+    try {
+        if(localdir.length > 0 && !fs.existsSync(path.join(localdir, '/'))){
+            fs.mkdirSync(path.join(localdir, '/'), {recursive:true});
         }
         const chunk_size = 30
         for(let i=0;i<list.length;i+=chunk_size){
@@ -62,6 +73,16 @@ export async function download_bucket(bucket_name, localdir=""){
             console.log(`download - ${i+chunk.length}/${list.length}`)
         }
     }
+    catch(err){
+        console.log(err)
+    }
+}
+
+export async function download_bucket(bucket_name, localdir=""){
+    try {
+        const list = get_bucket_list(bucket_name)
+        await download_files_from_list(list, localdir)
+    }
     catch(err) {
         console.error(err)
         throw new Error('download bucket error')
@@ -72,7 +93,6 @@ export async function delete_files(bucket_name, files) {
     try {
         if(files.length > 0) {
             const chunk_size = 500
-            const s3 = getS3()
             for(let i=0;i<files.length;i+=chunk_size){
                 const res = await s3.send(new DeleteObjectsCommand({
                     Bucket: bucket_name,
@@ -92,16 +112,14 @@ export async function delete_files(bucket_name, files) {
     }
 }
 
-export async function upload_files(bucket_name, files, localdir="") {
+export async function upload_files(bucket_name, files) {
     try {
         if(files.length > 0) {
-            const s3 = getS3()
             files.forEach(async(file)=>{
-                const local_file = path.join(localdir, file)
                 const res = await s3.send(new PutObjectCommand({
                     Bucket: bucket_name,
-                    Key: file,
-                    Body: fs.createReadStream(local_file)
+                    Key: file.key,
+                    Body: fs.createReadStream(file.source)
                 }))
                 // console.log(res)
             })

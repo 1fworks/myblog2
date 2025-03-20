@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build-cloudflare-pages": "npx next build && node .r2/extract_useful_files.js && npx next-image-export-optimizer && node .r2/movfolder.js && node .r2/update_bucket_content.js",
+    "workflow-1": "node .r2/download_bucket.js && node .r2/gif_to_webp.js && npx next build && node .r2/remove_webp.js",
+    "workflow-2": "node .r2/extract_useful_files.js && npx next-image-export-optimizer",
+    "workflow-3": "node .r2/movfolder.js && node .r2/update_bucket_content.js",
+    "build-cloudflare-pages": "npm run workflow-1 && npm run workflow-2 && npm run workflow-3",
     "start": "next start",
     "lint": "next lint",
     "s3test": "node .r2/s3/test.js"
@@ -53,6 +56,7 @@
     "remark-toc": "^9.0.0",
     "rss": "^1.2.2",
     "sass": "^1.84.0",
+    "sharp": "^0.33.5",
     "striptags": "^3.2.0",
     "unist-util-visit": "^5.0.0",
     "usehooks-ts": "^3.1.1",

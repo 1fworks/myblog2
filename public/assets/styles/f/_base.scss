@@ -276,7 +276,7 @@
             fill: $dark-text-less-cloudy;
         }
         div:hover {
-            background-color: $dark-text-input-active;
+            background-color: $text-link-active;//$dark-text-input-active;
             svg {
                 fill: $background-color;
             }

@@ -3,14 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { sync } from 'glob';
 import crypto from 'crypto';
-import dotenv from 'dotenv';
-import { download_bucket } from './s3/bucket_manager.js'
 
 const image_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']
 const file_types = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg', 'json']
 const cache_filename = 'next-image-export-optimizer-hashes.json'
 
-const r2_folder_name = 'r2folder'
+const r2_folder_name = '.r2folder'
 
 const env_public = path.join(config.env.nextImageExportOptimizer_imageFolderPath, '/').replaceAll('\\','/')
 const public_folder = path.join(process.cwd(), env_public)
@@ -18,13 +16,6 @@ const r2_folder = path.join(process.cwd(), `${r2_folder_name}/`)
 
 async function main() {
     try {
-        if(fs.existsSync('.env.local')){
-            dotenv.config({path:'.env.local'})
-        }
-        console.log('download images from bucket...')
-        await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
-        console.log('download complete!')
-
         const public_images = sync(`${public_folder}/**/{${image_types.map(filetype=>`*.${filetype}`).join(',')}}`, { posix: true, dotRelative: true, nocase: true, absolute: false })
         .filter(file=>file.split('/').slice(-2)[0] !== 'nextImageExportOptimizer');
         

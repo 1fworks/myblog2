@@ -10,7 +10,7 @@ import path from "path";
 export const closeImgModal = () => {
     const modal = document.querySelector('.img-modal-active') as HTMLElement
     if(modal) {
-        modal.classList.add('img-modal')
+        // modal.classList.add('img-modal')
         modal.classList.remove('img-modal-active')
     }
 
@@ -60,6 +60,7 @@ export const MyNextImage = (
     imgWidth?:number, imgHeight?:number, delay?:number, clickable?:boolean, animate?:boolean}) => {
     
     if(process.env.NODE_ENV !== 'production'){ unoptimized = true }
+    else if(['webp'].includes(filename.split('.').slice(-1)[0].toLowerCase())){ unoptimized = true }
     
     const src_with_basePath = path.join(`${basePath}/`,`${src}`)
 
@@ -204,7 +205,7 @@ export const MyNextImage = (
             const modal = document.querySelector('.img-modal') as HTMLElement
             if(modal) {
                 modal.classList.add('img-modal-active')
-                modal.classList.remove('img-modal')
+                // modal.classList.remove('img-modal')
                 modal.style.zIndex = '11'
             }
 
