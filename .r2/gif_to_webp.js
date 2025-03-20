@@ -82,7 +82,7 @@ async function main() {
                 })
             }
             else {
-                const oldname = `${r2_folder_name}/${img_folder}/${file}`
+                const oldname = `${r2_folder_name}/${img_folder}/${gif_files[file].webp}`
                 fs.renameSync(oldname, dest)
             }
             fs.rmSync(source)
