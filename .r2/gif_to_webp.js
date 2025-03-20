@@ -29,7 +29,11 @@ async function main() {
             const sha256 = crypto.createHash('sha256')
             sha256.update(data)
             const hash_data = sha256.digest('hex')
-            return gif_files[path.replace('./public/', '')] = { hash: hash_data, webp: webp.replace('./public/', ''), cached: false }
+            return gif_files[path.slice(path.indexOf('public')).slice('public/'.length)] = {
+                hash: hash_data,
+                webp: webp.slice(path.indexOf('public')).slice('public/'.length),
+                cached: false
+            }
         })
 
         const json_file = `${r2_folder_name}/${img_folder}/${json_filename}`
@@ -62,8 +66,8 @@ async function main() {
         console.log(`${total_n} gif -> webp (${cached_n} cached)`)
         Object.keys(gif_files).forEach(async (file, i)=>{
             json_data[file] = gif_files[file].hash
-            const source = `./public/${file}`
-            const dest = `./public/${gif_files[file].webp}`
+            const source = `public/${file}`
+            const dest = `public/${gif_files[file].webp}`
             if(!gif_files[file].cached){
                 await sharp(source, {animated:true, limitInputPixels:false}).webp({
                     quality:100,
@@ -91,7 +95,7 @@ async function main() {
             await upload_files(process.env.BUCKET_NAME, update)
             console.log(`${update.length} files uploaded!`)
         }
-        fs.rmSync(`./${r2_folder_name}/${img_folder}/`, { recursive:true, force:true })
+        fs.rmSync(`${r2_folder_name}/${img_folder}/`, { recursive:true, force:true })
     }
     catch(err) {
         console.error(err)

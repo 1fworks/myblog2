@@ -9,9 +9,7 @@ async function main() {
         if(fs.existsSync('.env.local')){
             dotenv.config({path:'.env.local'})
         }
-        console.log('download images from bucket...')
         await download_bucket(process.env.BUCKET_NAME, r2_folder_name)
-        console.log('download complete!')
     }
     catch(err) {
         console.error(err)

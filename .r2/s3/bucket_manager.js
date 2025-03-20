@@ -18,9 +18,8 @@ const getS3 = () => {
     return s3
 }
 
-const s3 = getS3()
-
 export async function get_bucket_list(bucket_name){
+    const s3 = getS3()
     const list = []
     let isTruncated = true
     let marker = undefined
@@ -43,7 +42,8 @@ export async function get_bucket_list(bucket_name){
     }
 }
 
-export async function download_files_from_list(list, localdir=""){
+export async function download_files_from_list(bucket_name, list, localdir=""){
+    const s3 = getS3()
     try {
         if(localdir.length > 0 && !fs.existsSync(path.join(localdir, '/'))){
             fs.mkdirSync(path.join(localdir, '/'), {recursive:true});
@@ -79,9 +79,11 @@ export async function download_files_from_list(list, localdir=""){
 }
 
 export async function download_bucket(bucket_name, localdir=""){
+    console.log('download images from bucket...')
     try {
-        const list = get_bucket_list(bucket_name)
-        await download_files_from_list(list, localdir)
+        const list = await get_bucket_list(bucket_name)
+        await download_files_from_list(bucket_name, list, localdir)
+        console.log('download complete!')
     }
     catch(err) {
         console.error(err)
@@ -90,6 +92,7 @@ export async function download_bucket(bucket_name, localdir=""){
 }
 
 export async function delete_files(bucket_name, files) {
+    const s3 = getS3()
     try {
         if(files.length > 0) {
             const chunk_size = 500
@@ -113,6 +116,7 @@ export async function delete_files(bucket_name, files) {
 }
 
 export async function upload_files(bucket_name, files) {
+    const s3 = getS3()
     try {
         if(files.length > 0) {
             files.forEach(async(file)=>{
