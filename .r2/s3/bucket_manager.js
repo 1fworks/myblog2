@@ -126,6 +126,9 @@ export async function upload_files(bucket_name, files) {
                 Body: fs.createReadStream(file.source)
             }))
             // console.log(res)
+            if((i > 0 && (i+1)%10 === 0) || i === files.length-1) {
+                console.log(`--- ${i+1}/${files.length}`)
+            }
         }
     }
     catch(err) {
