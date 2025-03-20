@@ -19,6 +19,7 @@ export const siteSetting = {
         lang: "en-US",
         timezone: "Asia/Seoul",
         image: `${url}/assets/img/f.png`, // for Open Graph
+        image_relative: '/assets/img/f.png',
         icons: [ // favicon, icon, apple icon, safari, ms-app
             { rel: 'icon', type: 'image/x-icon', url: `${url}/assets/favicon/favicon.ico` },
             { rel: 'icon', type: 'image/png', sizes: '16x16', url: `${url}/assets/favicon/favicon-16x16.png` },

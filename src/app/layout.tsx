@@ -14,6 +14,11 @@ import { BgImage } from '@/components/image/bgImage';
 import { basePath } from './site.setting';
 import { getFiles } from "./archive/[[...slug]]/page";
 
+import path from 'path';
+import imageSize from 'image-size';
+
+const img_data = imageSize(path.join('public/', siteSetting.site.image_relative))
+
 const anton = Anton({
   subsets: ['latin'],
   preload: true,
@@ -53,11 +58,11 @@ export const metadata: Metadata = {
   authors: [{ name: siteSetting.author.name, url: siteSetting.author.url }],
   creator: siteSetting.author.name,
   publisher: 'uwu',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
+  // formatDetection: {
+  //   email: false,
+  //   address: false,
+  //   telephone: false,
+  // },
 
   icons: siteSetting.site.icons,
 
@@ -76,10 +81,21 @@ export const metadata: Metadata = {
     description: siteSetting.site.description,
     type: 'website',
     url: siteSetting.site.url,
-    images: siteSetting.site.image,
+    images: [
+      {
+        width: img_data.width,
+        height: img_data.height,
+        url: siteSetting.site.image
+      }
+    ]
   },
 
   twitter: {
+    title: siteSetting.site.title,
+    description: siteSetting.site.description,
+    card: "summary",
+    site: `@${siteSetting.author.twitter}`,
+    creator: `@${siteSetting.author.twitter}`,
     images: siteSetting.site.image,
   },
 

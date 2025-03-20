@@ -5,5 +5,5 @@ import { editMetadata } from '@/libs/metadata';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const slugs = (await params).slug
   const { data } = readContentAndFrontMatterFromMdxfile(slugs)
-  return editMetadata(slugs.join('/'), data.title)
+  return editMetadata(`post/${slugs.join('/')}`, data.title)
 }

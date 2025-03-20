@@ -6,19 +6,38 @@ import { findFile } from "@/libs/findFile";
 import dayjs from "@/libs/myDayjs";
 import Link from "next/link";
 
+import path from "path";
+import imageSize from "image-size";
+
+const img_data = imageSize(path.join('public/', siteSetting.site.image_relative))
+
 export const metadata: Metadata = {
   title: 'Project',
   alternates: {
     canonical: `/project`,
   },
   openGraph: {
-    siteName: `Project | ${siteSetting.site.title}`,
+    siteName: siteSetting.site.title,
     title: `Project | ${siteSetting.site.title}`,
     description: siteSetting.site.description,
     type: 'website',
     url: `${siteSetting.site.url}/project`,
+    images: [
+      {
+        width: img_data.width,
+        height: img_data.height,
+        url: siteSetting.site.image
+      }
+    ]
+  },
+  twitter: {
+    title: `Project | ${siteSetting.site.title}`,
+    description: siteSetting.site.description,
+    card: "summary",
+    site: `@${siteSetting.author.twitter}`,
+    creator: `@${siteSetting.author.twitter}`,
     images: siteSetting.site.image,
-  }
+  },
 }
 export const dynamic = 'force-static'
 

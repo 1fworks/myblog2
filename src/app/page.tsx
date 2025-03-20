@@ -3,6 +3,10 @@ import { GET as getImageData } from "./(route)/api/getAllArtImages/route";
 import { RecentPostAndArt } from "@/components/recent/recent";
 import { siteSetting } from "./site.setting";
 import type { Metadata } from 'next'
+import path from "path";
+import imageSize from "image-size";
+
+const img_data = imageSize(path.join('public/', siteSetting.site.image_relative))
 
 export const metadata : Metadata = {
   title: siteSetting.site.title,
@@ -15,6 +19,20 @@ export const metadata : Metadata = {
     description: siteSetting.site.description,
     type: 'website',
     url: siteSetting.site.url,
+    images: [
+      {
+        width: img_data.width,
+        height: img_data.height,
+        url: siteSetting.site.image
+      }
+    ]
+  },
+  twitter: {
+    title: siteSetting.site.title,
+    description: siteSetting.site.description,
+    card: "summary_large_image",
+    site: `@${siteSetting.author.twitter}`,
+    creator: `@${siteSetting.author.twitter}`,
     images: siteSetting.site.image,
   },
 }
