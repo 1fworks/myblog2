@@ -21,7 +21,14 @@ const getFirstImageFromContext = (content: string|undefined, url: string|undefin
     if(filename) {
       const type = filename.split('.').slice(-1)[0].toLowerCase()
       if(image_files.includes(type)){
-        const filepath = findFile(filename, slugs?slugs:[])
+        let img_filename = filename
+        if(type === 'gif') {
+          const tmp = img_filename.split('.')
+          tmp.pop()
+          tmp.push('webp')
+          img_filename = tmp.join('.')
+        }
+        const filepath = findFile(img_filename, slugs?slugs:[])
         if(filepath) {
           return {
             filepath: filepath,

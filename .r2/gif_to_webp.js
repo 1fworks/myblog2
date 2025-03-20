@@ -61,10 +61,12 @@ async function main() {
         }
 
         const update = []
-        const total_n = Object.keys(gif_files).length
+        const gif_files_keys = Object.keys(gif_files)
+        const total_n = gif_files_keys.length
         json_data = {}
         console.log(`${total_n} gif -> webp (${cached_n} cached)`)
-        Object.keys(gif_files).forEach(async (file, i)=>{
+        for(let i=0;i<total_n;i+=1){
+            const file = gif_files_keys[i]
             json_data[file] = gif_files[file].hash
             const source = `public/${file}`
             const dest = `public/${gif_files[file].webp}`
@@ -84,7 +86,7 @@ async function main() {
                 fs.renameSync(oldname, dest)
             }
             fs.rmSync(source)
-        })
+        }
         console.log('gif -> webp done!')
         fs.writeFileSync(json_file, JSON.stringify(json_data, null, 2))
         update.push({

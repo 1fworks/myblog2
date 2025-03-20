@@ -118,15 +118,14 @@ export async function delete_files(bucket_name, files) {
 export async function upload_files(bucket_name, files) {
     const s3 = getS3()
     try {
-        if(files.length > 0) {
-            files.forEach(async(file)=>{
-                const res = await s3.send(new PutObjectCommand({
-                    Bucket: bucket_name,
-                    Key: file.key,
-                    Body: fs.createReadStream(file.source)
-                }))
-                // console.log(res)
-            })
+        for(let i=0;i<files.length;i+=1) {
+            const file = files[i]
+            const res = await s3.send(new PutObjectCommand({
+                Bucket: bucket_name,
+                Key: file.key,
+                Body: fs.createReadStream(file.source)
+            }))
+            // console.log(res)
         }
     }
     catch(err) {

@@ -48,22 +48,25 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     })
     // [text](link)
     text = text.replace(/\[(.+?)\]\((.+?)\)/g, (source, text1, text2)=>{
-      const file = findFile(text2, props.slugs ? props.slugs : [])
+      const filetype = text2.split('.').slice(-1)[0].toLowerCase()
+      let filename = text2
+      if(filetype === 'gif') {
+        const tmp = filename.split('.')
+        tmp.pop()
+        tmp.push('webp')
+        filename = tmp.join('.')
+      }
+
+      const file = findFile(filename, props.slugs ? props.slugs : [])
       if(file === undefined) return source;
       
       const modified_filename = file.replaceAll(' ','%20')
-      const filetype = modified_filename.split('.').slice(-1)[0].toLowerCase()
+      
       if(filetype === 'mdx') {
         return `[${text1}](${siteSetting.site.url}${modified_filename.replace('/posts/', '/post/').replace('.mdx', '')})`
       }
       else if(file_type.image_files.indexOf(filetype) > -1){
         // myNextImages
-        if(filetype === 'gif'){
-          const tmp = modified_filename.split('.')
-          tmp.pop()
-          tmp.push('webp')
-          return `[${text1}](${tmp.join('.')})`
-        }
         return `[${text1}](${modified_filename})`
       }
       else if(file_type.audio_files.indexOf(filetype) > -1){

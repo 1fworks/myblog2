@@ -13,7 +13,7 @@ export const getTextFromContext = async(content: string|undefined, len: number =
     html = html.replaceAll("\n"," ")
     .replace(/<code[^>]*>.*?<\/code>/g, "")
     text = striptags(html)
-    .replace(/!\[\[.*?\]\]/g, "")
+    .replace(/!\[\[.*?\]\]|!\[.*?\]\(.*?\)/g, "")
     .replaceAll('/imglist open', '')
     .replaceAll('/imglist close', '')
     description = text.trim().replace(/\s+/g, " ");
