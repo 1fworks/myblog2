@@ -118,17 +118,18 @@ export async function delete_files(bucket_name, files) {
 export async function upload_files(bucket_name, files) {
     const s3 = getS3()
     try {
-        for(let i=0;i<files.length;i+=1) {
-            const file = files[i]
-            const res = await s3.send(new PutObjectCommand({
-                Bucket: bucket_name,
-                Key: file.key,
-                Body: fs.createReadStream(file.source)
+        const chunk_size = 30
+        for(let i=0;i<files.length;i+=chunk_size){
+            const chunk = files.slice(i, i+chunk_size)
+            await Promise.all(chunk.map(async(file)=>{
+                const res = await s3.send(new PutObjectCommand({
+                    Bucket: bucket_name,
+                    Key: file.key,
+                    Body: fs.createReadStream(file.source)
+                }))
+                // console.log(res)
             }))
-            // console.log(res)
-            if((i > 0 && (i+1)%10 === 0) || i === files.length-1) {
-                console.log(`--- ${i+1}/${files.length}`)
-            }
+            console.log(`--- ${i+chunk.length}/${files.length}`)
         }
     }
     catch(err) {
