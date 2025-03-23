@@ -19,12 +19,17 @@ export const Gallery = ({ listName, imageList, className="" }
       <div className="gallery-box">
         {imageList.map((imageData, i)=>{
           const filename = imageData.filename.split('/').slice(-1)[0]
+          const src = imageData.filename.replaceAll(' ','%20')
+          const description = `▼ ${imageData.filename.split('/').slice(-2)[0]}`
           return (
             <div className="gallery-image" key={`img ${i}`}>
+              <div className="gallery-description-box">
+                <div className="gallery-description">{description}</div>
+              </div>
               <MyNextImage
                 filename={filename}
                 alt={filename}
-                src={imageData.filename}
+                src={src}
                 ratio={1/1}
                 cover={true}
                 imgWidth={imageData.data.width}

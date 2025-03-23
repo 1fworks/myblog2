@@ -81,7 +81,7 @@ export default function Project() {
           const previous_post_year = dayjs(posts[Math.max(i-1, 0)].frontmatter.date).format('YYYY')
           const preview = {
             filename: (post.frontmatter.preview as string).split('/').slice(-1)[0],
-            src: findFile((post.frontmatter.preview as string), []),
+            src: findFile((post.frontmatter.preview as string), ['projects']),
           }
           if(!post.frontmatter.date || !preview.src) return null;
           return (

@@ -57,7 +57,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
         filename = tmp.join('.')
       }
 
-      const file = findFile(filename, props.slugs ? props.slugs : [])
+      const file = findFile(filename, props.slugs ? props.slugs.slice(0, props.slugs.length-1) : [])
       if(file === undefined) return source;
       
       const modified_filename = file.replaceAll(' ','%20')

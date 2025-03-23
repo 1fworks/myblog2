@@ -111,16 +111,20 @@ export const getAllSpecificFolder = (slug: string[]) => {
 }
 
 // for findImage
-export const getAllSpecificFolderForFile = (filename: string, slugs: string[] = [], imgPath: string = "/public") : string[] => {
+export const getAllSpecificFolderForFile = (filename: string, slugs: string[] = [], imgPath: string = "/public/posts") : string[] => {
   const publicFolder = `${path.join(process.cwd(), imgPath)}`
+  const middle_path = slugs.join("/")
   let folderPaths: string[] = []
   
-  if(slugs.length > 0)
-    folderPaths = sync(`${publicFolder}/${slugs.join("/")}/${filename}`, { posix: true, dotRelative: true, nocase: true })
-  if(folderPaths.length === 0)
-    folderPaths = sync(`${publicFolder}/${filename}`, { posix: true, dotRelative: true, nocase: true } );
-  if(folderPaths.length === 0)
+  folderPaths = sync(`${publicFolder}/${middle_path?`${middle_path}/`:''}${filename}`, { posix: true, dotRelative: true, nocase: true })
+
+  if(folderPaths.length === 0) {
+    folderPaths = sync(`${publicFolder}/${middle_path?`${middle_path}/`:''}**/${filename}`, { posix: true, dotRelative: true, nocase: true })
+  }
+  if(folderPaths.length === 0) {
     folderPaths = sync(`${publicFolder}/**/${filename}`, { posix: true, dotRelative: true, nocase: true } );
+  }
+  // if(folderPaths.length === 0) console.log('------not found :', middle_path, filename)
 
   return folderPaths.map(path => {
     return path.slice(path.indexOf(imgPath)).replace("/public", "")

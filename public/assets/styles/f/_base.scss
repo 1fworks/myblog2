@@ -71,6 +71,11 @@
         @apply bg-[#ebebeb];
     }
 
+    .gallery-description {
+        background-color: #ffffffee;
+        color: $text-base-color;
+    }
+
     ::selection {
         background-color: $text-selection;
     }

@@ -677,6 +677,14 @@
         @include media-query($on-mobile) {
             @apply grid-cols-3;
         }
+        .gallery-description-box {
+            @apply relative w-full opacity-0 transition-opacity z-[2];
+            .gallery-description {
+                @apply absolute pointer-events-none rounded-md shadow-lg;
+                @apply text-wrap px-2 py-1 transition-transform translate-x-2;
+                line-height: 100%;
+            }
+        }
         .gallery-image {
             @apply w-full aspect-square;
             .img-attention {
@@ -689,6 +697,16 @@
                 .img-attention {
                     img:hover {
                         @apply scale-[1.025];
+                    }
+                }
+            }
+            &:hover {
+                @include media-query-opposite($on-mobile){
+                    .gallery-description-box {
+                        @apply opacity-100;
+                        .gallery-description {
+                            @apply translate-x-0;
+                        }
                     }
                 }
             }

@@ -6,12 +6,7 @@ export const findFile = (
   notfound: string|undefined = undefined)
 : string | undefined => {
   
-  const file = filename.split('/')
-  
-  let files: string[] = []
-  if(file.length === 1){
-    files = getAllSpecificFolderForFile(filename, slugs)
-  } else files = getAllSpecificFolderForFile(filename)
+  const files = getAllSpecificFolderForFile(filename, slugs)
   if(files.length === 0){
     return notfound ? notfound : undefined
   }
