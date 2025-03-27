@@ -1,0 +1,106 @@
+---
+title: 배경 및 색상 처리
+date: 2025-03-27T03:27:00
+update: 2025-03-27T03:27:00
+tags:
+  - devlog
+---
+![[imgs/end_fetchers/14/tilemap.png]]
+
+이전에 게임의 배경을 어떻게 처리한 건지 물어보시는 분이 계셨습니다. `타일`로 모두 처리를 했다고 말하니 놀라시더군요 :)
+
+생각난 김에 배경을 어떤 식으로 그려냈는지 알려드리겠습니다.
+
+---
+
+# 타일맵 (Tilemap)
+
+![[imgs/end_fetchers/14/gms_tilemap_0.webp]]
+![[imgs/end_fetchers/14/gms_tilemap_1.webp]]
+
+먼저 `tilemap`이라는 기능을 이용하여 구현하는 대표적인 방법이 있습니다. 타일의 배치에 따라 어떤 타일이 보일지 설정할 수도 있죠. 무엇보다 이런 형태로 맵을 구성하면 배경 이미지로 인한 리소스 용량을 크게 줄일 수 있다는 것이 큰 장점입니다.
+
+그런데 이 기능만으로 배경을 그리면 타일 배치에 대한 규칙성이 눈에 보이게 됩니다. 
+
+/imglist open
+![[imgs/end_fetchers/14/tilemap_example_01.png]]
+![[imgs/end_fetchers/14/tilemap_example_02.png]]
+/imglist close
+
+저는 이 눈에 보이는 규칙성을 조금 해소해 보고자 여러 각도의 대각선 타일을 여러 장 그려서 표현했습니다. 덕분에 다양한 형태의 지역을 `tilemap`만을 이용하여 구현할 수 있었죠. 덕분에 굳이 맵마다 배경을 따로 그려줄 필요가 없어졌습니다. 또한 마치 **tilemap을 쓰지 않은 것처럼 보이게** 만들 수 있었습니다.
+
+그래도 이 방식에도 단점은 있습니다. 어느 정도 틀에 맞춰져서 그려지다 보니 조금 딱딱해지는 느낌이 살짝 남아있었고, 무엇보다 자연스럽게 보이기 위해 타일을 끼워맞추는 과정이 마냥 즐겁진 않았습니다. 필요한 퍼즐 조각을 찾아 돌아다닌단 느낌이었죠... 조만간 다른 방법을 찾아봐야겠습니다.
+
+---
+
+# 배경 색상
+
+![[imgs/end_fetchers/14/screenshot.png]]
+
+어두운 곳에서는 짙은 남색을 깔아두어서 분위기를 잡았습니다. `shader`를 이용해서 필터를 씌우는 느낌으로 구현을 했습니다.
+
+방법은 전체적으로 깔아둘 색상 `col`을 결정하고 화면의 rgb에 `(1.-col)` 값을 빼는 방식입니다.
+
+<iframe frameborder="0" src="https://www.shadertoy.com/embed/W3f3R8?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+
+```c
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = fragCoord/iResolution.xy;
+    float radius = 200.;
+    vec2 mouse = (fragCoord - iMouse.xy) / radius;
+    float light = min(1., max(0., distance(vec2(0.), mouse) - 0.5));
+    vec3 col = vec3(0., 0.5, 1.);
+    
+    fragColor = texture(iChannel0, uv);
+    fragColor.rgb -= (1. - col) * light;
+}
+```
+
+간단하게 [shadertoy](https://www.shadertoy.com/)에서 코드를 짜봤습니다. 입맛에 맞게 활용하시길 :)
+
+---
+
+# 색상 팔레트
+
+(게임에서 일부 효과에만 적용했던 기술인데 꽤나 재밌는 정보라 소개합니다.)
+
+<iframe frameborder="0" src="https://www.shadertoy.com/embed/ll2GD3?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+
+화면에 특이한 색상이나 필터를 씌우고 싶은 경우가 있습니다. 저는 이럴 때 Color Palettes를 계산해주는 코드를 사용하곤 합니다. 코드는 아래와 같습니다.
+
+```c
+// cosine based palette, 4 vec3 params
+vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ) {
+	return a + b*cos( 6.283185*(c*t+d) );
+}
+```
+
+![[imgs/end_fetchers/14/color_palette.png]]
+
+이런 식으로 효과를 넣을 수 있습니다.
+
+![[end_fetchers/10/enemy_test.gif]]
+
+저는 이 효과를 공격이나 구르기와 같은 회피에 적용해서 사용했었습니다. 판정에 대한 정보를 색상으로 전달하기 위함이었는데 a, b, c, d 값만 적절히 바꿔주면 빠르게 적용할 수 있어서 편했습니다.
+
+---
+
+
+# 앞으로의 일정
+
+![[imgs/end_fetchers/14/still_alive.gif]]
+
+지금 반 년 넘도록 개발을 못하고 있는데... 다시 코드를 뜯어보기 좀 무섭네요. 개발 재개할 때 제가 싸질러논 코드를 다시 정리해야 할 것 같습니다. 겜스 버전도 업그레이드 하고요.
+
+그 이후에는 버전 업그레이드에 따른 오류를 처리하고 조금 미뤄놨던 최적화와 프로젝트 안에서 만들어놨던 에디터를 따로 분리시키고...
+
+그 뒤에 챕터1 제작을 시작할 것 같네요. 지금의 데모는 싹 갈아치워 버리고요.
+
+
+여태 아무 소식을 전달드리지 못해서 너무 죄송합니다. 개발 환경이 다시 갖추어지면 다시 개발 일지를 올릴 생각이었는데 계속 지체되네요..
+
+6월 전까지는 개발 일지 다시 올리도록 하겠습니다.
+
+
+모두 즐거운 밤 되시길!

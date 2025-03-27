@@ -144,7 +144,7 @@
     }
 
     .modal, .img-modal, .modal-active, .img-modal-active {
-        @apply backdrop-blur-0 fixed left-0 top-0 -z-10 w-dvw h-lvh transition-[backdrop-filter]; // duration-300
+        @apply fixed left-0 top-0 -z-10 w-dvw h-lvh; // backdrop-blur-0 transition-[backdrop-filter] duration-300
         // @include media-query($on-mobile){
         //     @apply mt-12;
         // }
@@ -153,7 +153,7 @@
         }
     }
     .modal-active, .img-modal-active {
-        @apply backdrop-blur-sm;
+        // backdrop-blur-sm
         .modal-darker {
             @apply opacity-85;
         }
@@ -591,6 +591,9 @@
         }
         .img-zoom {
             @apply absolute bottom-0 left-0 right-0 top-0 cursor-pointer;
+            img {
+                @apply transition-[border-radius]
+            }
             .img-focus, .img-focus-active {
                 @apply w-full;
                 @apply transition-img-zoom duration-[400ms] origin-center;
