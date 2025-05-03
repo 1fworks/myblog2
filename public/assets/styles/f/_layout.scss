@@ -414,6 +414,10 @@
         }
     }
 
+    .table-wrapper {
+        @apply w-full overflow-x-auto;
+    }
+
     a:not([class]):not([id]){
         @apply transition-colors underline;
         &::after{

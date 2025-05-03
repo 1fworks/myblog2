@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import { rehypeObsidianMedia } from "@/libs/rehypeObsidianMedia";
 import { rehypeUnwrapMyMediaFromParagraph } from "@/libs/rehypeUnwrapMyMediaFromParagraph";
 import { rehypeRemovePtagInSideList } from '@/libs/rehypeRemovePtagInList';
+import { rehypeWrapTables } from '@/libs/rehypeWrapTable';
 import { MyNextImage } from "../image/mynextImage";
 import { WavePlayer2024 } from '../audio/wavePlayer2024';
 import { MyAudio } from '../audio/audio';
@@ -139,6 +140,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
               () => rehypeObsidianMedia(imgInfoList),
               rehypeUnwrapMyMediaFromParagraph,
               rehypeRemovePtagInSideList,
+              rehypeWrapTables,
               rehypeReact,
             ],
             format: 'mdx',
