@@ -1,0 +1,32 @@
+---
+title: "[vue.js] teleport"
+date: 2025-09-23T03:09:00
+update: 2025-09-23T03:09:00
+---
+`<Teleport>`는 컴포넌트 템플릿의 일부를 해당 컴포넌트의 DOM 계층 외부의 DOM 노드로 "이동"할 수 있게 해주는 빌트인 컴포넌트
+
+```vue
+<button @click="open = true">모달 열기</button>
+
+<Teleport to="body">
+  <div v-if="open" class="modal">
+    <p>짜자잔~ 모달입니다!</p>
+    <button @click="open = false">닫기</button>
+  </div>
+</Teleport>
+```
+```vue
+<Teleport :disabled="isMobile">
+  ...
+</Teleport>
+```
+- 경우에 따라 `<Teleport>`를 조건부로 비활성화 할 수 있다.
+
+```vue
+<Teleport defer to="#late-div">...</Teleport>
+
+<!-- somewhere later in the template -->
+<div id="late-div"></div>
+```
+- **defer** 속성을 사용하여 Teleport의 대상 요소 해결(target resolving)을 애플리케이션의 다른 부분이 마운트될 때까지 지연 가능
+

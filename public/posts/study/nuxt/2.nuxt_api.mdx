@@ -1,0 +1,375 @@
+---
+title: Nuxt API
+date: 2025-09-23T02:02:00
+update: 2025-09-23T02:02:00
+---
+>제가 쓸 기능만 간단하게 정리해놨습니다.
+>나머지는 여기 공식 메뉴얼에서 확인해주시길..!
+>https://nuxt.com/docs/4.x/api
+
+
+# --- Utils
+
+## $fetch
+- https://nuxt.com/docs/api/utils/dollarfetch
+- 전역적으로 노출된 HTTP 요청을 만드는 helper
+
+>app.vue
+```vue
+<script setup lang="ts">
+// During SSR data is fetched twice, once on the server and once on the client.
+const dataTwice = await $fetch('/api/item')
+
+// During SSR data is fetched only on the server side and transferred to the client.
+const { data } = await useAsyncData('item', () => $fetch('/api/item'))
+
+// You can also useFetch as shortcut of useAsyncData + $fetch
+const { data } = await useFetch('/api/item')
+</script>
+```
+
+>pages/contact.vue
+```vue
+<script setup lang="ts">
+async function contactForm() {
+  await $fetch('/api/contact', {
+    method: 'POST',
+    body: { hello: 'world '}
+  })
+}
+</script>
+
+<template>
+  <button @click="contactForm">Contact</button>
+</template>
+```
+
+---
+
+# --- Composables
+
+## useFetch
+- https://nuxt.com/docs/api/composables/use-fetch
+- API 엔드포인트에서 데이터를 가져옴 (SSR 친화적)
+
+```vue
+<script setup lang="ts">
+const { data, status, error, refresh, clear } = await useFetch('/api/modules', {
+  pick: ['title']
+})
+</script>
+```
+```ts
+const param1 = ref('value1')
+const { data, status, error, refresh } = await useFetch('/api/modules', {
+  query: { param1, param2: 'value2' }
+})
+```
+- 옵션을 통해 query 사용 가능
+
+**Parameters**
+- URL
+- Options
+	- method
+	- query (alias: params)
+	- body
+	- headers
+	- baseURL
+	- timeout
+	- cache
+	- etc...
+
+## 언제 사용하는가..?
+
+- **$fetch**는 사용자 상호작용이 발생할 때 데이터를 가져오거나 보내는 용도로 적합
+- **useFetch**나 **useAsyncData**는 서버에서 데이터를 가져올 때 사용하면 좋음
+
+---
+
+## useHead
+- https://nuxt.com/docs/api/composables/use-head
+- `useHead(meta: MaybeComputedRef<MetaObject>): void`
+- head 태그 관리할 때 사용
+## useSeoMeta
+- https://nuxt.com/docs/api/composables/use-seo-meta
+- 사이트의 SEO 메타 데이터를 관리할 때 사용
+
+```vue
+<script setup lang="ts">
+useSeoMeta({
+  title: 'My Amazing Site',
+  ogTitle: 'My Amazing Site',
+  description: 'This is my amazing site, let me tell you all about it.',
+  ogDescription: 'This is my amazing site, let me tell you all about it.',
+  ogImage: 'https://example.com/image.png',
+  twitterCard: 'summary_large_image',
+})
+</script>
+```
+```vue
+<script setup lang="ts">
+const title = ref('My title')
+
+useSeoMeta({
+  title,
+  description: () => `This is a description for the ${title.value} page`
+})
+</script>
+```
+- 반응형으로 넣으려면 `() => value` 문법을 사용
+
+---
+
+## useState
+- https://nuxt.com/docs/api/composables/use-state
+- 반응형이면서 SSR에 친화적인 공유 상태를 생성
+- 내부 데이터는 JSON으로 직렬화된다.
+	- classes, functions, symbols은 피해야 함
+```TS
+// Create a reactive state and set default value
+const count = useState('counter', () => Math.round(Math.random() * 100))
+```
+
+---
+
+## useLoadingIndicator
+- https://nuxt.com/docs/api/composables/use-loading-indicator
+- 앱 페이지 로딩 상태에 접근할 때 사용
+
+**Parameters**
+- `duration` (default: `2000`)
+- `throttle` (default: `200`)
+- `estimatedProgress`
+
+**Properties**
+- `isLoading` (type: `Ref<boolean>`)
+- `error` (type: `Ref<boolean>`)
+- `progress` (type: `Ref<number>`)
+	- From `0` to `100`
+
+**Methods**
+- `start()`
+	- `isLoading`을 `true`로 변경
+	- `{ force: true }` 옵션 제공
+- `set()`
+	- `progress`을 특정한 값으로 설정
+	- `{ force: true }` 옵션 제공
+- `finish()`
+	- `progress` 값을 100으로 설정
+	- 모든 timer와 interval을 중단
+	- 로딩 상태 초기화 (500ms 이후)
+	- `{ force: true }`, `{ error: true }` 옵션 제공
+- `clear()`
+	- 모든 timer와 interval을 clear
+
+---
+
+## useNuxtApp
+- https://nuxt.com/docs/api/composables/use-nuxt-app
+- 공유 런타임 컨텍스트에 접근
+```vue
+<script setup lang="ts">
+const nuxtApp = useNuxtApp()
+</script>
+```
+### method
+`provide(name, value)`
+```js
+const nuxtApp = useNuxtApp()
+nuxtApp.provide('hello', (name) => `Hello ${name}!`)
+
+// Prints "Hello name!"
+console.log(nuxtApp.$hello('name'))
+```
+ `hook(name, cb)`
+- [app hooks runtime](https://nuxt.com/docs/api/advanced/hooks#app-hooks-runtime) 문서에서 사용 가능한 hook 확인 가능
+>plugins/test.ts
+```ts
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.hook('page:start', () => {
+    /* your code goes here */
+  })
+  nuxtApp.hook('vue:error', (..._args) => {
+    console.log('vue:error')
+    // if (import.meta.client) {
+    //   console.log(..._args)
+    // }
+  })
+})
+```
+`callHook(name, ...args)`
+```ts
+await nuxtApp.callHook('my-plugin:init')
+```
+### properties
+`vueApp`
+- 글로벌 Vue.js 어플리케이션 인스턴스
+- `component()` 메소드: 전역 컴포넌트 등록
+- `directive()` 메소드: 전역 커스텀 지시문 등록
+- `use()` 메소드: Vue.js 플러그인 설치
+그 외: `ssrContext`, `payload`, `isHydrating`, `runWithContext`
+
+---
+
+## useNuxtData
+- https://nuxt.com/docs/api/composables/use-nuxt-data
+- 데이터를 가져오는 컴포저블의 현재 캐시된 값 접근
+**Params**
+- `key`: 캐시된 값을 식별하기 위한 고유한 키
+
+**Return**
+- `data`: 제공된 키에 따라 캐시된 반응형 참조
+	- 없으면 `null` 반환
+	- 이 `Ref`는 캐시된 값이 바뀌면 자동으로 업데이트 된다.
+
+>pages/posts.vue
+```vue
+<script setup lang="ts">
+// We can access same data later using 'posts' key
+const { data } = await useFetch('/api/posts', { key: 'posts' })
+</script>
+```
+
+>pages/posts/`[id].vue`
+```vue
+<script setup lang="ts">
+// Access to the cached value of useFetch in posts.vue (parent route)
+const { data: posts } = useNuxtData('posts')
+
+const route = useRoute()
+
+const { data } = useLazyFetch(`/api/posts/${route.params.id}`, {
+  key: `post-${route.params.id}`,
+  default() {
+    // Find the individual post from the cache and set it as the default value.
+    return posts.value.find(post => post.id === route.params.id)
+  }
+})
+</script>
+```
+
+**Optimistic Updates**
+```vue
+<script setup lang="ts">
+// We can access same data later using 'todos' key
+const { data } = await useAsyncData('todos', () => $fetch('/api/todos'))
+</script>
+```
+```vue
+<script setup lang="ts">
+const newTodo = ref('')
+let previousTodos = []
+
+// Access to the cached value of useAsyncData in todos.vue
+const { data: todos } = useNuxtData('todos')
+
+async function addTodo () {
+  return $fetch('/api/addTodo', {
+    method: 'post',
+    body: {
+      todo: newTodo.value
+    },
+    onRequest () {
+      // Store the previously cached value to restore if fetch fails.
+      previousTodos = todos.value
+
+      // Optimistically update the todos.
+      todos.value = [...todos.value, newTodo.value]
+    },
+    onResponseError () {
+      // Rollback the data if the request failed.
+      todos.value = previousTodos
+    },
+    async onResponse () {
+      // Invalidate todos in the background if the request succeeded.
+      await refreshNuxtData('todos')
+    }
+  })
+}
+</script>
+```
+
+---
+
+## useRoute
+- https://nuxt.com/docs/api/composables/use-route
+- 현재 경로를 반환 
+
+```vue
+<script setup lang="ts">
+const route = useRoute()
+const { data: mountain } = await useFetch(`/api/mountains/${route.params.slug}`)
+</script>
+
+<template>
+  <div>
+    <h1>{{ mountain.title }}</h1>
+    <p>{{ mountain.description }}</p>
+  </div>
+</template>
+```
+
+`/test?example=true` 이런 경로에선
+- `useRoute().params` 대신
+- `useRoute().query` 사용
+
+**API**
+- `fullPath`: 경로, 쿼리, 해시 모두 포함
+- `hash`: `#`으로 시작하는 해시 섹션
+- `query`: 쿼리 파라미터
+- `matched`: 현재 경로 위치와 일치하는 정규화된 경로 배열
+- `meta`
+- `name`: 경로 레코드의 고유 이름
+- `path`: URL의 인코딩된 경로명 섹션
+- `redirectedFrom`: 현재 경로 위치에 도달하기 전에 접근을 시도했던 경로 위치
+
+---
+
+## useRouter
+- https://nuxt.com/docs/api/composables/use-router
+- 라우터 인스턴트 반환
+
+>pages/index.vue
+```vue
+<script setup lang="ts">
+const router = useRouter()
+</script>
+```
+or
+```vue
+<template>
+  <button @click="$router.back()">Back</button>
+</template>
+```
+
+### 기본 동작
+- `addRoute()`
+- `removeRoute()`
+- `getRoutes()`
+- `hasRoute()`
+- `resolve()`
+```ts
+const router = useRouter()
+
+router.addRoute({ name: 'home', path: '/home', component: Home })
+router.removeRoute('home')
+router.getRoutes()
+router.hasRoute('home')
+router.resolve({ name: 'home' })
+```
+
+### API
+- `back()`
+- `forward()`
+- `go()`
+- `push()`
+- `replace()`
+```ts
+const router = useRouter()
+
+router.back()
+router.forward()
+router.go(3)
+router.push({ path: "/home" })
+router.replace({ hash: "#bio" })
+```

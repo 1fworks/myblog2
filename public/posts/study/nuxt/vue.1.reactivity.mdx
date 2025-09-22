@@ -1,0 +1,339 @@
+---
+title: "[vue.js] 반응형"
+date: 2025-09-23T03:01:00
+update: 2025-09-23T03:01:00
+---
+# `ref()`
+```js
+import { ref } from 'vue'
+const count = ref(0)
+```
+```js
+const count = ref(0)
+
+console.log(count) // { value: 0 }
+console.log(count.value) // 0
+
+count.value++
+console.log(count.value) // 1
+```
+- `React`의 `useState`와 비슷함
+- `.value`를 통해서 읽기 및 수정 가능
+
+```js
+import { ref } from 'vue'
+
+export default {
+  // `setup`은 Composition API 전용 특수 후크입니다.
+  setup() {
+    const count = ref(0)
+
+    // ref를 템플릿에 노출
+    return {
+      count
+    }
+  }
+}
+```
+- 컴포넌트 템플릿의 ref에 액세스하려면, 컴포넌트의 `setup()` 함수에서 선언하고 반환
+
+```vue
+<button @click="count++">
+  {{ count }}
+</button>
+```
+- 템플릿에서 **ref**를 사용할 때 `.value`를 추가할 필요 없음.
+- 편의상 **ref**는 템플릿 내에서 사용될 때 자동으로 **언래핑**된다.
+
+# `<script setup>`
+
+- `<script setup>`으로 사용법을 단순화할 수 있다.
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function increment() {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="increment">
+    {{ count }}
+  </button>
+</template>
+```
+
+# DOM 업데이트 타이밍
+```js
+import { nextTick } from 'vue'
+
+async function increment() {
+  count.value++
+  await nextTick()
+}
+```
+- 상태 변경 후, DOM 업데이트가 완료될 때까지 기다리려면 [nextTick()](https://ko.vuejs.org/api/general.html#nexttick) 전역 API를 사용
+
+# Ref 언래핑 세부 사항
+```js
+const count = ref(0)
+const state = reactive({
+  count
+})
+
+console.log(state.count) // 0
+
+state.count = 1
+console.log(count.value) // 1
+```
+- ref는 **반응 객체의 속성으로 액세스되거나 변경될 때** 자동으로 **래핑 해제**
+
+```js
+const otherCount = ref(2)
+
+// 기존 ref는 이제 state.count에서 참조가 끊어집니다. 
+state.count = otherCount
+console.log(state.count) // 2
+console.log(count.value) // 1
+```
+- ref가 할당된 기존 속성에 새 ref를 할당하면 이전 ref는 대체
+
+- ref의 언래핑은 **깊은 반응형 객체 내부에 중첩된 경우에만 발생**
+	- [얕은 반응형 객체](https://ko.vuejs.org/api/reactivity-advanced.html#shallowreactive)의 속성으로 접근하는 경우에는 적용되지 않는다.
+
+## 배열 및 컬렉션의 주의 사항
+```js
+const books = reactive([ref('Vue 3 Guide')])
+// .value가 필요합니다
+console.log(books[0].value)
+
+const map = reactive(new Map([['count', ref(0)]]))
+// .value가 필요합니다
+console.log(map.get('count').value)
+```
+- 반응형 객체와 달리 ref가 반응형 배열의 요소 또는 `Map`과 같은 **기본 컬렉션 유형**으로 액세스될 때 **랩핑 해제가 수행되지 않는다.**
+
+## 템플릿에서 래핑 해제 시
+```js
+const count = ref(0)
+const object = { id: ref(1) }
+```
+```js
+<!-- 예상대로 작동 -->
+{{ count + 1 }}
+<!-- 언래핑되지 않는다. 결과는 '[object Object]1'이 된다. -->
+{{ object.id + 1 }}
+```
+- 템플릿에서 ref 언래핑은 ref가 **템플릿 렌더링 컨텍스트의 최상위 속성**인 경우에만 적용
+
+```js
+const { id } = object
+```
+```vue
+{{ id + 1 }}
+```
+- `id`를 **최상위 속성으로 분해**해서 사용해야 한다!
+
+```vue
+{{ object.id }}
+```
+- ref가 텍스트 보간(예: `{{ }}` 태그)의 최종 평가 값인 경우
+	- 래핑되지 않으므로 다음은 `1`을 렌더링한다.
+	- 텍스트 보간의 편의 기능일 뿐이며 `{{ object.id.value }}`와 동일
+
+---
+
+# `reactive()`
+
+- **내부 값을 특수 객체로 감싸는 ref**와 달리 `reactive()`는 **객체 자체를 반응형**으로 만든다.
+```js
+import { reactive } from 'vue'
+const state = reactive({ count: 0 })
+```
+```vue
+<button @click="state.count++">
+  {{ state.count }}
+</button>
+```
+- 반응형 개체는 [JavaScript Proxies](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)이며 일반 개체처럼 작동
+- `reactive()`는 객체를 심층적으로 변환
+	- 중첩된 객체도 액세스할 때 `reactive()`로 래핑
+- ref 값이 객체일 때 내부적으로 `ref()`에 의해 호출되기도 한다.
+- 얕은 참조와 유사하게 깊은 반응성을 옵트아웃하기 위한 [`shallowReactive()`](https://ko.vuejs.org/api/reactivity-advanced.html#shallowreactive) API가 있다.
+
+## 반응형 재정의 vs. 원본
+```js
+const raw = {}
+const proxy = reactive(raw)
+
+// 반응형으로 재정의 된 것은 원본과 같지 않습니다.
+console.log(proxy === raw) // false
+// 객체를 reactive() 한 반환 값과 프록시는 동일합니다.
+console.log(reactive(raw) === proxy) // true
+// 프록시를 reactive()한 반환 값과 프록시는 동일합니다.
+console.log(reactive(proxy) === proxy) // true
+```
+
+## `reactive()` 제한 사항
+```js
+let state = reactive({ count: 0 })
+
+const items = reactive([
+  { id: 1, name: 'Item A' },
+  { id: 2, name: 'Item B' }
+]);
+```
+- **제한된 값 유형**
+	- 객체, 배열 및 [컬렉션 유형](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects#keyed_collections)에만 작동
+
+```js
+// 위 참조({ count: 0 })는 더 이상 추적되지 않습니다.
+// (반응성 연결이 끊어졌습니다!)
+state = reactive({ count: 1 })
+```
+- **전체 객체를 대체할 수 없음**
+	- 반응 객체에 대한 동일한 참조를 항상 유지해야 한다.
+
+```js
+const state = reactive({ count: 0 })
+// count는 분해 할당 될 때 state.count에서 연결이 끊어집니다.
+let { count } = state
+// 원래 상태에 영향을 주지 않음
+count++
+// 함수는 일반 숫자를 수신하고
+// state.count에 대한 변경 사항을 추적할 수 없습니다.
+// 반응성을 유지하려면 전체 개체를 전달해야 합니다.
+callSomeFunction(state.count)
+```
+- **분해 할당에 친화적이지 않음**
+	- 반응형 객체의 원시 타입 속성을 지역 변수로 분해하거나, 그 속성을 함수에 전달할 때, 반응성 연결이 끊어짐
+
+- 이런 제한으로 인해 반응 상태를 선언하기 위한 기본 API로 **`ref()`를 사용하는 것이 좋다.**
+
+---
+
+# `computed()`
+```vue
+<script setup>
+import { reactive, computed } from 'vue'
+
+const author = reactive({
+  name: 'John Doe',
+  books: [
+    'Vue 2 - Advanced Guide',
+    'Vue 3 - Basic Guide',
+    'Vue 4 - The Mystery'
+  ]
+})
+
+// 계산된 ref
+const publishedBooksMessage = computed(() => {
+  return author.books.length > 0 ? 'Yes' : 'No'
+})
+</script>
+
+<template>
+  <p>책을 가지고 있다:</p>
+  <span>{{ publishedBooksMessage }}</span>
+</template>
+```
+- `computed()` 함수는 [getter 함수](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get#description)를 전달받기를 기대하며, 반환된 값은 **계산된 ref**
+- 일반적인 ref와 유사하게, 계산된 결과에 `publishedBooksMessage.value`로 **접근 가능**
+- 계산된 속성은 **의존된 반응형을 자동으로 추적**
+
+## 메서드 호출
+```vue
+<p>{{ calculateBooksMessage() }}</p>
+```
+```js
+// 컴포넌트 내에서
+function calculateBooksMessage() {
+  return author.books.length > 0 ? 'Yes' : 'No'
+}
+```
+- 메서드를 이용해서 동일한 기능을 정의할 수 있다.
+- **차이점**: 메서드 호출은 **리렌더링이 발생할 때마다 항상 함수를 실행**
+
+## 수정 가능한 계산된 속성
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+
+const firstName = ref('John')
+const lastName = ref('Doe')
+
+const fullName = computed({
+  // getter
+  get() {
+    return firstName.value + ' ' + lastName.value
+  },
+  // setter
+  set(newValue) {
+    // 참고: 분해 할당 문법을 사용함.
+    [firstName.value, lastName.value] = newValue.split(' ')
+  }
+})
+</script>
+```
+- `fullName.value = 'John Doe'`를 실행하면
+	- setter가 호출되고
+	- 그에 따라 `firstName`과 `lastName`이 업데이트
+
+## 이전 값 가져오기
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+
+const count = ref(2)
+
+// 이 computed 속성은 count 값이 3 이하일 때 해당 값을 반환합니다.  
+// count가 4 이상이 되면, 마지막으로 조건을 만족했던 값이 반환되며,  
+// count가 다시 3 이하로 내려갈 때까지 유지됩니다.
+const alwaysSmall = computed((previous) => {
+  if (count.value <= 3) {
+    return count.value
+  }
+
+  return previous
+})
+</script>
+```
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+
+const count = ref(2)
+
+const alwaysSmall = computed({
+  get(previous) {
+    if (count.value <= 3) {
+      return count.value
+    }
+
+    return previous
+  },
+  set(newValue) {
+    count.value = newValue * 2
+  }
+})
+</script>
+```
+
+## getter에서 사이드 이펙트는 금물
+
+- **계산된 getter** 안에서
+	- 다른 상태를 변형시키거나
+	- 비동기 요청을 하거나
+	- DOM을 변경하는 행위 **금지**
+- **계산된 값을 변경 금지**
+	- 계산된 속성에서 반환된 값은 파생된 상태
+	- 임시 스냅샷같은 것!
+
+---
+
+공식 메뉴얼
+: https://ko.vuejs.org/guide/essentials/reactivity-fundamentals
+: https://ko.vuejs.org/guide/essentials/computed.html

@@ -1,0 +1,616 @@
+---
+title: Nuxt 디렉터리 구조
+date: 2025-09-23T02:01:00
+update: 2025-09-23T02:01:00
+---
+>제가 쓸 기능만 간단하게 정리해놨습니다.
+>나머지는 여기 공식 메뉴얼에서 확인해주시길..!
+>https://nuxt.com/docs/4.x/guide/directory-structure
+
+
+# app/components/
+
+여기에 넣어둔 컴포넌트는 어디에서나 import가 가능합니다.
+```bash
+-| components/
+---| base/
+-----| foo/
+-------| Button.vue
+```
+```vue
+<BaseFooButton />
+```
+- 컴포넌트의 이름은 이런 식으로 결정
+
+>nuxt.config.ts
+```ts
+export default defineNuxtConfig({
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
+});
+```
+- `nuxt.config.ts` 파일을 이렇게 변경시 `~/components/Some/MyComponent.vue` 컴포넌트는 `<SomeMyComponent>`가 아닌 `<MyComponent>`로 쓸 수 있습니다.
+
+## 동적 컴포넌트, 임포트
+```vue
+<script setup lang="ts">
+import { SomeComponent } from '#components'
+
+const MyButton = resolveComponent('MyButton')
+</script>
+
+<template>
+  <component :is="clickable ? MyButton : 'div'" />
+  <component :is="SomeComponent" />
+</template>
+```
+- `<component :is="someComputedComponent">`
+- 이런 식으로 사용하려면
+	- `resolveComponent` 또는
+	- `#components`에서 직접 import
+
+```vue
+<script setup lang="ts">
+const show = ref(false)
+</script>
+
+<template>
+  <div>
+    <h1>Mountains</h1>
+    <LazyMountainsList v-if="show" />
+    <button v-if="!show" @click="show = true">Show List</button>
+  </div>
+</template>
+```
+- `Lazy` 접두사를 붙여서 동적으로 가져오는 방법도 있습니다.
+
+---
+
+# app/composables/
+
+app에 자동으로 Vue composable를 import 해줍니다.
+
+>app/composables/useFoo.ts
+```ts
+export const useFoo = () => {
+  return useState('foo', () => 'bar')
+}
+```
+
+>app/composables/use-foo.ts or composables/useFoo.ts
+```ts
+// It will be available as useFoo() (camelCase of file name without extension)
+export default function () {
+  return useState('foo', () => 'bar')
+}
+```
+
+>app/app.vue
+```vue
+<script setup lang="ts">
+const foo = useFoo()
+</script>
+
+<template>
+  <div>
+    {{ foo }}
+  </div>
+</template>
+```
+
+## 파일 스캔 방식
+```bash
+-| composables/
+---| index.ts     // scanned
+---| useFoo.ts    // scanned
+---| nested/
+-----| utils.ts   // not scanned
+```
+- nested 모듈은 자동으로 import 되진 않습니다.
+
+>nuxt.config.ts
+```ts
+export default defineNuxtConfig({
+  imports: {
+    dirs: [
+      // Scan top-level composables
+      '~/composables',
+      // ... or scan composables nested one level deep with a specific name and file extension
+      '~/composables/*/index.{ts,js,mjs,mts}',
+      // ... or scan all composables within given directory
+      '~/composables/**'
+    ]
+  }
+})
+```
+- `nuxt.config.ts`을 이렇게 변경하면 자동으로 스캔됩니다.
+
+---
+
+# app/layouts/
+
+>app/app.vue
+```vue
+<template>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
+</template>
+```
+- `app.vue`에서 `<NuxtLayout>`를 사용
+
+```bash
+-| layouts/
+---| default.vue
+---| custom.vue
+```
+
+>app/layouts/default.vue
+```vue
+<template>
+  <div>
+    <p>Some default layout content shared across all pages</p>
+    <slot />
+  </div>
+</template>
+```
+- `default.vue`나 커스텀 레이아웃을 통해서 레이아웃 변경 가능합니다.
+- 페이지 내용이 표시될 곳에는 `<slot />` 컴포넌트를 사용합니다.
+
+>app/pages/about.vue
+```vue
+<script setup lang="ts">
+definePageMeta({
+  layout: 'custom'
+})
+</script>
+```
+- custom 레이아웃을 쓸 때는 `definePageMeta`를 사용합니다.
+
+```vue
+<script setup lang="ts">
+// You might choose this based on an API call or logged-in status
+const layout = "custom";
+</script>
+
+<template>
+  <NuxtLayout :name="layout">
+    <NuxtPage />
+  </NuxtLayout>
+</template>
+```
+- `<NuxtLayout>` 속성의 `name` property를 이용해서 사용하는 방법도 있습니다.
+
+|               File                |    Layout Name    |
+| :-------------------------------: | :---------------: |
+|  `~/layouts/desktop/default.vue`  | `desktop-default` |
+| `~/layouts/desktop-base/base.vue` |  `desktop-base`   |
+|   `~/layouts/desktop/index.vue`   |     `desktop`     |
+
+---
+
+# app/pages/
+
+파일 기반 라우팅을 지원
+
+```bash
+-| pages/
+---| index.vue
+---| users-[group]/
+-----| [id].vue
+```
+
+>pages/users-`[group]`/`[id]`.vue
+```vue
+<template>
+  <p>{{ $route.params.group }} - {{ $route.params.id }}</p>
+</template>
+```
+```html
+<!--
+`/users-admins/123`는 아래와 같이 rendering
+-->
+<p>admins - 123</p>
+```
+- `$route` 오브젝트를 통해서 접근 가능
+
+```vue
+<script setup lang="ts">
+const route = useRoute()
+
+if (route.params.group === 'admins' && !route.params.id) {
+  console.log('Warning! Make sure user is authenticated!')
+}
+</script>
+```
+- 또한 `useRoute` 함수를 이용해서 접근 가능
+
+>pages/`[...slug]`.vue
+```vue
+<template>
+  <p>{{ $route.params.slug }}</p>
+</template>
+```
+- 파일명을 `[...slug].vue` 처럼 쓰면
+
+```html
+<!-- Navigating to `/hello/world` would render: -->
+<p>["hello", "world"]</p>
+```
+- 이렇게 렌더링 됩니다.
+
+```bash
+-| pages/
+---| index.vue
+---| (marketing)/
+-----| about.vue
+-----| contact.vue
+```
+- `(괄호)`로 묶어서 그룹화가 가능합니다.
+- 위 폴더 구조에서는 `/`, `/about`, `/contact` 이렇게 경로가 만들어집니다.
+	- **괄호**로 묶은 그룹명은 무시
+
+## Nested Routes
+```bash
+-| pages/
+---| parent/
+-----| child.vue
+---| parent.vue
+```
+
+>pages/parent.vue
+```vue
+<template>
+  <div>
+    <h1>I am the parent view</h1>
+    <NuxtPage :foobar="123" />
+  </div>
+</template>
+```
+
+>pages/parent/child.vue
+```vue
+<script setup lang="ts">
+const props = defineProps(['foobar'])
+
+console.log(props.foobar)
+</script>
+```
+
+`<NuxtPage>` 컴포넌트를 이용해서 `child.vue` 컴포넌트를 삽입할 수 있습니다.
+- `pageKey` prop를 이용해서 페이지 전환 시 어떻게 마운트될지를 제어 가능
+
+---
+
+# app/plugins/
+
+전역적으로 사용할 수 있는 기능을 확장할 때 사용합니다.
+
+```bash
+-| plugins/
+---| foo.ts      // scanned
+---| bar/
+-----| baz.ts    // not scanned
+-----| foz.vue   // not scanned
+-----| index.ts  // currently scanned but deprecated
+```
+
+최상위, 또는 하위 디렉토리의 index.ts 파일은 자동으로 스캔됩니다.
+
+>nuxt.config.ts
+```ts
+export default defineNuxtConfig({
+  plugins: [
+    '~/plugins/bar/baz',
+    '~/plugins/bar/foz'
+  ]
+})
+```
+- 직접 등록하는 방법도 존재합니다.
+
+>plugins/hello.ts
+```ts
+export default defineNuxtPlugin((nuxtApp) => {
+  const foo = useFoo()
+  ...
+  // Doing something with nuxtApp
+})
+```
+- `defineNuxtPlugin`를 이용해서 만들 수 있습니다.
+- composables 사용도 가능합니다.
+
+>plugins/depending-on-my-plugin.ts
+```ts
+export default defineNuxtPlugin({
+  name: 'depends-on-my-plugin',
+  dependsOn: ['my-plugin'],
+  async setup (nuxtApp) {
+    // this plugin will wait for the end of `my-plugin`'s execution before it runs
+  }
+})
+```
+- 의존성을 설정할 수도 있습니다.
+
+## Helpers 제공하기
+
+>plugins/hello.ts
+```ts
+export default defineNuxtPlugin(() => {
+  return {
+    provide: {
+      hello: (msg: string) => `Hello ${msg}!`
+    }
+  }
+})
+```
+
+>components/Hello.vue
+```vue
+<script setup lang="ts">
+// alternatively, you can also use it here
+const { $hello } = useNuxtApp()
+</script>
+
+<template>
+  <div>
+    {{ $hello('world') }}
+  </div>
+</template>
+```
+
+---
+
+# app/utils/
+
+자동으로 유틸리티 함수를 import 해줍니다.
+
+>utils/index.ts
+```ts
+export const { format: formatNumber } = Intl.NumberFormat('en-GB', {
+  notation: 'compact',
+  maximumFractionDigits: 1
+})
+```
+
+>utils/random-entry.ts or utils/randomEntry.ts
+```ts
+// It will be available as randomEntry()
+// (camelCase of file name without extension)
+export default function (arr: Array<any>) {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+```
+
+- named export 또는 default export를 사용합니다.
+
+>app.vue
+```vue
+<template>
+  <p>{{ formatNumber(1234) }}</p>
+</template>
+```
+- 그런 다음 `.js`, `.ts`, `.vue` 파일에서 유틸리티 함수를 사용하면 됩니다.
+
+---
+
+# app/middleware/
+
+1. 페이지에 직접 정의되는 **익명 라우트 미들웨어**
+2. `middleware/`에 위치하는 **네임드 라우트 미들웨어**
+3. `middleware/`에 위치하는 **전역 라우트 미들웨어**.
+   - `.global` 접미사를 붙여서 사용할 수 있다.
+
+>middleware/my-middleware.ts
+```ts
+export default defineNuxtRouteMiddleware((to, from) => {
+  if (to.params.id === '1') {
+    return abortNavigation()
+    // Aborts the navigation, with an optional error message.
+  }
+  // In a real app you would probably not redirect every route to `/`
+  // however it is important to check `to.path` before redirecting or you
+  // might get an infinite redirect loop
+  if (to.path !== '/') {
+    return navigateTo('/')
+    // Redirects to the given route
+  }
+})
+```
+
+가능한 리턴
+- `return`
+- `return navigateTo('/')`
+- `return navigateTo('/', { redirectCode: 301 })`
+- `return abortNavigation()`
+- `return abortNavigation(error)`
+
+```bash
+-| middleware/
+---| analytics.global.ts
+---| setup.global.ts
+---| auth.ts
+```
+```vue
+<script setup lang="ts">
+definePageMeta({
+  middleware: [
+    function (to, from) {
+      // Custom inline middleware
+    },
+    'auth',
+  ],
+});
+</script>
+```
+
+전역 미들웨어 이후에 페이지에 정의된 미들웨어 순으로 동작한다.
+1. `analytics.global.ts`
+2. `setup.global.ts`
+3. Custom inline middleware
+4. `auth.ts`
+
+## 미들웨어가 동작하는 타이밍
+```ts
+export default defineNuxtRouteMiddleware(to => {
+  // skip middleware on server
+  if (import.meta.server) return
+  // skip middleware on client side entirely
+  if (import.meta.client) return
+  // or only skip middleware on initial client load
+  const nuxtApp = useNuxtApp()
+  if (import.meta.client && nuxtApp.isHydrating && nuxtApp.payload.serverRendered) return
+})
+```
+
+## 동적으로 미들웨어 추가
+```ts
+export default defineNuxtPlugin(() => {
+  addRouteMiddleware('global-test', () => {
+    console.log('this global middleware was added in a plugin \
+			    and will be run on every route change')
+  }, { global: true })
+
+  addRouteMiddleware('named-test', () => {
+    console.log('this named middleware was added in a plugin \
+			    and would override any existing middleware of the same name')
+  })
+})
+```
+- `addRouteMiddleware()`를 이용해서 동적으로 추가가 가능합니다.
+
+---
+
+# server/
+
+```bash
+-| server/
+---| api/
+-----| hello.ts      # /api/hello
+---| routes/
+-----| bonjour.ts    # /bonjour
+---| middleware/
+-----| log.ts        # log all requests
+```
+- routes 디렉토리에 넣으면 `/api` 접두사 없이 추가 가능
+
+>server/api/hello.ts
+```ts
+export default defineEventHandler((event) => {
+  return {
+    hello: 'world'
+  }
+})
+```
+
+>pages/index.vue
+```vue
+<script setup lang="ts">
+const { data } = await useFetch('/api/hello')
+</script>
+
+<template>
+  <pre>{{ data }}</pre>
+</template>
+```
+
+## route parameters
+
+>server/api/hello/`[name].ts`
+```ts
+export default defineEventHandler((event) => {
+  const name = getRouterParam(event, 'name')
+
+  return `Hello, ${name}!`
+})
+```
+- `/api/hello/nuxt`로 요청하면 `Hello, nuxt!`을 받아온다.
+
+## HTTP Method
+
+>server/api/test.**get**.ts
+```ts
+export default defineEventHandler(() => 'Test get handler')
+```
+
+>server/api/test.**post**.ts
+```ts
+export default defineEventHandler(() => 'Test post handler')
+```
+
+`/test`로 접근하면
+- **GET** 메소드: `Test get handler` 반환
+- **POST** 메소드: `Test post handler` 반환
+- 그 이외 메소드: 405 error 반환
+
+## 경로 감지
+
+>server/api/foo/`[...slug].ts`
+```ts
+export default defineEventHandler((event) => {
+  // event.context.params.slug to get the route segment: 'bar/baz'
+  return `Default foo handler`
+})
+```
+
+## Body Handling
+
+>server/api/submit.post.ts
+```ts
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event)
+  return { body }
+})
+```
+
+>app.vue
+```vue
+<script setup lang="ts">
+async function submit() {
+  const { body } = await $fetch('/api/submit', {
+    method: 'post',
+    body: { test: 123 }
+  })
+}
+</script>
+```
+
+## Query Parameters
+
+>server/api/query.get.ts
+```ts
+// Sample query: /api/query?foo=bar&baz=qux
+export default defineEventHandler((event) => {
+  const query = getQuery(event)
+
+  return { a: query.foo, b: query.baz }
+})
+```
+
+## Error Handling
+
+>server/api/validation/`[id].ts`
+```ts
+export default defineEventHandler((event) => {
+  const id = parseInt(event.context.params.id) as number
+
+  if (!Number.isInteger(id)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'ID should be an integer',
+    })
+  }
+  return 'All good'
+})
+```
+
+## 상태 코드
+```ts
+export default defineEventHandler((event) => {
+  setResponseStatus(event, 202)
+})
+```
+

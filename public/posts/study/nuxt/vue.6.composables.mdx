@@ -1,0 +1,56 @@
+---
+title: "[vue.js] 컴포저블"
+date: 2025-09-23T03:06:00
+update: 2025-09-23T03:06:00
+---
+Vue 앱의 컨텍스트에서 **컴포저블**
+- Vue 컴포지션 API를 활용하여 **상태 저장 로직**을 캡슐화하고 재사용
+
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const data = ref(null)
+const error = ref(null)
+
+fetch('...')
+  .then((res) => res.json())
+  .then((json) => (data.value = json))
+  .catch((err) => (error.value = err))
+</script>
+
+<template>
+  <div v-if="error">앗! 에러 발생: {{ error.message }}</div>
+  <div v-else-if="data">
+    로드된 데이터:
+    <pre>{{ data }}</pre>
+  </div>
+  <div v-else>로딩...</div>
+</template>
+```
+- 위는 비동기 데이터 가져오기를 수행하는 예제
+
+```js
+// fetch.js
+import { ref } from 'vue'
+
+export function useFetch(url) {
+  const data = ref(null)
+  const error = ref(null)
+
+  fetch(url)
+    .then((res) => res.json())
+    .then((json) => (data.value = json))
+    .catch((err) => (error.value = err))
+
+  return { data, error }
+}
+```
+```vue
+<script setup>
+import { useFetch } from './fetch.js'
+
+const { data, error } = useFetch('...')
+</script>
+```
+- **컴포저블로 재구성한 모습**

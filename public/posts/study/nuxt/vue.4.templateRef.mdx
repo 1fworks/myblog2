@@ -1,0 +1,126 @@
+---
+title: "[vue.js] 템플릿 참조"
+date: 2025-09-23T03:04:00
+update: 2025-09-23T03:04:00
+---
+# ref로 접근하기
+```vue
+<script setup>
+import { useTemplateRef, onMounted } from 'vue'
+
+// 첫 번째 인자는 템플릿에서 사용된 ref 값과 일치해야 합니다.
+const input = useTemplateRef('my-input')
+
+onMounted(() => {
+  input.value.focus()
+})
+</script>
+
+<template>
+  <input ref="my-input" />
+</template>
+```
+- ref는 컴포넌트가 **마운트된 후에만 접근 가능**
+
+```js
+watchEffect(() => {
+  if (input.value) {
+    input.value.focus()
+  } else {
+    // v-if에 의해 아직 마운트 되지 않았거나, 마운트 해제된 경우
+  }
+})
+```
+- 템플릿 표현식에서 `input`을 접근하려 하면, **첫 번째 렌더링 시**에는 `null`
+	- ref에 `null` 값이 있는 경우를 고려
+
+
+
+# `v-for` 내부에서 ref 사용
+
+`ref`가 `v-for` 내부에서 사용되면, 해당 ref는 마운트 후 엘리먼트로 채워짐
+- 배열 값이어야 한다.
+```vue
+<script setup>
+import { ref, useTemplateRef, onMounted } from 'vue'
+
+const list = ref([
+  /* ... */
+])
+
+const itemRefs = useTemplateRef('items')
+
+onMounted(() => console.log(itemRefs.value))
+</script>
+
+<template>
+  <ul>
+    <li v-for="item in list" ref="items">
+      {{ item }}
+    </li>
+  </ul>
+</template>
+```
+- ref 배열은 소스 배열과 **동일한 순서를 보장하지 않음**
+
+
+# 컴포넌트에 ref 사용하기
+```vue
+<script setup>
+import { useTemplateRef, onMounted } from 'vue'
+import Child from './Child.vue'
+
+const childRef = useTemplateRef('child')
+
+onMounted(() => {  
+  // childRef.value는 <Child />의 인스턴스를 가집니다.
+})
+</script>
+
+<template>
+  <Child ref="child" />
+</template>
+```
+```vue
+<!-- 버전 3.5 이전 -->
+<script setup>
+import { ref, onMounted } from 'vue'
+import Child from './Child.vue'
+
+const child = ref(null)
+
+onMounted(() => {
+  // child.value는 <Child />의 인스턴스를 가집니다.
+})
+</script>
+
+<template>
+  <Child ref="child" />
+</template>
+```
+
+## defineExpose
+
+자식 컴포넌트가 옵션 API를 사용하거나 `<script setup>`을 사용하지 않는 경우, 참조된 인스턴스는 자식 컴포넌트의 `this`와 동일
+- 부모 컴포넌트는 자식 컴포넌트의 모든 속성과 메서드에 대한 접근 권한을 갖는다.
+
+`<script setup>`을 사용하는 컴포넌트는 **기본적으로 비공개**
+`<script setup>`을 사용하는 **자식 컴포넌트**를 **부모 컴포넌트에서 참조**하려는 경우
+- 자식 컴포넌트가 `defineExpose` 컴파일러 매크로를 사용하여 선택한 인터페이스를 노출시켜야 함
+```vue
+<script setup>
+import { ref, defineExpose } from 'vue'
+
+const a = 1
+const b = ref(2)
+
+// 컴파일러 매크로, 예를 들어 defineExpose 는 import 할 필요가 없습니다
+defineExpose({
+  a,
+  b
+})
+</script>
+```
+- 상위에서 템플릿 참조를 통해 이 컴포넌트의 인스턴스를 가져오면,
+	- 검색된 인스턴스는 `{ a: number, b: number }` 와 같다.
+	- 일반 인스턴스에서처럼 ref는 자동으로 래핑 해제

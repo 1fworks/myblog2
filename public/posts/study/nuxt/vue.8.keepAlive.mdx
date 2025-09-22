@@ -1,0 +1,19 @@
+---
+title: "[vue.js] keepAlive"
+date: 2025-09-23T03:08:00
+update: 2025-09-23T03:08:00
+---
+`<KeepAlive>`는 여러 컴포넌트 간에 동적으로 전환될 때, 컴포넌트 인스턴스를 조건부로 캐시할 수 있는 빌트인 컴포넌트
+
+```vue
+<!-- 비활성 컴포넌트가 캐시됩니다! -->
+<KeepAlive>
+  <component :is="activeComponent" />
+</KeepAlive>
+```
+
+기본적으로 활성화된 컴포넌트 인스턴스는 전환 시 언마운트가 된다. 그래서 해당 컴포넌트가 가지고 있던 변경된 상태는 모두 사라지는데 이를 방지하고 싶으면 `<KeepAlive>` 내장 컴포넌트로 감싸주면 해결된다.
+
+---
+
+공식 메뉴얼: https://ko.vuejs.org/guide/built-ins/keep-alive

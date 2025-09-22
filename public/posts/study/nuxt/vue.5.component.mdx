@@ -1,0 +1,400 @@
+---
+title: "[vue.js] 컴포넌트"
+date: 2025-09-23T03:05:00
+update: 2025-09-23T03:05:00
+---
+# 컴포넌트 정의
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+</script>
+
+<template>
+  <button @click="count++">당신은 {{ count }} 번 클릭했습니다.</button>
+</template>
+```
+- 빌드 방식을 사용할 때 일반적으로 [싱글 파일 컴포넌트](https://ko.vuejs.org/guide/scaling-up/sfc.html)(줄여서 SFC)라고 하는 `.vue` 확장자를 사용하는 전용 파일에 각 **Vue 컴포넌트**를 정의
+
+```js
+import { ref } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    return { count }
+  },
+  template: `
+    <button @click="count++">
+      당신은 {{ count }} 번 클릭했습니다.
+    </button>`
+  // DOM 내의 템플릿을 대상으로 할 수도 있습니다:
+  // template: '#my-template-element'
+}
+```
+- 빌드 방식을 사용하지 않을 때, Vue 컴포넌트는 Vue 관련 옵션을 포함하는 일반 JavaScript 객체로 정의
+
+# 컴포넌트 사용
+```vue
+<script setup>
+import ButtonCounter from './ButtonCounter.vue'
+</script>
+
+<template>
+  <h1>아래에 자식 컴포넌트가 있습니다.</h1>
+  <ButtonCounter />
+</template>
+```
+- 부모 컴포넌트에서 import한 후 사용
+- `<script setup>`을 사용하면 가져온 컴포넌트를 템플릿에서 자동으로 사용할 수 있다.
+
+## 컴포넌트를 전역으로 등록
+```js
+import { createApp } from 'vue'
+
+const app = createApp({})
+
+app.component(
+  // 등록될 이름
+  'MyComponent',
+  // 구현체
+  {
+    /* ... */
+  }
+)
+```
+```js
+import MyComponent from './App.vue'
+
+app.component('MyComponent', MyComponent)
+```
+- SFC를 사용하는 경우, 가져온 `.vue` 파일을 등록
+
+```js
+app
+  .component('ComponentA', ComponentA)
+  .component('ComponentB', ComponentB)
+  .component('ComponentC', ComponentC)
+```
+- 다음과 같이 `.component()` 메서드 연결이 가능
+
+# Props 전달
+
+`props`은 컴포넌트에 등록할 수 있는 사용자 정의 속성
+```vue
+<!-- BlogPost.vue -->
+<script setup>
+defineProps(['title'])
+</script>
+
+<template>
+  <h4>{{ title }}</h4>
+</template>
+```
+- [`defineProps`](https://ko.vuejs.org/api/sfc-script-setup.html#defineprops-defineemits)는 `<script setup>` 내에서만 사용할 수 있는 컴파일 타임 매크로
+- 템플릿에 선언된 `props`는 자동으로 노출
+
+```js
+const props = defineProps(['title'])
+console.log(props.title)
+```
+- `defineProps`는 컴포넌트에 전달된 모든 `props`를 객체로 반환
+- JavaScript에서 접근 가능
+
+```js
+export default {
+  props: ['title'],
+  setup(props) {
+    console.log(props.title)
+  }
+}
+```
+- `<script setup>`을 사용하지 않는 경우, `props` 옵션을 선언해서 사용
+
+```js
+<!-- <script setup> 에서 -->
+defineProps({
+  title: String,
+  likes: Number
+})
+```
+```vue
+<!-- TypeScript -->
+<script setup lang="ts">
+defineProps<{
+  title?: string
+  likes?: number
+}>()
+</script>
+```
+- 문자열 배열이 아닌 객체를 이용해서 선언 가능
+
+```vue
+<script setup lang="ts">
+const props = defineProps({
+  foo: { type: String, required: true },
+  bar: Number
+})
+
+props.foo // string
+props.bar // number | undefined
+</script>
+```
+- **타입 지정 가능**
+- `required` 속성을 이용하여 **필수 여부**를 설정할 수 있다.
+
+```ts
+interface Props {
+  msg?: string
+  labels?: string[]
+}
+
+const { msg = 'hello', labels = ['one', 'two'] } = defineProps<Props>()
+```
+```ts
+interface Props {
+  msg?: string
+  labels?: string[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  msg: 'hello',
+  labels: () => ['one', 'two']
+})
+```
+- **기본값 설정** 또한 가능하다.
+
+
+# 이벤트 청취하기
+```vue
+<BlogPost
+  ...
+  @enlarge-text="postFontSize += 0.1"
+ />
+```
+```vue
+<!-- BlogPost.vue의 <script> 생략 -->
+<template>
+  <div class="blog-post">
+    <h4>{{ title }}</h4>
+    <button @click="$emit('enlarge-text')">텍스트 확대</button>
+  </div>
+</template>
+```
+- 자식 컴포넌트는 빌트인 [**`$emit`** 메서드](https://ko.vuejs.org/api/component-instance.html#emit)를 호출하고 이벤트 이름을 전달하여 자체적으로 이벤트를 생성할 수 있다.
+- `@enlarge-text="postFontSize += 0.1"` 리스너 덕분에 부모 컴포넌트는 이벤트를 수신하고 `postFontSize` 값을 업데이트
+
+## `defineEmits`
+```vue
+<!-- BlogPost.vue -->
+<script setup>
+defineProps(['title'])
+defineEmits(['enlarge-text'])
+</script>
+```
+- [`defineEmits`](https://ko.vuejs.org/api/sfc-script-setup.html#defineprops-defineemits) 매크로를 사용하여 원하는 이벤트를 선언
+- `defineProps`와 마찬가지로 `defineEmits`도 `<script setup>`에서만 사용할 수 있으며 `import`할 필요 없음
+
+```vue
+<script setup>
+const emit = defineEmits(['enlarge-text'])
+
+emit('enlarge-text')
+</script>
+```
+- `$emit` 메서드와 동일한 `emit` 함수를 반환
+	- 컴포넌트의 `<script setup>` 섹션에서 이벤트를 내보내는 데 사용할 수 있다.
+
+```vue
+<script setup lang="ts">
+// 런타임 선언
+const emit = defineEmits(['change', 'update'])
+
+// options 기반
+const emit = defineEmits({
+  change: (id: number) => {
+    // `true` 또는 `false` 값을 반환하여
+    // 유효성 검사 통과/실패 여부를 알려줌
+  },
+  update: (value: string) => {
+    // `true` 또는 `false` 값을 반환하여
+    // 유효성 검사 통과/실패 여부를 알려줌
+  }
+})
+
+// 타입 기반 선언
+const emit = defineEmits<{
+  (e: 'change', id: number): void
+  (e: 'update', value: string): void
+}>()
+
+// 3.3+: 대체, 더 간결한 문법
+const emit = defineEmits<{
+  change: [id: number]
+  update: [value: string]
+}>()
+</script>
+```
+- 여러 방식으로 `emit` 함수 작성 가능
+
+## 유효성 검사
+```vue
+<script setup>
+const emit = defineEmits({
+  // 유효성 검사 없음
+  click: null,
+
+  // submit 이벤트 유효성 검사
+  submit: ({ email, password }) => {
+    if (email && password) {
+      return true
+    } else {
+      console.warn('Invalid submit event payload!')
+      return false
+    }
+  }
+})
+
+function submitForm(email, password) {
+  emit('submit', { email, password })
+}
+</script>
+```
+
+# 슬롯이 있는 컨텐츠 배포
+```vue
+<FancyButton>
+  클릭하기! <!-- 슬롯 컨텐츠 -->
+</FancyButton>
+```
+```vue
+<!-- `<FancyButton>`의 템플릿 -->
+<button class="fancy-btn">
+  <slot></slot> <!-- 슬롯 아울렛 -->
+</button>
+```
+- HTML 엘리먼트와 마찬가지로 다음과 같이 컴포넌트에 컨텐츠를 전달
+- 컨텐츠를 이동하려는 자리 표시자로 `<slot>`을 사용
+
+
+# 동적 컴포넌트
+
+컴포넌트 간에 동적으로 전환
+- Vue의 `<component>` 엘리먼트에 특별한 `is` 속성으로 구현 가능
+```vue
+<!-- currentTab이 변경되면 컴포넌트가 변경됩니다 -->
+<component :is="tabs[currentTab]"></component>
+```
+- `:is`에 전달된 값
+	- 등록된 **컴포넌트의 이름 문자열**
+	- 실제 가져온 **컴포넌트 객체**
+- 내장된 [`<KeepAlive>` 컴포넌트](https://ko.vuejs.org/guide/built-ins/keep-alive.html)를 사용하여 비활성 컴포넌트를 "활성" 상태로 유지하도록 강제할 수 있다.
+
+
+# in-DOM 템플릿 파싱 주의 사항
+
+## 대소문자를 구분하지 않음
+
+- DOM 내 템플릿을 사용할 때
+	- PascalCase 컴포넌트 이름과
+	- `props`의 camelCased 이름
+	- 또는 `v-on` 이벤트 이름은 모두
+	- **=> kebab-case(하이픈으로 구분된) 기반**으로 사용
+
+## 셀프 태그 닫기
+```vue
+<my-component></my-component>
+```
+- in-DOM 템플릿에서는 **항상 명시적인 닫는 태그를 포함**
+- `<my-component />`처럼 쓸 수 없음!
+
+## 엘리먼트 배치 제한
+
+`<ul>`, `<ol>`, `<table>` 및 `<select>`와 같은 일부 HTML 엘리먼트에는 내부에 표시할 수 있는 엘리먼트에 대한 제한이 있다. 또한 `<li>`, `<tr>` 및 `<option>`와 같은 일부 엘리먼트는 특정 다른 엘리먼트 내부에만 사용할 수 있다.
+
+- 자세한 내용: [엘리먼트 배치 제한](https://ko.vuejs.org/guide/essentials/component-basics#element-placement-restrictions)
+
+
+# Component v-model
+```vue
+<!-- Child.vue -->
+<script setup>
+const model = defineModel()
+
+function update() {
+  model.value++
+}
+</script>
+
+<template>
+  <div>부모 바인딩 v-model은: {{ model }}</div>
+</template>
+```
+- `v-model`을 컴포넌트에서 사용하여 양방향 바인딩을 구현
+- [`defineModel()`](https://ko.vuejs.org/api/sfc-script-setup.html#definemodel) 매크로를 사용
+
+```vue
+<!-- Parent.vue -->
+<Child v-model="countModel" />
+```
+- 부모는 `v-model`을 사용하여 값을 바인딩
+- `defineModel()`에 의해 반환되는 값은 ref
+	- 부모 값과 로컬 값 사이의 **양방향 바인딩**으로 작동
+
+```js
+// v-model을 필수로 만들기
+const model = defineModel({ required: true })
+
+// 기본값 제공
+const model = defineModel({ default: 0 })
+
+// 첫 번째 인수로 문자열을 전달하여 해당 인수를 지원
+const title = defineModel('title', { required: true })
+```
+
+## 3.4 이전 구현 방법
+
+- 로컬 ref의 값과 동기화되는 `modelValue`라는 이름의 prop;
+- 로컬 ref의 값이 변경될 때 발생하는 `update:modelValue`라는 이벤트.
+```vue
+<!-- Child.vue -->
+<script setup>
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+</script>
+
+<template>
+  <input
+    :value="props.modelValue"
+    @input="emit('update:modelValue', $event.target.value)"
+  />
+</template>
+```
+```vue
+<!-- Parent.vue -->
+<Child
+  :modelValue="foo"
+  @update:modelValue="$event => (foo = $event)"
+/>
+```
+
+## Multiple `v-model` bindings
+```vue
+<UserName
+  v-model:first-name="first"
+  v-model:last-name="last"
+/>
+```
+```vue
+<script setup>
+const firstName = defineModel('firstName')
+const lastName = defineModel('lastName')
+</script>
+
+<template>
+  <input type="text" v-model="firstName" />
+  <input type="text" v-model="lastName" />
+</template>
+```
+- `defineModel()`의 **첫 번째 인수로 문자열을 전달**하여 해당 인수를 지원

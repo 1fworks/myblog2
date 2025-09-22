@@ -1,0 +1,79 @@
+---
+title: "[vue.js] 클래스, 스타일 바인딩"
+date: 2025-09-23T03:02:00
+update: 2025-09-23T03:02:00
+---
+## HTML 클래스 바인딩
+```vue
+<div :class="{ active: isActive }"></div>
+```
+- `isActive` 데이터 속성의 [truthiness](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)에 의해 `active` **클래스의 존재 여부**가 결정됨
+
+```js
+const isActive = ref(true)
+const hasError = ref(false)
+```
+```vue
+<div
+  class="static"
+  :class="{ active: isActive, 'text-danger': hasError }"
+></div>
+```
+- 객체에 더 많은 필드를 사용하여 **여러 클래스를 토글 가능**
+- 렌더링 결과는 아래와 같이 나온다.
+
+```vue
+<div class="static active"></div>
+```
+
+# 배열로 바인딩 하기
+```js
+const activeClass = ref('active')
+const errorClass = ref('text-danger')
+```
+```vue
+<div :class="[activeClass, errorClass]"></div>
+```
+- 렌더링 결과는 아래와 같이 나온다.
+
+```vue
+<div class="active text-danger"></div>
+```
+
+# 컴포넌트에서 사용하기
+```vue
+<!-- 자식 컴포넌트의 템플릿 -->
+<p class="foo bar">안녕!</p>
+```
+```vue
+<!-- 컴포넌트가 사용될 때 -->
+<MyComponent class="baz boo" />
+```
+- 렌더링 결과는 아래처럼.
+
+```vue
+<p class="foo bar baz boo">안녕!</p>
+```
+
+---
+
+# 인라인 스타일 바인딩
+```js
+const styleObject = reactive({
+  color: 'red',
+  fontSize: '30px'
+})
+```
+```vue
+<div :style="styleObject"></div>
+```
+- `:style` 디렉티브는 `:class`와 마찬가지로 일반 스타일 속성과 함께 사용할 수 있다.
+- `:class` 쓰듯이 쓰면 되는 것 같다.
+
+## 접두사 자동완성
+
+- Vue가 실행되고 있을 때, 해당 브라우저에서 지원되지 않는 CSS 속성이 `:style`에 사용되면, 자동으로 해당 속성과 [벤더 접두사](https://developer.mozilla.org/en-US/docs/Glossary/Vendor_Prefix)가 조합된 여러 개의 특수한 속성을 테스트하고 지원되는 속성을 찾아서 추가한다.
+
+---
+
+공식 메뉴얼: https://ko.vuejs.org/guide/essentials/class-and-style.html

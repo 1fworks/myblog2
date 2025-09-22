@@ -8,6 +8,7 @@ import rehypeToc from 'rehype-toc';
 import rehypeReact from 'rehype-react';
 import remarkMdx from 'remark-mdx';
 import remarkGfm from 'remark-gfm';
+import { remarkVue2Html } from '@/libs/remarkVue2Html';
 import { rehypeObsidianMedia } from "@/libs/rehypeObsidianMedia";
 import { rehypeUnwrapMyMediaFromParagraph } from "@/libs/rehypeUnwrapMyMediaFromParagraph";
 import { rehypeRemovePtagInSideList } from '@/libs/rehypeRemovePtagInList';
@@ -119,6 +120,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
             remarkPlugins: [
               remarkMdx,
               remarkGfm,
+              remarkVue2Html,
             ],
             rehypePlugins: [
               rehypeSlug, [
