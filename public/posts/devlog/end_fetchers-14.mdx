@@ -41,7 +41,8 @@ tags:
 
 방법은 전체적으로 깔아둘 색상 `col`을 결정하고 화면의 rgb에 `(1.-col)` 값을 빼는 방식입니다.
 
-<iframe frameborder="0" src="https://www.shadertoy.com/embed/W3f3R8?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+https://www.shadertoy.com/view/W3f3R8
+![[imgs/end_fetchers/14/simple_darkness.png]]
 
 ```c
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -65,7 +66,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 (게임에서 일부 효과에만 적용했던 기술인데 꽤나 재밌는 정보라 소개합니다.)
 
-<iframe frameborder="0" src="https://www.shadertoy.com/embed/ll2GD3?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+https://www.shadertoy.com/view/ll2GD3
+![[imgs/end_fetchers/14/palettes.png]]
 
 화면에 특이한 색상이나 필터를 씌우고 싶은 경우가 있습니다. 저는 이럴 때 Color Palettes를 계산해주는 코드를 사용하곤 합니다. 코드는 아래와 같습니다.
 
