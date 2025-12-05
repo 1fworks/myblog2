@@ -45,6 +45,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
       <article className="mini-gallery">
         { images.map((image, i)=>{
           const filename = image.filename.split('/').slice(-1)[0]
+          const src = image.filename.replaceAll(' ','%20')
           return (
             <div
               className="gallery-image"
@@ -53,7 +54,7 @@ export const RecentPostAndArt = ({ className, posts, images }:
               <MyNextImage
                 filename={filename}
                 alt={filename}
-                src={image.filename}
+                src={src}
                 ratio={1/1}
                 cover={true}
                 imgWidth={image.data.width}
