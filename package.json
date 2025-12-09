@@ -37,7 +37,7 @@
     "lunr": "^2.3.9",
     "lunr-languages": "^1.14.0",
     "marked": "^15.0.6",
-    "next": "15.1.6",
+    "next": "^15.1.9",
     "next-export-optimize-images": "^4.6.1",
     "next-image-export-optimizer": "^1.18.0",
     "next-mdx-remote": "^5.0.0",
