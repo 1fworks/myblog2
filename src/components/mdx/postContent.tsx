@@ -33,7 +33,7 @@ export const PostContent = ({children}:{children: React.ReactNode}) => {
     const tocCheck = () => {
       let tmp = first
       for(const content of contents) {
-        if(content.getBoundingClientRect().top > window.innerHeight / 2) break
+        if(content.getBoundingClientRect().top > 60) break
         tmp = content
       }
       if(curr.current !== tmp){
