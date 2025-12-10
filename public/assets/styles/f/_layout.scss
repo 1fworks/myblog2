@@ -440,6 +440,9 @@
         @include media-query($on-tablet + 70px){
             @apply opacity-0 pointer-events-none;
         }
+        @include media-query($on-tablet) {
+            @apply hidden;
+        }
         a {
             @apply transition-link break-keep underline select-none;
             @apply tracking-normal;
