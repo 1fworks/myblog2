@@ -434,7 +434,7 @@
 
     nav.toc {
         @apply transition-opacity;
-        @apply fixed left-1/2 top-1/4 translate-x-[410px];
+        @apply absolute left-1/2 top-[16rem] translate-x-[410px] h-full;
         max-width: calc(50dvw - 410px - 1rem);
         @apply text-base/4 my-4;
         @include media-query($on-tablet + 70px){
@@ -448,7 +448,7 @@
                 @apply opacity-10;
                 // content: " [#]";
             }
-            &:hover {
+            &:hover, &.link-active {
                 @apply font-bold;
                 &::after {
                     @apply opacity-70;
@@ -463,6 +463,9 @@
             li {
                 @apply my-3;
             }
+        }
+        .toc-level-1 {
+            @apply sticky top-[8rem];
         }
     }
 

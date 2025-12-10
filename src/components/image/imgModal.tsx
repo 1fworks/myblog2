@@ -9,15 +9,15 @@ export default function ImgModal() {
   const distance = 123//px
   
   useEffect(()=>{
-    window.addEventListener("resize", ()=>{
+    const resizeEvent = () => {
       if(!divRef.current) return;
       const modal = divRef.current as Element
       if(modal.classList.contains('img-modal-active')){
         closeImgModal()
         scrollRef.current = window.scrollY
       }
-    })
-    window.addEventListener("scroll", ()=>{
+    }
+    const scrollEvent = ()=>{
       if(!divRef.current) return;
       const modal = divRef.current as Element
       if(modal.classList.contains('img-modal-active')){
@@ -29,7 +29,15 @@ export default function ImgModal() {
       else{
         scrollRef.current = window.scrollY
       }
-    })
+    }
+
+    window.addEventListener("resize", resizeEvent)
+    window.addEventListener("scroll", scrollEvent)
+    
+    return () => {
+      window.removeEventListener("resize", resizeEvent)
+      window.removeEventListener("scroll", scrollEvent)
+    }
   }, [])
 
   return (

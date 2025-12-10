@@ -19,6 +19,7 @@ import { MyAudio } from '../audio/audio';
 import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
 import { getImgDataList } from '@/libs/post';
+import { PostContent } from './postContent';
 
 const file_type = {
   image_files: ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'],
@@ -110,7 +111,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
   const imgInfoList = getImgDataList() as { [key:string]:{width:number, height:number, type:string} }
   
   return (
-    <div>
+    <PostContent>
       <MDXRemote
         source={markdownsource}
         components={{MyNextImage, WavePlayer2024, MyAudio}}
@@ -149,6 +150,6 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
           },
         }}
       />
-    </div>
+    </PostContent>
   )
 }

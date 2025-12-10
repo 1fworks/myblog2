@@ -116,6 +116,9 @@
         a {
             color: $text-less-cloudy;
             text-decoration-color: $text-input;
+            &.link-active {
+                color: $text-base-color;
+            }
             &:hover {
                 color: $text-em;
             }

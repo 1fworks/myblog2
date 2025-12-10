@@ -84,6 +84,9 @@
         a {
             color: $dark-text-less-cloudy;
             text-decoration-color: $dark-text-input-active;
+            &.link-active {
+                color: $dark-text-base-color;
+            }
             &:hover {
                 color: $dark-text-em;
             }
