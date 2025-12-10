@@ -18,6 +18,7 @@ export const PostContent = ({children}:{children: React.ReactNode}) => {
 
   useEffect(()=>{
     const tocLinks = [...document.querySelectorAll(".toc-link")]
+    if(tocLinks.length === 0) return;
     tocLinks[0].classList.add('link-active')
 
     const contents = [...document.querySelectorAll(".anchor")].map(content=>{
