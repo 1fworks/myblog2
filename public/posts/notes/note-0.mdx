@@ -1,7 +1,7 @@
 ---
 title: masOS 세팅
 date: 2025-12-09T22:15:00
-update: 2025-12-09T22:15:00
+update: 2025-12-12T08:34:00
 ---
 ![[imgs/mac_setting/macmini.png]]
 
@@ -24,7 +24,6 @@ update: 2025-12-09T22:15:00
 여기서 키를 바꿀 수 있습니다.
 
 ## 한/영 키
-
 ![[imgs/mac_setting/mac_keyboard_setting_2.png]]
 
 `Caps Lock`으로 `한/영`을 바꾸는 것도 매우 불편했습니다. 그래서 입력 소스 전환 버튼을 비활성시켰습니다.
@@ -34,13 +33,11 @@ update: 2025-12-09T22:15:00
 `한/영`키는 `F18`로 바꿔놨습니다. 지금은 via를 지원하는 키보드를 사용하고 있어서 그냥 바꿀 수 있었지만 소프트웨어로 해결해야 한다면 `karabiner`를 써야할 것 같네요.
 
 ## 구름 입력기
-
 ![[imgs/mac_setting/hangul.png]]
 
 글자를 치다보면 '맥' 이라는 글자가 'aㅐㄱ'으로 타이핑되는 경우가 많아서 참 답답했는데 [구름입력기](https://gureum.io/)란 것이 있더라고요. macOS용 한글 입력기인데 [libhangul](https://github.com/libhangul/libhangul) 기반으로 모아치기를 지원한다고 합니다. 가볍고 좋은 것 같습니다. 확실히 오타도 줄어들었고요.
 
 ## Home, End 키 세팅
-
 맥에서 `Home` 키와 `End` 키를 누르면 문서의 첫 부분과 마지막으로 이동하더군요. 문장의 첫 부분과 끝 부분으로 이동하기를 원했기에 키바인딩 설정을 바꿨습니다.
 
 ```powershell
@@ -65,6 +62,20 @@ vi DefaultKeyBinding.dict
 ```
 
 `DefaultKeyBinding.dict` 파일에 위 내용을 넣어주고 재부팅하면 됩니다.
+
+---
+
+# 디스플레이 세팅
+![[imgs/mac_setting/betterdisplaypro.png]]
+>https://github.com/waydabber/BetterDisplay
+
+FHD 모니터를 쓰고있는데 요상하게 글자가 흐릿하게 보여서 눈이 침침해지더군요. 시스템에서 폰트에 안티앨리어싱을 먹이고 있는 것 같은데 끄는 옵션이 보이지 않아서 찾은 앱입니다.
+
+![[imgs/mac_setting/betterdisplaypro_hidpi.png]]
+
+**HiDPI** 기능을 이용해서 좀 더 글자가 선명하게 보이게 만들었습니다. 해상도를 늘리고 4개의 픽셀을 이용해서 1개의 픽셀을 표현하는 것 같습니다.
+
+글자는 선명해져서 좋은데 도트를 찍을 때는 선명했던 경계가 흐려지는 경향이 조금 보이네요. 화면에서 처리하는 픽셀 수가 늘어나서 그런 것 같습니다. 도트를 찍을 때는 끄고 코딩하거나 구글링 할 때는 켜는 식으로 사용하고 있습니다.
 
 ---
 
@@ -104,13 +115,13 @@ brew install git
 
 ## iTerm2
 ![[imgs/mac_setting/iterm2.png]]
-https://iterm2.com/
+>https://iterm2.com/
 
 iTerm2를 설치했습니다. 써보니 창을 분할하거나 탭으로 관리할 수 있어서 좋더라고요. 자동 완성 기능도 제공해준다고 합니다.
 
 ## oh my zsh
 ![[imgs/mac_setting/ohmyzsh.png]]
-https://ohmyz.sh/
+>https://ohmyz.sh/
 
 친구가 이쁜 테마를 쓰고 있길래 저도 설치해봤습니다. 이걸로 터미널 모양을 바꿀 수 있더라고요.
 
@@ -133,19 +144,20 @@ sudo xattr -r -d com.apple.quarantine /Users/[user_name]/Downloads/steam.dmg
 
 # 알탭 지원
 ![[imgs/mac_setting/AltTab.png]]
-https://alt-tab-macos.netlify.app/
+>https://alt-tab-macos.netlify.app/
 
-친구가 추천해준 앱입니다. 윈도우처럼 알탭을 쓸 수 있게 해줍니다. 그런데 백그라운드로 돌아가는 앱도 표시되는 느낌이라 '**숨겨진 윈도우 표시 - 숨기기**' 해놓고 쓰고 있습니다.
+친구가 추천해준 앱입니다. 윈도우처럼 알탭을 쓸 수 있게 해줍니다. 그런데 켜져있는 모든 앱이 다 보이는 느낌이라 '**숨겨진 윈도우 표시 - 숨기기**' 해놓고 쓰고 있습니다. (`cmd`+`H`를 하면 사용 중인 앱을 숨길 수 있습니다.)
+
+스팀이나 자주 쓰는 백그라운드 앱은 블랙리스트에 **'열린 윈도우가 없을 때' AltTab 프로그램에서 숨기도록** 설정했습니다.
 
 ---
 
 # 마우스 스크롤
-맥에서 마우스 스크롤이 정말 답답했습니다. 휠을 많이 돌려야 그제서야 스크롤이 되는 느낌이었습니다.
-
 ![[imgs/mac_setting/mos.png]]
-https://mos.caldis.me/
+>https://mos.caldis.me/
 
-이 프로그램을 쓰니 그제서야 제가 알던 마우스처럼 휠이 작동하더군요. 설정도 다양하게 할 수 있어서 좋습니다.
+맥에서 마우스 스크롤이 정말 답답했습니다.
+휠을 많이 돌려야 그제서야 스크롤이 되는 느낌이었습니다. 이 프로그램을 쓰니 그제서야 제가 알던 마우스처럼 휠이 작동하더군요. 설정도 다양하게 할 수 있어서 좋습니다.
 
 /imglist open
 ![[imgs/mac_setting/mos_setting_0.png]]
@@ -157,11 +169,23 @@ https://mos.caldis.me/
 
 # 캡처 도구
 ![[imgs/mac_setting/shottr.png]]
-https://shottr.cc/
+>https://shottr.cc/
 
 어디 괜찮은 캡처 도구가 없나 싶어서 찾은 앱입니다.
 ![[imgs/mac_setting/shottr_setting.png]]
 캡처한 후에 어떤 동작을 할 건지도 설정할 수 있습니다. 단축키 설정도 가능하고요. 간단하고 편한 것 같습니다.
+
+---
+
+# Yoink
+![[imgs/mac_setting/yoink.png]]
+>(App Store에서 받을 수 있습니다.)
+
+맥에서 파일 이동이 요상하게 불편하더군요. 드래그 앤 드랍으로 편하게 작업할 수 있게 도와준다고 합니다.
+
+![[imgs/mac_setting/yoink_screenshot.png]]
+
+파일이나 폴더를 잡고 화면 끝부분에 가져가면 저렇게 임시 저장소가 나옵니다. 아무거나 막 집어넣고 꺼내오기 좋은 것 같습니다.
 
 ---
 
@@ -190,8 +214,7 @@ softwareupdate --install-rosetta --agree-to-license
 Apple Silicon이 탑재된 Mac에서는 Rosetta 2를 설치하라는 문구가 뜹니다. 인텔맥 전용으로 제작된 앱을 사용할 수 있게 해준다네요. 혹시 설치하라는 문구가 뜬다면 위 명령어를 수행하면 됩니다.
 
 ## dxmt
-
-https://github.com/3Shain/dxmt
+>https://github.com/3Shain/dxmt
 
 3D 애플리케이션을 실행할 수 있게 해주는 Direct3D 10 및 11를 위한 Metal 기반 레이어... 라고 합니다.
 여기서 release 파일을 받아 압축을 풀어줍니다. 그 다음에 파일이 있는 폴더에서 터미널을 연 후에 아래 명령어를 수행합니다. 직접 파일을 옮겨도 됩니다.
