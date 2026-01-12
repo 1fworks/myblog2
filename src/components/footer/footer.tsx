@@ -1,7 +1,14 @@
 import { siteSetting } from "@/app/site.setting"
+import dayjs from "@/libs/myDayjs"
+import { Dayjs } from "dayjs";
+import { useEffect, useState } from "react"
 // import Link from "next/link"
 
 export const Footer = () => {
+  const [ now, setNow ] = useState<Dayjs|undefined>(undefined)
+  useEffect(()=>{
+    setNow(dayjs())
+  }, [])
   return (
     <footer>
       <div className='pt-10 pb-10'>
@@ -28,7 +35,7 @@ export const Footer = () => {
               </g>
             </svg>
             rss
-          </a> © {siteSetting.author.name} {new Date().getFullYear()}
+          </a> © {siteSetting.author.name} {now?.year()}
         </p>
         <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Cloudflare Pages</p>
       </div>
