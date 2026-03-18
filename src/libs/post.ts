@@ -14,6 +14,7 @@ export interface frontmatter_type {
   tags?: string[];
   order?: boolean;
   preview?: string;
+  proj_icon?: string;
 }
 
 export const BASE_PATH = '/public/posts';

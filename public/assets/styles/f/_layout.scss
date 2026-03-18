@@ -1041,7 +1041,14 @@
         }
         .proj-text, .short-description {
             @apply text-white mix-blend-difference;
-            @include media-query($on-what-happen) {
+        }
+        .proj-text {
+            @include media-query($on-minimini) {
+                @apply hidden;
+            }
+        }
+        .short-description {
+            @include media-query($on-mini) {
                 @apply hidden;
             }
         }

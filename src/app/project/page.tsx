@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { siteSetting } from "../site.setting";
 import { getAllPostsWithFrontMatter } from "@/libs/post";
+import { default as NextImage } from "next/image";
 import { MyNextImage } from "@/components/image/mynextImage";
 import { findFile } from "@/libs/findFile";
 import dayjs from "@/libs/myDayjs";
@@ -95,7 +96,28 @@ export default function Project() {
                   style={{animationDelay:`${(i+1)*200}ms`}}
                 >
                   <div className="proj-text">
-                    <div className="proj-title">{post.frontmatter.title}</div>
+                    <div className="flex">
+                      { post.frontmatter.proj_icon && post.frontmatter.proj_icon === 'webpage' ?
+                        <NextImage
+                          className="w-fit h-fit my-auto pr-2"
+                          src='/assets/img/icon/internet.png'
+                          alt="controller icon"
+                          unoptimized={true}
+                          width={22}
+                          height={22}
+                        />
+                        :
+                        <NextImage
+                          className="w-fit h-fit my-auto pr-2"
+                          src='/assets/img/icon/controller.png'
+                          alt="controller icon"
+                          unoptimized={true}
+                          width={22}
+                          height={22}
+                        />
+                      }
+                      <div className="proj-title">{post.frontmatter.title}</div>
+                    </div>
                     <p>{i == 0 || post_year != previous_post_year ? post_year : ''}</p>
                   </div>
                   { post.frontmatter.short_description &&
