@@ -12,13 +12,17 @@ export const Footer = () => {
   return (
     <footer>
       <div className='pt-10 pb-10'>
-        <div className="w-fit mx-auto mb-2">
+        <div className="w-fit mx-auto mb-2 opacity-0 animate-fade-in-animation"
+          style={{ animationDuration: '300ms'}}
+        >
           { /* My Blog Logo. _ = F = _ */ }
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
             <path d="M 6 0 L 0 6 L 1 7 L 7 1 L 6 0 M 2 8 L 6 12 L 12 6 L 11 5 L 10 6 L 7 3 L 6 4 L 9 7 L 8 8 L 5 5 Z"/>
           </svg>
         </div>
-        <p className='w-fit mx-auto blog-data-1'>
+        <p className={`w-fit mx-auto blog-data-1 opacity-0 ${now?.year()===undefined?'':'animate-fade-in-animation'}`}
+          style={{ animationDuration: '200ms' }}
+        >
           <a className='no-style mr-3' href='/feed.xml'>
             {
               // Gentlecons Interface Icons by Konstantin Filatov, CC Attribution License
@@ -37,7 +41,9 @@ export const Footer = () => {
             rss
           </a> © {siteSetting.author.name} {now?.year()}
         </p>
-        <p className='w-fit mx-auto blog-data-2'>Powered by Next.js, Cloudflare Pages</p>
+        <p className={`w-fit mx-auto blog-data-2 opacity-0 ${now?.year()===undefined?'':'animate-fade-in-animation'}`}
+          style={{ animationDuration: '200ms', animationDelay: '100ms' }}
+        >Powered by Next.js, Cloudflare Pages</p>
       </div>
     </footer>
   )
