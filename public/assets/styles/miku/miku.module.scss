@@ -1,0 +1,50 @@
+@mixin cursor-miku-normal {
+  animation: kf-miku-normal 1400ms linear infinite;
+}
+
+@mixin cursor-miku-pointer {
+  animation: kf-miku-pointer 1600ms linear infinite;
+}
+
+.mikucursor :global {
+  .cursor-my-default {
+    @apply cursor-default;
+  }
+  .cursor-my-pointer {
+    @apply cursor-pointer;
+  }
+  .cursor-my-zoom-out {
+    @apply cursor-zoom-out;
+  }
+}
+
+[data-miku=true] {
+  .mikucursor :global {
+    @include cursor-miku-normal;
+    .cursor-my-default {
+      &:hover {
+        @include cursor-miku-normal;
+      }
+    }
+    .cursor-my-pointer, a, button {
+      &:hover {
+        @include cursor-miku-pointer;
+      }
+    }
+  }
+}
+
+.mikucursor :global {
+  .miku-cursor-preview {
+    &.cursor-my-default {
+      &:hover {
+        @include cursor-miku-normal;
+      }
+    }
+    &.cursor-my-pointer {
+      &:hover {
+        @include cursor-miku-pointer;
+      }
+    }
+  }
+}

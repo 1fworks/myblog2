@@ -13,6 +13,7 @@ import { Wrapper } from '@/components/wrapper/wrapper';
 import { BgImage } from '@/components/image/bgImage';
 import { basePath } from './site.setting';
 import { getFiles } from "./archive/[[...slug]]/page";
+import MikuCursorProvider from '@/components/image/mikuCursorProvider';
 
 import path from 'path';
 import imageSize from 'image-size';
@@ -114,10 +115,12 @@ export default async function RootLayout({
     <html lang="en" className={`scroll-smooth`} suppressHydrationWarning>
       <body className={`relative ${pretendard.variable} ${wantedsans.variable} ${anton.variable} ${styles.mytheme}`}>
         <ThemeProvider defaultTheme='dark'>
-          <BgImage basePath={basePath}/>
-          <ImgModal/>
-          <NavMenu recent_file={recent_file}/>
-          <Wrapper>{children}</Wrapper>
+          <MikuCursorProvider>
+            <BgImage basePath={basePath}/>
+            <ImgModal/>
+            <NavMenu recent_file={recent_file}/>
+            <Wrapper>{children}</Wrapper>
+          </MikuCursorProvider>
         </ThemeProvider>
       </body>
     </html>

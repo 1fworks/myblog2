@@ -221,6 +221,20 @@
         &.button-disable {
             @apply opacity-50 font-normal;
         }
+        &.btn-miku {
+            @apply border-2 transition-all overflow-hidden;
+            &:hover {
+                div {
+                    @apply scale-105 transition-transform blur-[2px] duration-500;
+                }
+            }
+            .img-zoom, .img-focus {
+                @apply pointer-events-none;
+            }
+            &.cursor-miku {
+                @apply hover:opacity-30;
+            }
+        }
         &:hover {
             @apply shadow-lg opacity-100;
         }
@@ -550,6 +564,12 @@
     img {
         @apply shadow-lg outline-none;
         @apply rounded-md mx-auto select-none;
+    }
+    .img-shadowless {
+        @apply shadow-none;
+        img {
+            @apply shadow-none;
+        }
     }
     
     .post-content {

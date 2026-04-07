@@ -15,6 +15,7 @@ import { rehypeRemovePtagInSideList } from '@/libs/rehypeRemovePtagInList';
 import { rehypeWrapTables } from '@/libs/rehypeWrapTable';
 import { MyNextImage } from "../image/mynextImage";
 import { WavePlayer2024 } from '../audio/wavePlayer2024';
+import { MikuCursor } from '../image/mikuCursor';
 import { MyAudio } from '../audio/audio';
 import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
@@ -114,7 +115,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     <PostContent>
       <MDXRemote
         source={markdownsource}
-        components={{MyNextImage, WavePlayer2024, MyAudio}}
+        components={{MyNextImage, WavePlayer2024, MikuCursor, MyAudio}}
         options={{
           parseFrontmatter: true,
           mdxOptions: {

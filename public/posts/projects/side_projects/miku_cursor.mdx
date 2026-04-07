@@ -1,0 +1,31 @@
+---
+title: miku cursor
+date: 2026-04-07T00:00:00
+update: 2026-04-07T00:00:00
+---
+파일 정리하다가 예전에 그려놓은 미쿠 커서 이미지가 있길래 조금 다듬어서 올려봅니다.
+
+---
+<div className='img-shadowless'>![[imgs/miku/miku_preview.webp]]</div>
+<MikuCursor />
+---
+## 커서 미리보기
+<div className='w-full text-center'>마우스를 올려보세요!</div>
+
+<div className='flex flex-col gap-2 w-fit mx-auto'>
+  <div className='flex w-fit mx-auto'>
+    <button className='btn-miku cursor-miku miku-cursor-preview cursor-my-default' disabled>![[imgs/miku/normalx2.webp]]</button><button className='btn-miku cursor-miku' disabled>![[imgs/miku/singingx2.webp]]</button><button className='btn-miku cursor-miku' disabled>![[imgs/miku/workingx2.webp]]</button>
+  </div>
+  <div className='flex w-fit mx-auto'>
+    <button className='btn-miku cursor-miku' disabled>![[imgs/miku/helpx2.webp]]</button><button className='btn-miku cursor-miku miku-cursor-preview cursor-my-pointer' disabled>![[imgs/miku/linkx2.webp]]</button><button className='btn-miku cursor-miku' disabled>![[imgs/miku/linkx2.webp]]</button>
+  </div>
+  <div className='flex w-fit mx-auto'>
+    <button className='btn-miku cursor-miku' disabled>![[imgs/miku/loadingx2.webp]]</button>
+  </div>
+</div>
+
+---
+## css
+```css
+cursor: url('test.png'), pointer;
+```

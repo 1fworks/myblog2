@@ -113,6 +113,9 @@
 
     button {
         background-color: $dark-background-color;
+        &.btn-miku {
+            border-color: $dark-text-cloudy;
+        }
         &:hover {
             background-color: $dark-text-input-active;
         }

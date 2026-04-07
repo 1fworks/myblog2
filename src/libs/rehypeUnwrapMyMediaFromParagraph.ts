@@ -2,7 +2,7 @@ import { visit } from "unist-util-visit";
 import { Node } from 'unist';
 import { Element } from "mdx/types";
 
-const myMedia = ['MyNextImage', 'WavePlayer2024', 'MyAudio', 'MyVideo', 'iframe']
+const myMedia = ['MyNextImage', 'WavePlayer2024', 'MikuCursor', 'MyAudio', 'MyVideo', 'iframe']
 
 export function rehypeUnwrapMyMediaFromParagraph() {
   return (tree: Node) => {
@@ -13,7 +13,7 @@ export function rehypeUnwrapMyMediaFromParagraph() {
       const newNodes: Element = []
 
       children.forEach((child: Element) => {
-        if(child.type === 'element' && myMedia.indexOf(child.tagName) > -1) {
+        if((child.type === 'element' && myMedia.indexOf(child.tagName) > -1) || child.type === 'mdxJsxTextElement' || child.type === 'mdxJsxFlowElement') {
           // If there's something else in front of the image node, make it a p tag
           if (newNodes.length > 0) {
             parent.children.splice(index++, 0, {

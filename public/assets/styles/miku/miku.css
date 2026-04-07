@@ -1,0 +1,32 @@
+@keyframes kf-miku-normal {
+  0.0% { cursor: url('/assets/miku_cursor/normal/normal_frame_1.webp') 2 2, pointer; }
+  25.0% { cursor: url('/assets/miku_cursor/normal/normal_frame_1.webp') 2 2, pointer; }
+  28.57% { cursor: url('/assets/miku_cursor/normal/normal_frame_2.webp') 2 2, pointer; }
+  35.71% { cursor: url('/assets/miku_cursor/normal/normal_frame_2.webp') 2 2, pointer; }
+  39.29% { cursor: url('/assets/miku_cursor/normal/normal_frame_3.webp') 2 2, pointer; }
+  46.43% { cursor: url('/assets/miku_cursor/normal/normal_frame_3.webp') 2 2, pointer; }
+  50.0% { cursor: url('/assets/miku_cursor/normal/normal_frame_4.webp') 2 2, pointer; }
+  75.0% { cursor: url('/assets/miku_cursor/normal/normal_frame_4.webp') 2 2, pointer; }
+  78.57% { cursor: url('/assets/miku_cursor/normal/normal_frame_5.webp') 2 2, pointer; }
+  85.71% { cursor: url('/assets/miku_cursor/normal/normal_frame_5.webp') 2 2, pointer; }
+  89.29% { cursor: url('/assets/miku_cursor/normal/normal_frame_6.webp') 2 2, pointer; }
+  96.43% { cursor: url('/assets/miku_cursor/normal/normal_frame_6.webp') 2 2, pointer; }
+  100.0% { cursor: url('/assets/miku_cursor/normal/normal_frame_1.webp') 2 2, pointer; }
+}
+
+@keyframes kf-miku-pointer {
+  0.0% { cursor: url('/assets/miku_cursor/link/link_frame_1.webp') 22 14, pointer; }
+  6.67% { cursor: url('/assets/miku_cursor/link/link_frame_2.webp') 22 14, pointer; }
+  13.33% { cursor: url('/assets/miku_cursor/link/link_frame_3.webp') 22 14, pointer; }
+  20.0% { cursor: url('/assets/miku_cursor/link/link_frame_4.webp') 22 14, pointer; }
+  26.67% { cursor: url('/assets/miku_cursor/link/link_frame_5.webp') 22 14, pointer; }
+  33.33% { cursor: url('/assets/miku_cursor/link/link_frame_6.webp') 22 14, pointer; }
+  40.0% { cursor: url('/assets/miku_cursor/link/link_frame_7.webp') 22 14, pointer; }
+  46.67% { cursor: url('/assets/miku_cursor/link/link_frame_8.webp') 22 14, pointer; }
+  53.33% { cursor: url('/assets/miku_cursor/link/link_frame_9.webp') 22 14, pointer; }
+  73.33% { cursor: url('/assets/miku_cursor/link/link_frame_9.webp') 22 14, pointer; }
+  80.0% { cursor: url('/assets/miku_cursor/link/link_frame_10.webp') 22 14, pointer; }
+  86.67% { cursor: url('/assets/miku_cursor/link/link_frame_11.webp') 22 14, pointer; }
+  93.33% { cursor: url('/assets/miku_cursor/link/link_frame_12.webp') 22 14, pointer; }
+  100.0% { cursor: url('/assets/miku_cursor/link/link_frame_1.webp') 22 14, pointer; }
+}

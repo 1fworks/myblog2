@@ -145,6 +145,9 @@
 
     button {
         background-color: $background-color;
+        &.btn-miku {
+            border-color: $text-cloudy;
+        }
         &:hover {
             background-color: $text-input-active;
         }
