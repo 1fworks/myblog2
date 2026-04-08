@@ -192,13 +192,13 @@ export const ArchivePageWithSearchBar = ({
         { value.length === 0 &&
           <div className={`flex flex-row ml-auto items-center my-2 transition-opacity ${value.length > 0?'opacity-0':'opacity-100'}`}>
             <button
-              className={`${sortby==="oldest"?undefined:"button-disable"} ${value.length > 0?'cursor-default':''}`}
+              className={`${sortby==="oldest"?undefined:"button-disable"} ${value.length > 0?'cursor-my-default':''}`}
               onClick={()=>{if(value.length === 0 && sortby !== "oldest"){setSortby("oldest")}}}>
                 오름차순
             </button>
             <p className="select-none opacity-30">/</p>
             <button
-              className={`${sortby==="newest"?undefined:"button-disable"} ${value.length > 0?'cursor-default':''}`}
+              className={`${sortby==="newest"?undefined:"button-disable"} ${value.length > 0?'cursor-my-default':''}`}
               onClick={()=>{if(value.length === 0 && sortby !== "newest"){setSortby("newest")}}}>
                 내림차순
             </button>

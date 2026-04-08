@@ -29,7 +29,7 @@ export const MiniArchive = ({ files, l_curr }:{
   return (
     <div className="archive mini-archive">
       { l_start > 0 &&
-        <div className="archive-list cursor-pointer overflow-hidden px-3" onClick={()=>{setLStart(Math.max(0, l_start - list_plus))}}>
+        <div className="archive-list cursor-my-pointer overflow-hidden px-3" onClick={()=>{setLStart(Math.max(0, l_start - list_plus))}}>
           ↑ more
         </div>
       }
@@ -48,7 +48,7 @@ export const MiniArchive = ({ files, l_curr }:{
         })
       }
       { l_end < files.length - 1 &&
-        <div className="archive-list cursor-pointer overflow-hidden px-3" onClick={()=>{setLEnd(Math.min(files.length - 1, l_end + list_plus))}}>
+        <div className="archive-list cursor-my-pointer overflow-hidden px-3" onClick={()=>{setLEnd(Math.min(files.length - 1, l_end + list_plus))}}>
           ↓ more
         </div>
       }

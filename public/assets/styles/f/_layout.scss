@@ -1151,4 +1151,37 @@
     .my-audio, .wave-player-2024 {
         @apply my-2;
     }
+
+    .cursor-my-default {
+        @apply cursor-default;
+    }
+    .cursor-my-pointer {
+        @apply cursor-pointer;
+    }
+    .miku-cursor {
+        @apply cursor-none;
+        
+        .cursor-my-default {
+            @apply cursor-none;
+        }
+
+        .cursor-my-pointer,
+        a, button, input,
+        .img-modal-active,
+        .navmenu .mode svg:hover,
+        .img-box .img-zoom,
+        .img-box .img-zoom .img-focus img:hover,
+        .click-unable .img-zoom,
+        .click-unable ,img,
+        .click-unable .img-zoom:hover,
+        .click-unable img:hover
+        {
+            @apply cursor-none;
+        }
+
+        .cursor-my-zoom-out,
+        .img-box .img-zoom .img-focus-active img:hover {
+            @apply cursor-none;
+        }
+    }
 }
