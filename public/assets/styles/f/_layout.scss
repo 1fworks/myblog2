@@ -232,7 +232,7 @@
                 @apply pointer-events-none;
             }
             &.cursor-miku {
-                @apply hover:opacity-30;
+                @apply hover:opacity-50 hover:brightness-150;
             }
         }
         &:hover {
@@ -1158,10 +1158,26 @@
     .cursor-my-pointer {
         @apply cursor-pointer;
     }
+    .cursor-my-help {
+        @apply cursor-help;
+    }
+    .cursor-my-progress {
+        @apply cursor-progress;
+    }
+    .cursor-my-wait, .cursor-my-wait2 {
+        @apply cursor-wait;
+    }
+    .cursor-my-not-allowed {
+        @apply cursor-not-allowed;
+    }
+    .cursor-my-text {
+        @apply cursor-text;
+    }
+    .cursor-my-move {
+        @apply cursor-move;
+    }
     .miku-cursor {
-        @apply cursor-none;
-        
-        .cursor-my-default {
+        * {
             @apply cursor-none;
         }
 
@@ -1179,8 +1195,28 @@
             @apply cursor-none;
         }
 
+        .cursor-my-default {
+            @apply cursor-none;
+        }
+
         .cursor-my-zoom-out,
         .img-box .img-zoom .img-focus-active img:hover {
+            @apply cursor-none;
+        }
+
+        .cursor-my-help {
+            @apply cursor-none;
+        }
+        
+        .cursor-my-progress {
+            @apply cursor-none;
+        }
+
+        .cursor-my-wait, .cursor-my-wait2 {
+            @apply cursor-none;
+        }
+
+        .cursor-my-not-allowed {
             @apply cursor-none;
         }
     }
