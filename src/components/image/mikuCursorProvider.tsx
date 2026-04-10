@@ -3,11 +3,18 @@
 import { useEffect, useRef, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
 import { default as NextImage } from "next/image";
+import Link from "next/link";
 
 export default function MikuCursorProvider({children}:{children: React.ReactNode}) {
+  const [ touchDevice, setTouchDevice ] = useState<boolean>(false)
   const [ miku ] = useLocalStorage<boolean>('miku-cursor', false)
   const [ mounted, setMounted ] = useState<boolean>(false)
   const [ imgNum, setImgNum ] = useState<number>(0)
+  const [ block, setBlock ] = useState<boolean>(false)
+  const walkingMiku = useRef<HTMLDivElement>(null)
+  const walkingDir = useRef<number>(1)
+  const imgRef = useRef<HTMLDivElement>(null)
+  const mikuX = useRef<number>(0)
   const imgData = [
     { src: 'normal', pos: [2, 2] },
     { src: 'pointer', pos: [22, 14] },
@@ -108,12 +115,60 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
     }
   }, [miku])
 
+  useEffect(()=>{
+    let frameId: number
+    let now: number = performance.now()
+    const animation = ()=>{
+      console.log('hi')
+      const last = performance.now()
+      if(walkingMiku.current !== null){
+        if(mikuX.current >= window.innerWidth - 128) {
+          if(imgRef.current !== null) imgRef.current.style.scale = '-1 1'
+          walkingDir.current = -1
+        }
+        else if(mikuX.current <= 0) {
+          if(imgRef.current !== null) imgRef.current.style.scale = '1 1'
+          walkingDir.current = 1
+        }
+        mikuX.current = Math.max(0, Math.min(window.innerWidth - 128, mikuX.current + walkingDir.current * (last - now) / 1000 * 30))
+        walkingMiku.current.style.left = `${mikuX.current}px`
+      }
+      now = last
+      frameId = requestAnimationFrame(animation)
+    }
+    if(miku && !touchDevice) frameId = requestAnimationFrame(animation)
+    return ()=>{
+      cancelAnimationFrame(frameId)
+    }
+  }, [miku, touchDevice])
+
+  useEffect(()=>{
+    if(mounted) setTouchDevice(!window.matchMedia('(hover: hover)').matches)
+  }, [mounted])
+
   return (
-    <div className={ mounted && miku ? 'miku-cursor' : '' }>
-      { mounted && miku &&
-        <div ref={cursor} className={`fixed -left-full min-w-[128px] min-h-[128px] z-[1000] pointer-events-none`} style={{ transform: `translateX(-${imgData[imgNum].pos[0]}px) translateY(-${imgData[imgNum].pos[1]}px)` }}>
-          <NextImage className="img-shadowless" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`} alt={imgData[imgNum].src} width={128} height={128} sizes="100vw" quality={100} unoptimized={true}/>
-        </div>
+    <div className={ mounted && miku && !block && !touchDevice? 'miku-cursor' : '' }>
+      { mounted && miku && !touchDevice &&
+        <>
+          { !block &&
+            <div ref={cursor} className={`fixed -left-full min-w-[128px] min-h-[128px] z-[1000] pointer-events-none`} style={{ transform: `translateX(-${imgData[imgNum].pos[0]}px) translateY(-${imgData[imgNum].pos[1]}px)` }}>
+              <NextImage className="img-shadowless" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`} alt={imgData[imgNum].src} width={128} height={128} sizes="100vw" quality={100} unoptimized={true}/>
+            </div>
+          }
+          <div ref={walkingMiku} className="walking-miku">
+            <Link
+              className="absolute left-0 top-0 right-0 bottom-0 rounded-full"
+              href='/post/projects/side_projects/miku_cursor'
+              onMouseEnter={()=>{ setBlock(true) }}
+              onMouseLeave={()=>{ setBlock(false) }}
+            >
+              <div className={`miku-field ${block?'miku-field-active':''} cursor-my-pointer`}></div>
+            </Link>
+            <div ref={imgRef} className={`-scale-x-100 pointer-events-none`}>
+              <NextImage className="miku-img pointer-events-none img-shadowless animate-climb100-animation" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/walk.webp`} alt={"miku walking"} width={64} height={64} sizes="100vw" quality={100} unoptimized={true}/>
+            </div>
+          </div>
+        </>
       }
       { children }
     </div>
