@@ -4,9 +4,12 @@ import { useEffect, useRef, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
 import { default as NextImage } from "next/image";
 import ExportedImage from "next-image-export-optimizer";
+import { basePath } from "@/app/site.setting";
 import Link from "next/link";
+import path from "path";
 
 export default function MikuCursorProvider({children}:{children: React.ReactNode}) {
+  const src_with_basePath = (src: string)=>{ return path.join(`${basePath}/`,`${src}`) }
   const [ touchDevice, setTouchDevice ] = useState<boolean>(false)
   const [ miku ] = useLocalStorage<boolean>('miku-cursor', false)
   const [ mounted, setMounted ] = useState<boolean>(false)
@@ -163,7 +166,20 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
         <>
           { !block &&
             <div ref={cursor} className={`fixed -left-full min-w-[128px] min-h-[128px] z-[1000] pointer-events-none`} style={{ transform: `translateX(-${imgData[imgNum].pos[0]}px) translateY(-${imgData[imgNum].pos[1]}px)` }}>
-              <NextImage className="img-shadowless" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`} alt={imgData[imgNum].src} width={128} height={128} sizes="100vw" quality={100} unoptimized={true}/>
+              { process.env.NODE_ENV === 'production' &&
+                <ExportedImage className="img-shadowless" style={{ imageRendering: 'pixelated' }}
+                  data-src={src_with_basePath(`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`)}
+                  src={src_with_basePath(`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`)}
+                  alt={imgData[imgNum].src} width={128} height={128} sizes="100vw" unoptimized={true}
+                />
+              }
+              { process.env.NODE_ENV !== 'production' &&
+                <NextImage className="img-shadowless" style={{ imageRendering: 'pixelated' }}
+                  data-src={src_with_basePath(`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`)}
+                  src={src_with_basePath(`/assets/img/miku_cursor/${imgData[imgNum].src}.webp`)}
+                  alt={imgData[imgNum].src} width={128} height={128} sizes="100vw" quality={100} unoptimized={true}
+                />
+              }
             </div>
           }
           <div ref={walkingMiku} className="walking-miku">
@@ -180,7 +196,8 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
                 <ExportedImage
                   className="miku-img pointer-events-none img-shadowless animate-climb100-animation"
                   style={{ imageRendering: 'pixelated' }}
-                  src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`}
+                  data-src={src_with_basePath(`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`)}
+                  src={src_with_basePath(`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`)}
                   alt={"miku walking"}
                   width={96} height={96} sizes="100vw" unoptimized={true}
                 />
@@ -189,7 +206,8 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
                 <NextImage
                   className="miku-img pointer-events-none img-shadowless animate-climb100-animation"
                   style={{ imageRendering: 'pixelated' }}
-                  src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`}
+                  data-src={src_with_basePath(`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`)}
+                  src={src_with_basePath(`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`)}
                   alt={"miku walking"}
                   width={96} height={96} sizes="100vw" quality={100} unoptimized={true}
                 />
