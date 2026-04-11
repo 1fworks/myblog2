@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
 import { default as NextImage } from "next/image";
+import ExportedImage from "next-image-export-optimizer";
 import Link from "next/link";
 
 export default function MikuCursorProvider({children}:{children: React.ReactNode}) {
@@ -175,7 +176,24 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
               <div className={`miku-field ${block?'miku-field-active':''} cursor-my-pointer`}></div>
             </Link>
             <div ref={imgRef} className={`-scale-x-100 pointer-events-none`}>
-              <NextImage className="miku-img pointer-events-none img-shadowless animate-climb100-animation" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`} alt={"miku walking"} width={96} height={96} sizes="100vw" quality={100} unoptimized={true}/>
+              { process.env.NODE_ENV === 'production' &&
+                <ExportedImage
+                  className="miku-img pointer-events-none img-shadowless animate-climb100-animation"
+                  style={{ imageRendering: 'pixelated' }}
+                  src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`}
+                  alt={"miku walking"}
+                  width={96} height={96} sizes="100vw" unoptimized={true}
+                />
+              }
+              { process.env.NODE_ENV !== 'production' &&
+                <NextImage
+                  className="miku-img pointer-events-none img-shadowless animate-climb100-animation"
+                  style={{ imageRendering: 'pixelated' }}
+                  src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`}
+                  alt={"miku walking"}
+                  width={96} height={96} sizes="100vw" quality={100} unoptimized={true}
+                />
+              }
             </div>
           </div>
         </>
