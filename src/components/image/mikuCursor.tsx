@@ -12,8 +12,8 @@ export function MikuCursor() {
 
   return (
     <div>
-      <div className='flex items-center justify-center'>
-        YY 미쿠 커서 활성화/비활성화 버튼 YY
+      <div className='flex items-center justify-center font-bold'>
+        YY 미쿠 커서 버튼 YY
       </div>
       <div className='flex items-center justify-center'>
         { mounted &&
