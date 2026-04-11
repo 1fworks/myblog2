@@ -98,18 +98,27 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
       }
       if(!change) setImgNum(0)
     }
+    const mouseClickEvent = (e: MouseEvent)=>{
+      if(cursor.current !== null) {
+        (cursor.current as HTMLDivElement).style.left = `${e.clientX}px`;
+        (cursor.current as HTMLDivElement).style.top = `${e.clientY}px`;
+      }
+    }
     setMounted(true)
     if(miku) {
       window.addEventListener('mousemove', mouseMoveEvent)
+      window.addEventListener('click', mouseClickEvent)
       document.body.addEventListener('mouseleave', lostFocusEvent)
     }
     else {
       window.removeEventListener('mousemove', mouseMoveEvent)
+      window.removeEventListener('click', mouseClickEvent)
       document.body.removeEventListener('mouseleave', lostFocusEvent)
     }
     return ()=>{
       if(miku) {
         window.removeEventListener('mousemove', mouseMoveEvent)
+        window.removeEventListener('click', mouseClickEvent)
         document.body.removeEventListener('mouseleave', lostFocusEvent)
       }
     }
@@ -119,18 +128,19 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
     let frameId: number
     let now: number = performance.now()
     const animation = ()=>{
-      console.log('hi')
       const last = performance.now()
       if(walkingMiku.current !== null){
         if(mikuX.current >= window.innerWidth - 128) {
-          if(imgRef.current !== null) imgRef.current.style.scale = '-1 1'
           walkingDir.current = -1
         }
         else if(mikuX.current <= 0) {
-          if(imgRef.current !== null) imgRef.current.style.scale = '1 1'
           walkingDir.current = 1
         }
-        mikuX.current = Math.max(0, Math.min(window.innerWidth - 128, mikuX.current + walkingDir.current * (last - now) / 1000 * 30))
+        if(imgRef.current !== null) {
+          if(walkingDir.current > 0) imgRef.current.style.scale = '1 1'
+          else imgRef.current.style.scale = '-1 1'
+        }
+        if(!block) mikuX.current = Math.max(0, Math.min(window.innerWidth - 128, mikuX.current + walkingDir.current * (last - now) / 1000 * 30))
         walkingMiku.current.style.left = `${mikuX.current}px`
       }
       now = last
@@ -140,7 +150,7 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
     return ()=>{
       cancelAnimationFrame(frameId)
     }
-  }, [miku, touchDevice])
+  }, [miku, touchDevice, block])
 
   useEffect(()=>{
     if(mounted) setTouchDevice(!window.matchMedia('(hover: hover)').matches)
@@ -165,7 +175,7 @@ export default function MikuCursorProvider({children}:{children: React.ReactNode
               <div className={`miku-field ${block?'miku-field-active':''} cursor-my-pointer`}></div>
             </Link>
             <div ref={imgRef} className={`-scale-x-100 pointer-events-none`}>
-              <NextImage className="miku-img pointer-events-none img-shadowless animate-climb100-animation" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/walk.webp`} alt={"miku walking"} width={64} height={64} sizes="100vw" quality={100} unoptimized={true}/>
+              <NextImage className="miku-img pointer-events-none img-shadowless animate-climb100-animation" style={{ imageRendering: 'pixelated' }} src={`/assets/img/miku_cursor/${block?'jumping':'walk'}.webp`} alt={"miku walking"} width={96} height={96} sizes="100vw" quality={100} unoptimized={true}/>
             </div>
           </div>
         </>
