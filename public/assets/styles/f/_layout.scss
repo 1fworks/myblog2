@@ -239,6 +239,30 @@
             @apply shadow-lg opacity-100;
         }
     }
+    .spoiler {
+        @apply min-h-24;
+        button {
+            @apply opacity-90;
+            @apply m-0 rounded-none;
+        }
+        .spoiler-warning {
+            @apply opacity-20 transition-all;;
+        }
+        .spoiler-text {
+            @apply transition-transform opacity-70;
+        }
+        &:hover {
+            .spoiler-warning {
+                @apply opacity-100;
+            }
+            .spoiler-text {
+                @apply scale-110 opacity-100;
+            }
+            button {
+                @apply opacity-70;
+            }
+        }
+    }
 
     hr {
         @apply transition-[border-color];

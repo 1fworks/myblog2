@@ -14,6 +14,8 @@ export const getTextFromContext = async(content: string|undefined, len: number =
     .replace(/<code[^>]*>.*?<\/code>/g, "")
     text = striptags(html)
     .replace(/!\[\[.*?\]\]|!\[.*?\]\(.*?\)/g, "")
+    .replaceAll('/spoiler open', '')
+    .replaceAll('/spoiler close', '')
     .replaceAll('/imglist open', '')
     .replaceAll('/imglist close', '')
     description = text.trim().replace(/\s+/g, " ");

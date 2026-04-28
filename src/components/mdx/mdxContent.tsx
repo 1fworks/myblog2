@@ -17,6 +17,7 @@ import { MyNextImage } from "../image/mynextImage";
 import { WavePlayer2024 } from '../audio/wavePlayer2024';
 import { MikuCursor } from '../image/mikuCursor';
 import { MyAudio } from '../audio/audio';
+import { Spoiler } from '../spoiler/spoiler';
 import { findFile } from "@/libs/findFile";
 import { siteSetting } from "@/app/site.setting";
 import { getImgDataList } from '@/libs/post';
@@ -38,6 +39,8 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     // image group
     text = text.split(/\/imglist open/g).join(`<div className="post-img-list">`)
     text = text.split(/\/imglist close/g).join(`</div>`)
+    text = text.split(/\/spoiler open/g).join(`<Spoiler>`)
+    text = text.split(/\/spoiler close/g).join(`</Spoiler>`)
     // remark_breaks
     text = text.replace(/(?<!  |!\[\[(.+?)\]\]|!\[(.+?)\]\(.*?\))\n/g, "  \n")
     // wikilink [[]] ![[]]
@@ -115,7 +118,7 @@ export const MDXContent = async(props : { source:string, slugs?: string[] }) => 
     <PostContent>
       <MDXRemote
         source={markdownsource}
-        components={{MyNextImage, WavePlayer2024, MikuCursor, MyAudio}}
+        components={{MyNextImage, WavePlayer2024, MikuCursor, MyAudio, Spoiler}}
         options={{
           parseFrontmatter: true,
           mdxOptions: {

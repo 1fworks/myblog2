@@ -120,6 +120,15 @@
             background-color: $dark-text-input-active;
         }
     }
+    .spoiler {
+        button {
+            background-color: $dark-text-input;
+            background-image: url('/assets/img/bg/spoiler_warning.webp');
+            &:hover {
+                background-color: $dark-text-input-active;
+            }
+        }
+    }
 
     .navmenu {
         svg{

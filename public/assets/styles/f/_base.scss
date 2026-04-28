@@ -152,6 +152,22 @@
             background-color: $text-input-active;
         }
     }
+    .spoiler {
+        button {
+            background-color: $text-input;
+            background-image: url('/assets/img/bg/spoiler_warning_black.webp');
+            image-rendering: pixelated;
+            @apply bg-repeat;
+            &:hover {
+                background-color: $text-input-active;
+            }
+        }
+        &:hover {
+            .spoiler-warning {
+                @apply text-red-500;
+            }
+        }
+    }
 
     .navmenu {
         svg{
