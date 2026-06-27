@@ -1,0 +1,93 @@
+---
+title: 도커 사용법
+date: 2026-06-27T15:49:00
+update: 2026-06-27T15:50:00
+---
+>Ubuntu 26.04 LTS 버전 이미지를 사용했습니다.
+
+## 컨테이너 생성 및 실행
+```bash
+docker run \
+--env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+--network=bridge \
+--restart=no \
+--hostname=[호스트이름] \
+--name=[컨테이너이름] \
+-p [현재컴퓨터포트]:[컨테이너포트번호] \
+-v /[공유할폴더경로]:/[컨테이너안에서보여질폴더경로] \
+-w /[접속시 시작디렉토리] \
+-d ubuntu:latest \
+sleep infinity
+```
+- 데스크탑 환경을 만들고 VNC를 이용해서 컨테이너 화면을 볼려면 포트 지정을 해야 합니다.
+- bash가 꺼지지 않게 유지하기 위해서 잠시 `sleep infinity`를 넣어줬습니다.
+
+## 터미널에서 bash로 컨테이너 열기
+```bash
+docker exec -it [컨테이너이름] bash
+```
+---
+
+## 패키지 목록 업데이트
+```bash
+apt-get update
+apt-get upgrade
+```
+
+이건 제가 필요해서 설치한 것들입니다. (vim, curl)
+```bash
+apt-get install vim curl
+```
+---
+
+## 한글 사용
+```bash
+apt-get install locales language-pack-ko
+locale-gen ko_KR.utf8
+```
+
+```bash
+dpkg-reconfigure locales
+```
+```bash
+Locales to be generated: 177
+Default locale for the system environment: 3
+```
+`ko_KR.UTF-8 UTF-8` 번호를 찾아서 입력
+`ko_KR.UTF-8` 사용하기 위해 번호 3 입력
+
+
+```bash
+vim ~/.bashrc
+```
+
+>~/.bashrc
+```vim
+# Setting Language(ko_KR.UTF-8)
+export LANGUAGE=ko_KR.UTF-8
+export LANG=ko_KR.UTF-8
+```
+`~/.bashrc` 파일 수정 후 다시 bash를 키거나 `source ~/.bashrc` 명령어를 수행합니다.
+
+```bash
+apt install fonts-noto-cjk
+```
+마지막으로 폰트까지 설치해줍니다.
+
+여기까지 했으면 터미널에서 한글 입력도 되고 깨지지 않는 한글 출력을 볼 수 있습니다.
+
+---
+
+이렇게 만들어놓은 환경을 다시 이미지 형태로 저장할 수 있습니다. 나중에 이 이미지를 이용해서 개발 환경을 빠르게 재구축 할 수 있습니다.
+
+## 컨테이너 이미지 생성
+
+컨테이너 id 확인
+```bash
+docker ps -a
+```
+
+이미지 생성
+```bash
+docker commit [Container ID] [Image Name]
+```
