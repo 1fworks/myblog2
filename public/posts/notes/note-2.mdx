@@ -1,7 +1,7 @@
 ---
 title: 도커 사용법
 date: 2026-06-27T15:49:00
-update: 2026-06-27T15:50:00
+update: 2026-06-29T15:50:00
 ---
 >Ubuntu 26.04 LTS 버전 이미지를 사용했습니다.
 
@@ -26,6 +26,7 @@ sleep infinity
 ```bash
 docker exec -it [컨테이너이름] bash
 ```
+
 ---
 
 ## 패키지 목록 업데이트
@@ -38,6 +39,27 @@ apt-get upgrade
 ```bash
 apt-get install vim curl
 ```
+
+---
+
+## 사용자 관련
+### 사용자 추가, 로그인
+```bash
+useradd -m [사용자명]
+su - [사용자명] -c "bash --login"
+```
+- `-m` 옵션: 사용자 홈 디렉토리를 `/home/[사용자명]`으로 자동 설정
+- `su`: 유저 전환
+- `su -`: 유저의 홈 디렉토리와 환경변수를 가져와서 새로운 쉘 환경 시작
+### 사용자 비밀번호 설정 및 변경
+```bash
+passwd
+```
+### 컨테이너 사용자 로그인
+```bash
+docker exec -it [컨테이너이름] su - [사용자명] -s /bin/bash
+```
+
 ---
 
 ## 한글 사용
