@@ -72,14 +72,7 @@ export default async function Archive({ params }: { params : Promise<{slug: stri
     }
   })
   
-  const folders = tmp.filter((v:{url:string, last_update:string, nestedFolderFile:boolean}, i:number) => { // tmp.indexOf(v) === i
-    if(v.nestedFolderFile) return false
-    for(let j=0;j<i;j+=1){
-      if(tmp[j].url === v.url) return false
-    }
-    return true
-  })
-  .map((v, i)=>{
+  const tmp_folders = tmp.map((v:{url:string, last_update:string, nestedFolderFile:boolean}, i:number)=>{
     let last_update = v.last_update
     for(let j=0;j<tmp.length;j+=1){
       if(i === j) continue
@@ -98,12 +91,25 @@ export default async function Archive({ params }: { params : Promise<{slug: stri
     return (dayjs(b.last_update).valueOf() - dayjs(a.last_update).valueOf())
   })
   .map((element)=>{
-    const folder_path = [...slugs, ...element.url.split('/').slice(-1)]
-    return { url: element.url, last_update:element.last_update, description:getDescription(folder_path) }
+    const tmp = element.url.split('/')
+    const folder_path = [...tmp.slice(2, 2+slugs.length+1)]
+    const result = {
+      ...element,
+      folder_path: folder_path,
+    }
+    result.url = `/archive/${folder_path.join("/")}`
+    return result
+  })
+
+  const folders = tmp_folders.filter((v, i) => { // tmp.indexOf(v) === i
+    for(let j=0;j<i;j+=1){
+      if(tmp_folders[j].folder_path.join("/") === v.folder_path.join("/")) return false
+    }
+    return true
   })
   .map((element)=>{
     return {
-      ...element.description,
+      ...getDescription(element.folder_path),
       url: element.url,
       last_update: element.last_update,
     }

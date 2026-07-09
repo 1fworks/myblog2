@@ -95,6 +95,17 @@ export const getAllFolder = () => {
     }
   }).filter(element=>element !== undefined)
 
+  const tmp = [...folderPaths]
+  for(let i=0;i<tmp.length;i++){
+    const folderPath = tmp[i].split("/")
+    for(let j=POSTS_PATH.split("/").length;j<folderPath.length - 1;j++){
+      const newPath = folderPath.slice(0, j+1).join("/")
+      if(!folderPaths.includes(newPath)){
+        folderPaths.push(newPath)
+      }
+    }
+  }
+
   return folderPaths.filter((v, i) => folderPaths.indexOf(v) === i).map((path) => {
     return {
       slug: path.slice(path.indexOf(BASE_PATH)),
