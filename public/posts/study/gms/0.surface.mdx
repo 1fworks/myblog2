@@ -5,9 +5,8 @@ tags:
   - study
 ---
 
-## 1. surface_exists() 사용했음에도 불구하고 에러가 발생한다..?
+## 1. surface_exists()
 최근 surface를 사용하면서 한 가지 이상한 문제가 발생했습니다.
-
 ```gml
 ﻿Trying to set a surface target that does not exist.
 (line 64) - surface_set_target(surface)
@@ -21,7 +20,7 @@ surface_set_target(surface)
 ...
 ```
 
-surface_exists() 함수를 사용했음에도 이러한 문제가 발생한 것입니다.  
+**surface_exists() 함수를 사용했음에도 이러한 문제가 발생**한 것입니다.  
 저 조건문 하나만으로 surface를 안전하게 사용할 수 있다고 생각했으나..  그렇지 않았습니다.
 
 if문을 체크 한 다음 운영체제에서 cpu를 다른 프로세스에 넘겨버리고 garbage collection에서 수거해간건지 알 수가 없었습니다.  
@@ -72,7 +71,8 @@ Output에서 에러 메시지를 계속 띄우지만 무사히 surface를 성공
 
 ---
 
-## 2. surface가 사라지는 것을 방지해보자
+## 2. 문제 해결
+surface가 사라지는 것을 방지해봅시다.
 다들 아시다시피 surface는 휘발성입니다. 언제든지 surface의 내용이 사라질 수 있는 것이죠. 
 그래서 대부분은 surface의 내용이 사라져도 게임에는 영향이 가지 않게끔 코드를 작성할 것입니다.
 
