@@ -1,0 +1,307 @@
+---
+title: zustand 상태관리
+date: 2026-07-24T01:00:00
+update: 2026-07-24T01:00:00
+---
+제가 공부하면서 정리한 내용들입니다.
+개념보다는 간단한 예시들을 몇 개 정리해놓은 느낌이긴 합니다.
+더 자세한 내용을 보고 싶으면 공식 문서를 참고해주세요!
+- 공식 문서: https://zustand.docs.pmnd.rs/
+
+>2026.07.24 기준으로 작성된 게시글입니다.
+
+---
+
+### Zustand란?
+- 프론트엔드의 생명인 생태관리를 도와주며
+- `props drilling`을 방지 및 깔끔하게 정리할 수 있게 도와줍니다.
+- 로그인 상태 관리와 같은 것에서 자주 쓰이는데 보통 미들웨어로 처리합니다.
+	- ex) 로그인 안되어 있으면 로그인 창으로 연결시킴.
+- `react` 전용으로 만들어진 라이브러리
+	- `vue.js`에서는 [Pinia](https://pinia.vuejs.kr/)라는 스토어를 이용하면 됩니다.
+
+### 설치
+```bash
+npm install zustand
+```
+
+---
+
+# API
+## 1. create
+>`create` lets you create a React Hook with API utilities attached.
+
+```js
+const useSomeStore = create(stateCreatorFn)
+```
+```js
+import { create } from 'zustand'
+
+type AgeStoreState = { age: number }
+
+type AgeStoreActions = {
+  setAge: (
+    nextAge:
+      | AgeStoreState['age']
+      | ((currentAge: AgeStoreState['age']) => AgeStoreState['age']),
+  ) => void
+}
+
+type AgeStore = AgeStoreState & AgeStoreActions
+
+const useAgeStore = create<AgeStore>()((set) => ({
+  age: 42,
+  setAge: (nextAge) => {
+    set((state) => ({
+      age: typeof nextAge === 'function' ? nextAge(state.age) : nextAge,
+    }))
+  },
+}))
+```
+- 함수형 업데이터를 사용할 때 위 코드처럼 작성.
+- 꼭 스토어 액션이 있어야만 하는 건 아님.
+- `set`은 기본적으로 **shallow merge**
+
+```js
+const age = useAgeStore((state) => state.age)
+const setAge = useAgeStore((state) => state.setAge)
+function increment() { setAge((currentAge) => currentAge + 1) }
+```
+- 사용은 이런 식으로!
+
+```js
+useAgeStore.setState(val, true)
+```
+- 이런 식으로 상태값 업데이트가 가능
+- `replace` 인자
+	- `false`: **얕은 병합 (shallow merge)**
+	- `true`: 완전 대치
+
+```js
+function increment() {
+  ageStore.getState().setAge((currentAge) => currentAge + 1)
+}
+```
+- `getState()`는 호출하는 순간에 최신 상태를 가져옴.
+	- **리렌더링 트리거는 없음**
+
+```js
+const position = usePositionStore((state) => state.position)
+const setPosition = usePositionStore((state) => state.setPosition)
+
+useEffect(() => {
+  const unsubscribePositionStore = usePositionStore.subscribe(
+    ({ position }) => {
+      console.log('new position', { position })
+    },
+  )
+  return () => { unsubscribePositionStore() }
+}, [])
+```
+- 이런 식으로 `subscribe` 기능도 제공합니다.
+
+## 2. createStore
+>- `createStore` lets you create a vanilla store that exposes API utilities.
+>- `createStore` returns a vanilla store that exposes API utilities, `setState`, `getState`, `getInitialState` and `subscribe`.
+
+`create`는 React 훅으로 연결
+`createStore` 순수 바닐라 스토어를 생성
+
+React 훅을 못쓰는 환경에서는 `subscribe`를 써서 직접 값 변경을 감지하는 로직을 짜야합니다.
+
+```js
+const render: Parameters<typeof ageStore.subscribe>[0] = (state) => {
+  $yourAgeHeading.innerHTML = `Your age: ${state.age}`
+}
+
+render(ageStore.getInitialState(), ageStore.getInitialState()) 
+ageStore.subscribe(render)
+```
+
+## 3. createWithEqualityFn
+>`createWithEqualityFn` lets you create a React Hook with API utilities attached, just like `create`. However, it offers a way to define a custom equality check. This allows for more granular control over when components re-render, improving performance and responsiveness.
+
+보통 `create`로 만든 스토어의 경우는 메모리 주소(참조)를 기준으로 비교하기 때문에 불필요한 리렌더링이 발생하는 경우가 있다고 합니다. 이때 이걸 쓴다고 하네요.
+
+(근데 요즘엔 [useShallow](#3-useshallow)를 쓴다고 합니다.)
+
+```js
+const useAgeStore = createWithEqualityFn<AgeStore>()(
+  (set) => ({
+    age: 42,
+    setAge: (nextAge) =>
+      set((state) => ({
+        age: typeof nextAge === 'function' ? nextAge(state.age) : nextAge,
+      })),
+  }),
+  shallow,
+)
+```
+- `shallow`를 써서 감지하는 깊이 1로 고정할 수 있습니다.
+
+## 4. shallow
+```js
+const equal = shallow(a, b)
+```
+```js
+const objectLeft = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+}
+const objectRight = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+}
+
+Object.is(objectLeft, objectRight) // -> false
+shallow(objectLeft, objectRight) // -> true
+```
+- 메모리 참조 비교가 아닌 얕은 비교를 합니다.
+
+---
+
+# HOOK
+## 1. useStore
+>`useStore` is a React Hook that lets you use a vanilla store in React.
+
+```js
+const position = useStore(positionStore, (state) => state.position)
+const setPosition = useStore(positionStore, (state) => state.setPosition)
+```
+- 상태 값은 이렇게 가져와서 쓰면 됩니다.
+
+## 2. useStoreWithEqualityFn
+`useStore`처럼 바닐라로 만든 스토어에서 사용할 수 있는 React 훅입니다. 
+
+```js
+const position = useStoreWithEqualityFn(
+  positionStore,
+  (state) => state.position,
+  shallow,
+)
+```
+
+## 3. useShallow
+>`useShallow` is a React Hook that lets you optimize re-renders.
+
+```js
+const memoizedSelector = useShallow(selector)
+```
+```js
+function BearNames() {
+  const names = useBearFamilyMealsStore(
+    useShallow((state) => Object.keys(state)),
+  )
+
+  return <div>{names.join(', ')}</div>
+}
+```
+
+---
+
+# Middlewares
+
+## 1. persist
+>`persist` middleware lets you persist a store's state across page reloads or application restarts.
+
+페이지가 새로고침되거나 변해도 상태 값을 유지합니다.
+`localStorage`를 쓴다고 합니다.
+
+```js
+const positionStore = createStore<PositionStore>()(
+  persist(
+    (set) => ({
+      context: {
+        position: { x: 0, y: 0 },
+      },
+      actions: {
+        setPosition: (position) => set({ context: { position } }),
+      },
+    }),
+    {
+      name: 'position-storage',
+      partialize: (state) => ({ context: state.context }),
+      skipHydration: false,
+    },
+  ),
+)
+```
+- `partialize`: 일부 값만 저장
+- `skipHydration`:  수분 공급을 생략할건지 선택
+
+```js
+setTimeout(() => {
+  positionStore.persist.rehydrate()
+}, 2000)
+```
+- `skipHydration`: true로 되어있다면 다시 `hydrate`해야 합니다.
+
+```js
+useEffect(() => {
+  useStore.persist.rehydrate()
+}, [])
+```
+- 이런 방식으로 `hydrate`할 수 있습니다.
+
+## 2. combine
+타입을 자동으로 추론하여 타입 정의를 자동으로 해줍니다.
+
+```js
+const positionStore = createStore(
+  combine({ position: { x: 0, y: 0 } }, (set) => ({
+    setPosition: (position) => set({ position }),
+  })),
+)
+```
+
+## 3.subscribeWithSelector
+원하는 값만 감시할 수 있게 해줍니다.
+
+```js
+const positionStore = createStore<PositionStore>()(
+  subscribeWithSelector(
+    (set) => ({
+      position: { x: 0, y: 0 },
+      setPosition: (position) => set({ position }),
+    })
+  ),
+)
+```
+
+---
+
+# Next.js에서 사용법
+
+Next.js는 React용 SSR 렌더링 프레임워크입니다. 여기에서는 Provider를 만들어서 스토어를 이용하는 방법을 소개해주고 있습니다.
+- 공식 문서: [Setup with Next.js](https://zustand.docs.pmnd.rs/learn/guides/nextjs)
+
+```tsx
+// src/pages/index.tsx
+import { CounterStoreProvider } from '@/providers/counter-store-provider'
+import { HomePage } from '@/components/pages/home-page'
+
+export default function Home() {
+  return (
+    <CounterStoreProvider>
+      <HomePage />
+    </CounterStoreProvider>
+  )
+}
+```
+```tsx
+// src/components/pages/home-page.tsx
+import { useCounterStore } from '@/providers/counter-store-provider'
+
+export const HomePage = () => {
+  const { count, incrementCount, decrementCount } = useCounterStore(
+    (state) => state,
+  )
+  return (
+    <div>
+      ...
+    </div>
+  )
+}
+```
