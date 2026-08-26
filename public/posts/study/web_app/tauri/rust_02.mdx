@@ -1,0 +1,112 @@
+---
+title: Rust 언어 - 프로젝트 관리
+date: 2026-08-26T02:00:00
+update: 2026-08-26T02:00:00
+---
+프로젝트가 커지면 파일을 분리하고 모듈을 나누어서 관리해야 하는 상황이 오게 됩니다. 이때를 위한 패키지 관리 기법을 알아보고자 합니다.
+
+모듈 시스템에는 아래와 같은 개념이 있습니다.
+- **패키지**: 크레이트를 빌드, 테스트, 공유할 수 있는 카고의 기능
+- **크레이트**: 라이브러리나 실행 파일을 생성하는 모듈의 트리
+- **모듈과 use**: 코드의 구조와 범위, 그리고 경로의 접근성을 제어하는 기능
+- **경로**: 구조체, 함수, 혹은 모듈 등의 이름을 결정하는 방식
+
+---
+
+# 초기 프로젝트 구조
+```bash
+$ cargo new my-proj
+	Creating binary (application) `my-proj` package
+$ cd my-proj
+$ ls
+Cargo.toml src
+```
+`cargo`를 이용해서 프로젝트를 생성하면 `Cargo.toml` `src/main.rs` 2개의 파일이 생성됩니다. 
+
+```rust
+my_package/
+├── Cargo.toml
+└── src/
+    ├── bin/
+    │   ├── tool1.rs ← 별개의 바이너리 크레이트
+    │   └── tool2.rs ← 별개의 바이너리 크레이트
+    ├── main.rs      ← 바이너리 크레이트 (실행 파일)
+    └── lib.rs       ← 라이브러리 크레이트 (다른 코드에서 가져다 씀)
+```
+`Cargo.toml`에는 프로젝트에 대한 설명과 사용하는 크레이트들이 적힙니다. 이 파일에 `main.rs`에 대한 언급이 없는데 그 이유는 패키지와 같은 이름을 갖는 바이너리 크레이트의 크레이트 루트라는 규칙을 알고 있기 때문입니다. `lib.rs`파일도 마찬가지입니다.
+- 패키지의 src/bin 디렉터리에 파일을 분산해서 여러 개의 바이너리 크레이트를 추가할 수도 있습니다. 이때 각 디렉터리의 파일들은 별개의 바이너리 크레이트가 됩니다.
+
+---
+
+# 모듈, 아이템, 접근
+```rust
+// src/lib.rs
+mod front_of_house {
+	pub mod hosting () {
+		pub fn add_to_waitlist() {}
+		fn seat_at_table() {}
+	}
+	pub mod serving () {
+		fn take_order() {}
+		fn serve_order() {}
+		fn take_payment() {}
+	}
+}
+
+pub fn eat_at_restaurant() {
+	// 절대경로
+	crate::front_of_house::hosting::add_to_waitlist();
+	
+	// 상대경로
+	front_of_house::hosting::add_to_waitlist();
+}
+```
+`mod` 키워드를 이용해서 모듈을 정의할 수 있습니다.
+- 사용할 때는 **'크레이트명::모듈명::아이템'** 순으로 작성합니다.
+`pub` 키워드를 추가해서 공개 모듈, 공개 함수로 만들 수 있습니다.
+
+```rust
+fn func() {}
+
+mod my_module {
+	fn func2() {
+		super::func();
+	}
+}
+```
+`super` 키워드를 이용하면 `my_module` 모듈의 부모 모듈, 즉 루트 모듈인 `crate`에 접근하게 됩니다. 파일 경로 시스템에서 `..` 문법을 이용하는 것과 비슷합니다.
+
+```rust
+use crate::front_of_house::hosting;
+
+pub fn eat_at_reastaurant() {
+	hosting::add_to_waitlist();
+}
+```
+`use` 키워드를 이용해서 경로를 범위로 가져올 수 있습니다. 파일 시스템에서 심볼링 링크를 생성하는 것과 유사합니다.
+- `pub use` 키워드를 이용해서 이름을 다시 내보낼 수도 있습니다!
+
+```rust
+use self::front_of_house::hosting;
+```
+`use`에 `self` 키워드를 이용해서 상대 경로로도 지정할 수 있습니다.
+
+```rust
+use std::fmt::Result;
+use std::io::Result as IoResult;
+```
+`as` 키워드를 이용해서 새로운 이름을 부여할 수도 있습니다.
+
+```rust
+use std::{io, cmp::Ordering};
+use std::io::{self, Write};
+use std::collections::*;
+```
+중첩 경로로 여러 아이템을 가져올 수 있습니다. 아니면 한 번에 가져올 수도 있고요.
+
+```rust
+mod front_of_house;
+pub use crate::front_of_hosting;
+```
+`front_of_house` 모듈을 `src/front_of_house.rs`로 옮겨서 파일을 분리한다면 위처럼 코드를 작성하면 됩니다. `front_of_house` 모듈 선언만 했는데 이는 컴파일에 이 파일을 포함시키겠다는 의미를 담고 있습니다.
+- (`pub use`는 외부에서 쉽게 쓰기 위해서 사용된 키워드입니다. 저 부분은 필요에 따라서 작성하시길!)

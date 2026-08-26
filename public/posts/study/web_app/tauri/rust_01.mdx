@@ -1,0 +1,872 @@
+---
+title: Rust 언어 - 기본 문법
+date: 2026-08-26T01:00:00
+update: 2026-08-26T01:00:00
+---
+**'러스트 프로그래밍 공식 가이드 2018'** 책과 [Just Do Rust](https://wikidocs.net/book/16747) 위키독스를 참고하면서 공부한 내용들입니다. 제가 볼려고 간단하게 요약정리한 글이라 많이 불친절한 글입니다. 이 점은 유의해주시길!
+~~(2018년도 책을 참고한 이유는 그냥 집에 이 책이 있었기 때문...)~~
+
+여기서 간단하게 rust 언어를 사용해보실 수 있습니다.
+- Rust Playground: https://play.rust-lang.org/
+
+---
+
+# 변수
+### 가변성
+1. `mut` 키워드를 사용해서 가변 변수를 선언
+	- ```rust
+	  fn main() {
+		let mut x = 5;
+		x = 6;
+		println!("x의 값: {}", x);
+	  }
+	  ```
+
+2. `const` 키워드를 이용해서 상수 선언
+	- ```rust
+	  const MAX_POINTS: u32 = 100_000;
+	  ```
+	- 값은 항상 불변
+	- 상수는 전역 범위를 비롯해 원하는 어떤 범위 내에서도 선언 가능
+	- 타입 지정 필수
+	- 상수 표현식을 이용
+
+3. `let` 키워드를 이용해서 변수를 선언하거나 변수 가리기(shadowed)를 할 수 있음
+	- ```rust
+	  let spaces = "    ";
+	  let spaces = spaces.len();
+	  ```
+	- 변수의 타입을 바꿀 수 있음!
+	- (뭔가 재선언한다는 느낌입니다.)
+
+### 기본 데이터 타입
+1. **정수(int)**
+	- 부호 있음, 없음 순으로 나열
+	- i8, u8
+	- i16, u16
+	- i32, u32
+	- i64, u64
+	- isize, usize
+
+2. **부동 소수점(float)**
+	- f32
+	- f64 (default)
+
+3. **불리언(boolean)**
+- ```rust
+  let f: bool = false;
+  ```
+
+4. **문자(char)**
+- ```rust
+  let c = 'z';
+  ```
+
+5. **컴파운드(compound)**
+	- 하나의 타입으로 **여러 개의 값**을 그룹화한 타입
+	- 5.1. **튜플 타입**
+		- ```rust
+		  let tup: (i32, f64, u8) = (500, 6.4, 1);
+		  
+		  // 패턴 매칭을 이용해서 튜플 값 해체
+		  let (x, y, z) = tup;
+		  
+		  // 요소 인덱스를 이용해서 직접 참조
+		  let a = tup.0;
+		  let b = tup.1;
+		  let c = tup.2;
+		  ```
+	- 5.2. **배열 타입**
+		- 데이터를 힙(heap)이 아닌 **스택(stack) 메모리**에 할당하거나
+		- 항상 **고정된** 개수의 요소들을 다룰 때 유용합니다.
+		- 벡터(Vector)만큼 유연하지 않음!
+		- ```rust
+		  let a: [i32; 5] = [1, 2, 3, 4, 5];
+		  let b = [3; 5]; // [3, 3, 3, 3, 3]
+		  
+		  let first = a[0];
+		  let second = a[1];
+		  ```
+
+---
+
+# 범용 컬렉션
+내장된 배열과 튜플과는 달리 컬렉션이 가리키는 데이터는 힙 메모리에 저장됩니다. 즉, 데이터 크기를 컴파일 시점에 알 필요가 없으며 실행 중에 얼마든지 크기를 늘리거나 줄일 수 있습니다.
+
+### 벡터(Vector)
+연속된 일련의 값을 저장
+```rust
+{
+	// 생성
+	let mut v: Vec<i32> = Vec::new();
+	let mut v = vec![1, 2, 3]; // vec! 매크로
+	
+	// 추가
+	v.push(5);
+	v.push(6);
+	
+	// 읽기
+	let third: &i32 = &v[2];
+	let third = v.get[2]; // 범위를 벗어나면 None을 return함
+	
+	println!("last element={}", v[v.len()-1]); // len() 메소드를 제공
+	
+	for i in &v { // 값 순회
+		println!("{}", i);
+	}
+	
+	for i in &mut v { // 값 순회 및 변경
+		*i += 50;
+	}
+	
+	// 반복자를 이용하는 방법
+	for a in v.into_iter() { // == for a in v  
+	
+	}
+	for a in v.iter() { // == for a in &v
+	
+	}
+
+} // 벡터 해제 (drop 메서드)
+
+```
+```rust
+let arr = [1, 2, 3];
+let mut v = arr.to_vec();
+
+v.extend([4,5,6,7]);
+println!("{:?}",v); //[1, 2, 3, 4, 5, 6, 7]
+
+arr.into_iter().for_each(|x| v.push(x)); // 반복자를 이용하는 방법
+```
+- `to_vec` 메서드로 array를 vector로 바꿀 수 있습니다.
+- `extend`를 이용해서 배열을 push할 수 있습니다.
+
+```rust
+let mut vec = vec![1, 2, 3];
+let mut vec2 = vec![4, 5, 6];
+vec.append(&mut vec2);
+
+vec.clear();
+
+let a = vec![1, 2, 3];
+assert_eq!(a.len(), 3);
+
+let mut v = Vec::new();
+assert!(v.is_empty());
+```
+메소드
+- append : `pub fn append(&mut self, other: &mut Vec<T, A>)`
+	- other 벡터 안의 내용은 사라짐
+- clear: `pub fn clear(&mut self)`
+- len: `pub fn len(&self) -> usize`
+- is_empty: `pub fn is_empty(&self) -> bool`
+- insert: `pub fn insert(&mut self, index: usize, element: T)`
+- pop: `pub fn pop(&mut self) -> Option<T>`
+- push: `pub fn push(&mut self, value: T)`
+- remove: `pub fn remove(&mut self, index: usize) -> T`
+- resize: `pub fn resize(&mut self, new_len: usize, value: T)`
+	- 확장된 부분은 value로 채움
+- truncate: `pub fn truncate(&mut self, len: usize)`
+- fill: `pub fn fill(&mut self, value: T)`
+- reverse: `pub fn reverse(&mut self)`
+- sort: `pub fn sort(&mut self)`
+
+### 문자열(String)
+문자의 컬렉션
+```rust
+// 생성
+let mut s = String::new();
+let mut s = String::from("hi");
+
+// 수정
+s.push_str(" lo"); // 문자열을 추가할 때
+s.push("l"); // 문자 하나만 추가할 때
+
+// + 연산자
+let s1 = String::from("s1");
+let s2 = String::from("s2");
+let s3 = s1 + &s2; // 이때 s1은 메모리가 해제됨
+
+// format! 매크로
+let s1 = String::from("tic");
+let s2 = String::from("tac");
+let s3 = String::from("toe");
+let s = format!("{}-{}-{}", s1, s2, s3);
+
+// 문자열 슬라이스
+let hello = "안녕하세요";
+let s = &hello[0..3]; // "안"
+
+// 문자열 순회
+for c in "안녕하신가".chars() { // bytes() 메서드도 있음!
+	println!("{}", c);
+}
+```
+```rust
+let data = "hi";
+let s = data.to_string();
+```
+- `to_string` 메서드로 `String` 변환이 가능합니다.
+
+```rust
+let mut s = String::with_capacity(3);
+
+s.insert(0, 'f');
+s.insert(1, 'o');
+s.insert(2, 'o');
+
+assert_eq!("foo", s);
+```
+메소드
+- as_bytes: `pub fn as_bytes(&self) -> &[u8]`
+- as_str: `pub fn as_str(&self) -> &str`
+- clear: `pub fn clear(&mut self)`
+- from_utf8: `pub fn from_utf8(vec: Vec<u8>) -> Result<String, FromUtf8Error>`
+- insert: `pub fn insert(&mut self, idx: usize, ch: char)`
+- into_bytes: `pub fn into_bytes(self) -> Vec<u8>`
+- push: `pub fn push(&mut self, ch: char)`
+- push_str: `pub fn push_str(&mut self, string: &str)`
+- remove: `pub fn remove(&mut self, idx: usize) -> char`
+- truncate: `pub fn truncate(&mut self, new_len: usize)`
+
+### 해시 맵 (Hash Map)
+특정 키에 값을 연결할 때 사용
+```rust
+use std::collections::HashMap;
+
+// 생성 및 값 추가 1
+let mut scores = HashMap::new();
+scores.insert(String::from("blue"), 20);
+scores.insert(String::from("yellow"), 10);
+
+scores.insert(String::from("yellow"), 15); // 값 덮어쓰기
+scores.entry(String::from("yellow")).or_insert(30);
+	// 키에 값이 할당되어 있지 않다면 값 추가
+	// or_insert는 가변 참조(&mut V)를 반환함.
+
+// 생성 및 값 추가 2
+let mut map:HashMap<&str, i32> = HashMap::new();
+map.insert("Jeff", 100);
+map.insert("Tom", 90);
+println!("{:?}",map);  //{"Tom": 90, "Jeff": 100}
+
+// 값 초기화
+let map = HashMap::from([
+	("Jeff", 100), ("Tom", 90), // 여기서는 튜플 형태로 넣음
+]);
+println!("{:?}",map);  //{"Tom": 90, "Jeff": 100}
+
+// 접근
+let color_name = String::from("blue");
+let score = scores.get(&color_name); // get 메서드에 값 전달
+```
+```rust
+use std::collections::HashMap;
+
+let field_name = String::from("color");
+let field_value = String::from("blue");
+
+let mut map = HashMap::new();
+map.insert(field_name, field_value);
+// 여기서부터 field_name, field_value 변수는 유효하지 않음
+```
+Copy 트레이트를 구현하는 타입은 복사되지만 값을 소유하는 타입은 값이 해시 맵으로 이동합니다.
+- 해시 맵이 그 값의 소유권을 가지게 됩니다!
+
+```rust
+use std::collections::HashMap;
+
+let mut map = HashMap::new();
+map.insert(1, "a");
+assert_eq!(map.contains_key(&1), true);
+assert_eq!(map.contains_key(&2), false);
+```
+메소드
+- clear : `pub fn clear(&mut self)`
+- contains_key : `pub fn contains_key<Q>(&self, k: &Q) -> bool`
+- get : `pub fn get<Q>(&self, k: &Q) -> Option<&V>`
+- insert : `pub fn insert(&mut self, k: K, v: V) -> Option<V>`
+- keys : `pub fn keys(&self) -> Keys<'_, K, V>`
+- remove : `pub fn remove<Q>(&mut self, k: &Q) -> Option<V>`
+- values : `pub fn values(&self) -> Values<'_, K, V>`
+
+---
+
+# 함수와 표현식
+```rust
+fn main() {
+	let x = another_func(5);
+}
+// 매개 변수를 포함하는 함수
+fn another_func(x: i32) -> i32 {
+	println!("x의 값: {}", x);
+	x // 리턴 값
+}
+```
+```rust
+fn main() {
+	let x = 5;
+	let y = { // 표현식
+		let x = 3;
+		x + 1 // 리턴 값
+	}
+}
+```
+
+---
+
+# 흐름 제어, 패턴과 매칭
+## if, else if, else
+```rust
+if number % 3 == 0 {
+	// ...
+}
+else if number % 3 == 1 {
+	// ...
+}
+else {
+	// ...
+}
+```
+```rust
+let condition = true
+let number = if condition {
+	1
+}
+else {
+	2
+}
+```
+- `let` 구문에서 `if` 표현식을 사용할 수도 있습니다.
+
+## loop, while, for
+```rust
+loop {
+	println!("도로마무");
+	// 빠져나올 때는 break 사용
+}
+```
+```rust
+let counter = 0;
+let result = loop {
+	counter += 1;
+	if(counter == 10){
+		break counter * 2;
+	}
+}
+```
+- 루프에서도 값 리턴이 가능합니다.
+
+```rust
+while number != 0 {
+	// ...
+}
+
+let a = [1, 2, 3, 4, 5];
+for element in a.iter() {
+	// ...
+}
+for number in (1..4).rev() {
+	// ...
+}
+```
+- `while`, `for` 반복문도 제공합니다.
+
+## match
+일련의 패턴과 값을 비교해서 일치하는 패턴에 지정된 코드를 실행합니다.
+```rust
+//1. 변수 값에 따른 matching
+let x = 1;
+match x {
+	1 => println!("one"),
+	2 => println!("two"),
+	3 => println!("three"),
+	_ => println!("anything"),
+	// 별도의 처리가 필요하지 않을 때는 자리지정자 _ 를 사용
+}
+
+//2. 변수 범위에 따른 matching
+let age:u32 = 30;
+let group = match age {
+	// .. 는 배타적 범위를
+	// ..= 는 포함적 범위를 뜻합니다.
+	0..=10 => "baby",
+	11..=20 => "teen",
+	21..=60 => "adult",
+	_ => "old",
+};   //let group = ...; 형태의 statement라서 ; 있어야 함
+
+//3. 변수의 타입에 따른 matching
+let c = '5';
+let num = match c.to_digit(10){  //to_digit는 Option 타입 리턴
+	Some(n) => n,
+	None => 0,
+};
+
+//4. 튜플에 대한 matching
+let n = 33;
+match (n%3, n%5) {
+	(0, 0) => println!("3과 5의 배수"),
+	(0, _) => println!("3의 배수"),
+	(_, 0) => println!("5의 배수"),
+	(_, _) => println!("3의 배수도 5의 배수도 아님"),
+}
+```
+- match는 가능한 모든 경우의 수를 처리할 수 있도록 작성해야 합니다. 안그러면 컴파일 에러가 발생합니다.
+
+## if let
+`if`와 `let`을 조합해서 여러 경우 중 한 가지만 처리하고 싶을 때 사용하는 문법입니다.
+```rust
+let c = '6';
+if let Some(num) = c.to_digit(10) { //to_digit는 Option 타입 리턴
+	println!("num={}",num); // num=6
+	// Some에 들어 있는 'num'은 새로운 변수
+}
+else { // else if, else 사용 가능
+	println!("error!");
+}
+```
+
+---
+
+# 클로저
+외부 변수를 함수의 내부에서 써야하는 경우에 클로저를 사용합니다.
+- `let <변수명> = | <파라미터> | <표현식> ;`
+
+```rust
+let add_one = |x:i32| x+1;
+println!("{}",add_one(2)); //3
+
+let divmod = |x:i32, y:i32| { 
+	let q = x / y;   let r = x % y; 
+	return (q,r);
+};
+println!("{:?}",divmod(10,3)); //(3,1)
+```
+```rust
+fn main(){
+    let num = 100;
+    let add_num = |x| x+num; // 외부 변수 사용
+    println!("{}", add_num(5)); //105
+}
+```
+
+```rust
+fn get_val(v:&Vec<i32>, idx:usize) -> i32 {
+    let val = v.get(idx).unwrap_or_else(||{
+        if v.get(0).is_some() {&v[0]}
+        else {&0}
+    });
+    return *val;
+}
+```
+이건 `unwrap_or_else` 메소드를 이용해서 값을 가져오는 예시입니다.
+
+---
+
+# 반복자
+반복자의 생성은 데이터의 '모음' 혹은 수의 '범위'에서 이루어집니다.
+- 데이터의 '모음'은 Rust에서 Collection이라고 부르는 것들
+- 수의 범위는 `1..100`와 같이 표현되는 범위
+
+### 생성
+```rust
+fn iter_test(){
+    let v = vec![1,2,3,4,5];
+    for val in v.iter() {  // iter 반복자 사용
+        print!("{} ", val); // 1 2 3 4 5
+    }
+    println!("");
+
+    for val in &v { //for 루프에서는 벡터의 iterator가 자동으로 나옴
+        print!("{} ", val); // 1 2 3 4 5
+    }
+}
+
+fn into_iter_test(){
+    let v = vec![1,2,3,4,5];
+    for val in v.into_iter() {  // into_iter 사용. 소유권이 넘어갑니다.
+        print!("{} ", val); // 1 2 3 4 5 
+    }
+    println!("");
+	// 여기서 에러 발생
+    // 위에서 v.into_iter()에 의해 소유권이 넘어갔기 때문.
+    for val in &v {
+        print!("{} ", val); // 1 2 3 4 5 
+    }
+}
+
+fn iter_mut_test(){
+    let mut v = vec![1,2,3,4,5];
+    for x in v.iter_mut(){
+        *x += 1;   // borrow한 것이기에 *를 붙임
+    } 
+    println!("{:?}",v);   // [2,3,4,5,6]
+
+    for val in &v {   // 동작 가능. 소유권 그대로 유지
+        print!("{} ", val); // 2,3,4,5,6 
+    }
+}
+```
+
+## 반복자의 메소드
+- **collect()** : iterator의 내용을 collection으로 만들어줍니다. 타입 지정 필요
+- **sum(), max(), min()** : 타입 지정 필요
+- **count()**
+- **product()** : iterator의 각 원소를 곱한 결과를 리턴. 타입 지정 필요
+
+- **map**
+	- 반복자의 요소 하나하나에 대해 어떤 연산을 하게합니다.
+	- 루프를 돌려서 값들을 변경하고, 변경된 값을 이용해서 다시 무언가를 해야할 때 사용합니다.
+	- ```rust
+	  let v = vec![1,2,3,4,5];
+	  let v1:Vec<_> = v.iter().map(|&x| x+1).collect();
+	  ```
+
+- **filter**
+	- 괄호 안에 있는 조건을 만족하는 원소들만으로 재 구성된 iterator를 리턴합니다.
+	- ```rust
+	  let v = vec![1,2,3,4,5];
+	  let v1:Vec<_> = v.iter().filter(|&&x| x%2==0).collect();
+	  
+	  // into_iter()의 경우 소유권이 넘어가므로
+	  // |x|로 작성
+	  let v1:Vec<_> = v.into_iter().filter(|x| x%2==0).collect();
+	  ```
+
+- **filter_map**
+	- map - filter - map 한 것을 하나의 메서드에서 수행할 수 있습니다.
+	- ```rust
+	  let a = ["1", "two", "NaN", "four", "5"];
+	  let v:Vec<_> = a.iter().filter_map(|s| s.parse::<i32>().ok()).collect();
+	  // map을 쓴다면
+	  // let v:Vec<_> = a.iter().map(|s| s.parse::<i32>()).filter(|s| s.is_ok()).map(|s| s.unwrap()).collect();
+	  
+	  println!("v={:?}",v); //v=[1, 5]
+	  ```
+
+- **for_each**
+	- 루프를 돌려서 값들을 변경하고 그냥 종결해도 될 때 사용합니다.
+	- ```rust
+	  let mut v = vec![1,2,3,4,5];
+	  v.iter_mut().for_each(|x| *x += 1);
+	  
+	  println!("{:?}",v); //[2, 3, 4, 5, 6]
+	  ```
+
+- **take_while**
+	- `filter`와 유사하게 클로저의 조건을 만족하는 원소들만 추려내서 iterator를 만듭니다.
+	- ```rust
+	  let v = vec![1,3,5,7,9, 10, 11, 13, 15];
+	  let v1:Vec<_> = v.iter().filter(|x| *x % 2 == 1).collect();  //모든 홀수를 찾는다.
+	  let v2:Vec<_> = v.iter().take_while(|x| *x % 2 == 1).collect(); // 홀수가 아닐 때까지의 홀수만
+	  
+	  println!("v1={:?}",v1);  //v1=[1, 3, 5, 7, 9, 11, 13, 15]
+	  println!("v2={:?}",v2);  //v2=[1, 3, 5, 7, 9]  
+	  ```
+
+---
+
+# 소유권
+>Rust의 독특한 기능 중 하나.
+>가비지 콜렉터(Garbage Collector)에 의존하지 않고 메모리 안전성을 보장하려는 기법
+
+소유권 규칙
+- 각각의 값은 소유자(owner)라고 부르는 변수를 가진다.
+- 특정 시점에 값의 소유자는 단 하나.
+- 소유자가 범위를 벗어나면 값은 제거된다.
+
+## 메모리와 할당
+러스트의 메모리 할당과 해제는 GC(Garbage Collector)가 있는 언어와 다르게 수행됩니다.
+- 변수를 소유한 범위(scope)를 벗어나면 자동으로 해체
+```rust
+{
+	let val = String::from("oh hi!");
+} // 범위를 벗어나면 변수 val은 유효하지 않게 됨.
+```
+
+
+데이터를 heap 메모리에 할당하기 위해 여러 개의 변수를 사용하는 복잡한 상황에서는 달라질 수 있습니다.
+
+### 1. 이동(move)
+```rust
+let x = 10;
+let y = x;
+```
+- 정수의 경우에는 고정 크기의 단순한 값이기 때문에 '10'이라는 값 2개가 스택에 저장됩니다.
+```rust
+let s1 = String::from("hello");
+let s2 = s1;
+
+// s1은 유효하지 않은 변수가 됨.
+println!("{} world!", s1); // 에러 발생!
+```
+- heap에 할당되는 `String` 타입의 경우에는 조금 다릅니다.
+- s1 값을 그대로 복사해오는 것 같았지만 사실 문자열 콘텐츠를 저장하고 있는 메모리에 대한 **포인터, 길이, 용량**에 대한 내용을 가져옵니다.
+	- 그 이유는
+	- '컴파일 시점'에서 문자열의 길이를 미리 알 수 없거나
+	- 프로그램 실행 중에 길이가 변경되는 문자열은 그 문자열이 사용할 메모리를 바이너리 형태로 미리 변환할 수 없기 때문입니다.
+- 여기서 '얕은 복사'가 아닌 변수 s1이 변수 s2로 **이동했다**고 표현합니다.
+### 2. 복제(clone)
+```rust
+let s1 = String::from("XD");
+let s2 = s1.clone();
+```
+### 3. 스택 전용 데이터: 복사(copy)
+```rust
+let x = 10;
+let y = x;
+```
+- 러스트는 정수형과 같은 타입에 **Copy trait**라는 특성을 제공합니다.
+	- 이전 변수를 새 변수에 할당해도 무효화되지 않습니다.
+
+
+## 소유권과 함수
+값을 함수에 전달하는 것은 변수에 대입하는 것과 유사합니다. 여기서도 이동, 복사가 발생합니다.
+
+```rust
+fn main() {
+	let s = String::from("hi");
+	func1(s); // 변수 s가 함수 내로 이동. 변수 s는 더 이상 유효하지 않음.
+	
+	let x = 10;
+	func2(x); // 변수 x가 함수 내로 이동. 복사를 수행하므로 변수 x는 계속 유효함.
+}
+```
+
+```rust
+fn main() {
+	let s1 = gives_ownership();
+	let s2 = String::from("hi");
+	let s3 = takes_and_gives_back(s2); // s2는 무효화
+}
+
+fn gives_ownership() -> String {
+	let tmp = String::from("oh");
+	tmp
+}
+
+fn takes_and_gives_back(tmp_string: String) -> String {
+	tmp_string
+}
+```
+- 리턴 값도 소유권을 이전합니다.
+
+
+## 참조와 대여
+```rust
+fn main() {
+	let s1 = String::from("hi");
+	let len = calculate_len(&s1);
+}
+
+fn calculate_len(s: &String) {
+	s.len()
+}
+```
+- 값을 소유하는 대신에 객체의 참조를 이용하게 만들 수 있습니다.
+- 매개변수로 참조를 전달하는 것을 '**대여**'라고 합니다.
+```rust
+fn main() {
+	let mut s = String::from("hi");
+	change(&mut s);
+}
+
+fn change(s: &mut String) {
+	s.push_str(" hello!");
+}
+```
+- `mut` 키워드를 사용하면 **가변 참조**를 이용해서 값을 바꿀 수 있습니다.
+```rust
+let mut s = String::from("oh");
+let r1 = &mut s;
+let r2 = &mut s;
+// 에러 발생!
+```
+- 물론 가변 참조에는 제약이 있습니다.
+	- 특정 범위 내의 특정 데이터에 대한 가변 참조는 오직 한 개만 존재
+	- 데이터 경합 방지
+
+## 슬라이스 타입
+슬라이스도 소유권을 갖지 않는 타입입니다.
+이를 이용하면 컬렉션 전체가 아닌 연속된 요소들을 참조할 수 있습니다.
+### 문자열 슬라이스
+```rust
+let s = String::from("hello world");
+// 문자열의 지정된 부분만을 참조하는 방법
+let hello = &s[0..5]; // or [..5]
+let world = &s[6..11]; // or [6..]
+```
+```rust
+fn first_word(s: &str) -> &str {
+	s
+}
+
+let my_string = String::from("hello");
+// 문자열 슬라이스를 전달
+let word = first_word(&my_string[..]);
+
+let my_string_literal = "hi!";
+// 문자열 리터럴 슬라이스를 전달
+let word = first_word(&my_string_literal[..]);
+// 문자열 리터럴은 이미 슬라이스. 에러 없음!
+let word = first_word(my_string_literal);
+```
+- 문자열 슬라이스를 매개변수로 사용하는 함수
+
+---
+
+# 구조체
+```rust
+#[derive(Debug)] // Debug 트레이트를 상속하는 애노테이션
+struct User { // 정의
+	name: String,
+	email: String,
+	activate: bool,
+}
+
+impl User { // 메서드 정의
+	fn deactivate(&mut self) {
+		self.activate = false;
+	}
+	fn print_info(&self) {
+		println!("name: {}, email: {}", self.name, self.email);
+	}
+}
+
+let mut user1 = User { // 구조체 인스턴스 생성
+	name: String::from("name"),
+	email: String::from("email"),
+	activate: true,
+}
+
+user1.email = String::from("new email"); // 필드값 변경
+
+let user2 = User { // 구조체 갱신 문법
+	// name 필드에는 새로운 값이, 나머지는 user1 필드값들을 대입
+	name: String::from("user2 name"),
+	..user1
+}
+```
+
+```rust
+struct Color(i32, i32, i32);
+struct Point(i32, i32, i32);
+
+let black = Color(0, 0, 0);
+let origin = Color(0, 0, 0);
+```
+- 튜플과 유사하게 생긴 구조체를 선언할 수 있습니다.
+- 이를 **튜플 구조체**라고 부릅니다.
+
+```rust
+struct User {
+	name: &str,
+	email: &str,
+	activate: bool,
+}
+```
+- 필드가 하나도 없는 구조체를 **유사 유닛 구조체**라고 부릅니다.
+- 이때 수명을 지정하지 않고 구조체에 참조를 저장하면 에러가 발생..합니다.
+
+---
+
+# 열거자
+```rust
+enum IpAddrKind {
+	V4,
+	V6,
+}
+
+route(IpAddrKind::V4); // 이런 식으로 열거자 값 사용
+```
+
+```rust
+enum IpAddrKind {
+	V4(u8, u8, u8, u8),
+	V6(String),
+}
+
+// 열거자의 값에 데이터를 직접 지정할 수 있음!
+let home = IpAddrKind::V4(127, 0, 0, 1);
+```
+
+```rust
+enum Message {
+	A,
+	B { oh: i32, hi: i32 }, // 익명 구조체
+	C(String), // 값 하나
+	D(i32, i32, i32), // i32 값 3개
+}
+
+impl Message { // 메서드 정의
+	fn func(&self) {
+		// 메서드 본문
+	}
+}
+```
+- 열거자도 구조체처럼 `impl` 블록을 이용해서 메서드를 정의할 수 있습니다.
+
+```rust
+enum Option<T> { // T는 generic 타입 매개변수를 의미
+	Some(T),
+	None,
+}
+
+let some_number = Some(5);
+let some_string = Some("oh hi");
+let absent_number: Option<i32> = None;
+
+let value = some_number.pop().unwrap();
+// unwrap 메소드는 Option을 리턴
+// Some(x) 형태에서 x 값을 강제로 빼냄
+// 반환된 값이 None이면 panic을 일으킴!
+```
+- `Option<T>` 열거자는 표준 라이브러리에서 제공합니다.
+- 이걸 이용해서 값의 존재여부를 표현하는 `None`을 사용할 수 있습니다.
+
+```rust
+enum Result<T, E> {
+   Ok(T),
+   Err(E),
+}
+```
+- `Result<T, E>` 열거자도 제공됩니다.
+	- **Option**은 "값이 없는 경우"를 위한 열거형
+	- **Result**는 "에러가 발생한 경우"를 위한 열거형
+
+```rust
+fn divmod(n:i32, d:i32) -> Result<(i32, i32), String> {
+    if d==0 {
+        Err("can't divide by zero".to_owned())
+    } else {
+        Ok((n/d, n%d))
+    }
+}
+
+fn main(){
+    match divmod(10,3) {
+        Ok((q,r)) => println!("(quotient, remainder)={:?}",(q,r)),
+        Err(e) => println!("Error: {}",e),
+    }    
+}
+```
+- Result를 리턴하는 함수와 처리는 위 처럼 사용하면 됩니다.
+
+```rust
+use std::{fs::File, io::Write};
+
+fn main(){
+    write_file("foo.txt");
+}
+
+fn write_file(f_name:&str) {
+    let mut f = match File::create(f_name) {
+        Ok(file) => file,
+        Err(error) => {println!("Error: {}",error); return;},
+    };
+    let _ = f.write_all(b"hello"); 
+}
+```
+- Result 리턴 함수를 사용하는 다른 예시입니다.
